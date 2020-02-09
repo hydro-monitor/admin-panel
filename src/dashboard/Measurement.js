@@ -14,20 +14,20 @@ const useStyles = makeStyles({
   },
 });
 
-export default function Deposits() {
+export default function Measurement({node, measurement, timestamp}) {
   const classes = useStyles();
   return (
     <React.Fragment>
-      <Title>Recent Deposits</Title>
+      <Title>{node}</Title>
       <Typography component="p" variant="h4">
-        $3,024.00
+        {measurement} metros
       </Typography>
       <Typography color="textSecondary" className={classes.depositContext}>
-        on 15 March, 2019
+        tomada el {timestamp}
       </Typography>
       <div>
         <Link color="primary" href="#" onClick={preventDefault}>
-          View balance
+          Ver mediciones
         </Link>
       </div>
     </React.Fragment>
