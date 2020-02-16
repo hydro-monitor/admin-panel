@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import Dashboard from './dashboard/Dashboard';
+import InitialDashboard from './dashboard/InitialDashboard';
 import MeasurementsDashboard from './dashboard/MeasurementsDashboard';
 import {
   BrowserRouter as Router,
@@ -12,7 +12,7 @@ function App() {
   return (
     <Router>
       <Switch>
-        <Route path="/" exact component={Dashboard} />
+        <Route path="/" exact component={InitialDashboard} />
         <Route exact path="/measurements" component={MeasurementsDashboard} />
       </Switch>
     </Router>

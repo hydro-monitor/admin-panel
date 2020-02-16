@@ -11,40 +11,13 @@ import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { mainListItems } from './listItems';
-import Measurement from './Measurement';
 import Copyright from './Copyright';
 import { useStyles } from './dashboardStyles';
 
-function MeasurementList() {
-  const classes = useStyles();
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
-
-  // FIXME Ask server for last measurements
-  let latestMeasurements = [
-    {"node": "lujan-1", "measurement": 60, "timestamp": "10/2/2020"},
-    {"node": "lujan-2", "measurement": 560, "timestamp": "1/2/2020"},
-    {"node": "lujan-3", "measurement": 220, "timestamp": "5/2/2020"},
-    {"node": "areco-1", "measurement": 600, "timestamp": "8/2/2020"}
-  ]
-
-  let measurements = []
-  for (let i = 0; i < latestMeasurements.length; i++) {
-    measurements.push(
-    <Grid item xs={12} md={4} lg={3}>
-    <Paper className={fixedHeightPaper}>
-      <Measurement node={latestMeasurements[i].node} measurement={latestMeasurements[i].measurement} timestamp={latestMeasurements[i].timestamp}  />
-    </Paper>
-    </Grid>
-    )
-  }
-  return measurements
-}
-
-export default function Dashboard() {
+export default function Dashboard(props) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
   const handleDrawerOpen = () => {
@@ -53,7 +26,6 @@ export default function Dashboard() {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
   return (
     <div className={classes.root}>
@@ -70,7 +42,7 @@ export default function Dashboard() {
             <MenuIcon />
           </IconButton>
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-            Inicio
+            {props.title}
           </Typography>
         </Toolbar>
       </AppBar>
@@ -93,8 +65,7 @@ export default function Dashboard() {
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
           <Grid container spacing={3}>
-            {/* Recent measurements */}
-            <MeasurementList />
+            {props.children}
           </Grid>
           <Box pt={4}>
             <Copyright />
