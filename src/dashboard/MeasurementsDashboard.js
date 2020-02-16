@@ -9,7 +9,7 @@ export default function MeasurementsDashboard() {
   const classes = useStyles();
   return (
     <Dashboard title="Mediciones">
-      {/* Recent Orders */}
+      {/* Measurements table */}
       <Grid item xs={12}>
         <Paper className={classes.paper}>
           <Measurements />
