@@ -1,8 +1,8 @@
-import React from 'react';
-import Link from '@material-ui/core/Link';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Title from './Title';
+import React from "react";
+import Link from "@material-ui/core/Link";
+import { makeStyles } from "@material-ui/core/styles";
+import Typography from "@material-ui/core/Typography";
+import Title from "./Title";
 
 function preventDefault(event) {
   event.preventDefault();
@@ -10,11 +10,11 @@ function preventDefault(event) {
 
 const useStyles = makeStyles({
   depositContext: {
-    flex: 1,
-  },
+    flex: 1
+  }
 });
 
-export default function Measurement({node, measurement, timestamp}) {
+export default function Measurement({ node, measurement, timestamp }) {
   const classes = useStyles();
   return (
     <React.Fragment>
