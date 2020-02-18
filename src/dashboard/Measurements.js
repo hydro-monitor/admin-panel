@@ -9,7 +9,6 @@ import TableRow from "@material-ui/core/TableRow";
 import Title from "./Title";
 import NodesSelect from "./NodesSelect";
 import LinearProgress from "@material-ui/core/LinearProgress";
-import Box from "@material-ui/core/Box";
 
 function manualReadingBoolToString(wasManual) {
   if (wasManual) {
@@ -51,12 +50,14 @@ const useStyles = makeStyles(theme => ({
 
 export default function Measurements() {
   const classes = useStyles();
-  const node = "lujan-1";
-  const URL = "http://antiguos.fi.uba.ar:443/api/nodes/" + node + "/readings"; // TODO Get node name from combo
+  const nodes = ["lujan-1", "lujan-2", "areco-1"]; // TODO get nodes from server?
+  const [node, setNode] = useState(nodes[0]);
+  const handleSetNode = name => {
+    setNode(name);
+  };
+  const URL = "http://antiguos.fi.uba.ar:443/api/nodes/" + node + "/readings";
   const rows = useFetch(URL);
   console.log(rows);
-
-  const nodes = ["lujan-1", "lujan-2", "areco-1"];
 
   function renderTable() {
     return (
@@ -111,7 +112,7 @@ export default function Measurements() {
           <Title>Mediciones de nodo</Title>
         </div>
         <div>
-          <NodesSelect nodes={nodes} />
+          <NodesSelect nodes={nodes} setParentNode={handleSetNode} />
         </div>
       </div>
       {renderContent()}
