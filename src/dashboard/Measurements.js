@@ -33,7 +33,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Measurements() {
   const classes = useStyles();
-  const nodes = ["lujan-1", "lujan-2", "areco-1"]; // TODO get nodes from server?
+  const nodes = ["lujan-1", "lujan-2", "lujan-3", "areco-1"]; // TODO get nodes from server?
   const [node, setNode] = useState(nodes[0]);
   const [data, updateData] = useState(undefined);
   const changeNodeAndTable = name => {
