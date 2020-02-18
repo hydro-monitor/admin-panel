@@ -7,6 +7,7 @@ import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Title from "./Title";
+import NodesSelect from "./NodesSelect";
 import LinearProgress from "@material-ui/core/LinearProgress";
 
 function manualReadingBoolToString(wasManual) {
@@ -18,23 +19,6 @@ function manualReadingBoolToString(wasManual) {
 
 function sleep(milliseconds) {
   return new Promise(resolve => setTimeout(resolve, milliseconds));
-}
-
-function useFetch(url) {
-  const [data, updateData] = useState(undefined);
-
-  // empty array as second argument equivalent to componentDidMount
-  useEffect(() => {
-    async function fetchData() {
-      await sleep(2000); // FIXME Remove when testing is done
-      const response = await fetch(url);
-      const json = await response.json();
-      updateData(json);
-    }
-    fetchData();
-  }, [url]);
-
-  return data;
 }
 
 function preventDefault(event) {
@@ -49,8 +33,30 @@ const useStyles = makeStyles(theme => ({
 
 export default function Measurements() {
   const classes = useStyles();
-  const node = "lujan-1";
-  const URL = "http://antiguos.fi.uba.ar:443/api/nodes/" + node + "/readings"; // TODO Get node name from combo
+  const nodes = ["lujan-1", "lujan-2", "lujan-3", "areco-1"]; // TODO get nodes from server?
+  const [node, setNode] = useState(nodes[0]);
+  const [data, updateData] = useState(undefined);
+  const changeNodeAndTable = name => {
+    setNode(name);
+    updateData(undefined);
+  };
+  function useFetch(url) {
+    // empty array as second argument equivalent to componentDidMount
+    useEffect(() => {
+      async function fetchData() {
+        await sleep(2000); // FIXME Remove when testing is done
+        const response = await fetch(url);
+        console.log(response);
+        const json = await response.json();
+        updateData(json);
+      }
+      fetchData();
+    }, [url]);
+
+    return data;
+  }
+
+  const URL = "http://antiguos.fi.uba.ar:443/api/nodes/" + node + "/readings";
   const rows = useFetch(URL);
   console.log(rows);
 
@@ -92,17 +98,34 @@ export default function Measurements() {
     return <LinearProgress />;
   }
 
+  function renderError() {
+    return (
+      <LinearProgress variant="determinate" value={100} color="secondary" />
+    );
+  }
+
   function renderContent() {
     if (rows) {
       return renderTable();
-    } else {
+    } else if (rows === undefined) {
+      // Cuando todavia no obtuve el resultado del servidor
       return renderLoading();
+    } else if (rows === null) {
+      // Cuando no hay informacion para el nodo
+      return renderError();
     }
   }
 
   return (
     <React.Fragment>
-      <Title>Mediciones de nodo {node}</Title>
+      <div style={{ display: "inline-flex" }}>
+        <div style={{ alignSelf: "flex-end" }}>
+          <Title>Mediciones de nodo</Title>
+        </div>
+        <div>
+          <NodesSelect nodes={nodes} setParentNode={changeNodeAndTable} />
+        </div>
+      </div>
       {renderContent()}
     </React.Fragment>
   );
