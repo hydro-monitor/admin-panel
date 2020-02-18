@@ -21,7 +21,7 @@ function MeasurementList() {
   let measurements = [];
   for (let i = 0; i < latestMeasurements.length; i++) {
     measurements.push(
-      <Grid item xs={12} md={4} lg={3}>
+      <Grid item xs={12} md={4} lg={3} key={i}>
         <Paper className={fixedHeightPaper}>
           <Measurement
             node={latestMeasurements[i].node}
@@ -35,9 +35,9 @@ function MeasurementList() {
   return measurements;
 }
 
-export default function InitialDashboard() {
+export default function InitialDashboard(props) {
   return (
-    <Dashboard title="Inicio">
+    <Dashboard {...props} title="Inicio">
       <MeasurementList />
     </Dashboard>
   );

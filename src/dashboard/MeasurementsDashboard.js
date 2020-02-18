@@ -5,10 +5,10 @@ import Paper from "@material-ui/core/Paper";
 import Measurements from "./Measurements";
 import { useStyles } from "./dashboardStyles";
 
-export default function MeasurementsDashboard() {
+export default function MeasurementsDashboard(props) {
   const classes = useStyles();
   return (
-    <Dashboard title="Mediciones">
+    <Dashboard {...props} title="Mediciones">
       {/* Measurements table */}
       <Grid item xs={12}>
         <Paper className={classes.paper}>
