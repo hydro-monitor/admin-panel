@@ -7,7 +7,9 @@ import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Title from "./Title";
+import NodesSelect from "./NodesSelect";
 import LinearProgress from "@material-ui/core/LinearProgress";
+import Box from "@material-ui/core/Box";
 
 function manualReadingBoolToString(wasManual) {
   if (wasManual) {
@@ -53,6 +55,8 @@ export default function Measurements() {
   const URL = "http://antiguos.fi.uba.ar:443/api/nodes/" + node + "/readings"; // TODO Get node name from combo
   const rows = useFetch(URL);
   console.log(rows);
+
+  const nodes = ["lujan-1", "lujan-2", "areco-1"];
 
   function renderTable() {
     return (
@@ -102,7 +106,14 @@ export default function Measurements() {
 
   return (
     <React.Fragment>
-      <Title>Mediciones de nodo {node}</Title>
+      <div style={{ display: "inline-flex" }}>
+        <div style={{ alignSelf: "flex-end" }}>
+          <Title>Mediciones de nodo</Title>
+        </div>
+        <div>
+          <NodesSelect nodes={nodes} />
+        </div>
+      </div>
       {renderContent()}
     </React.Fragment>
   );
