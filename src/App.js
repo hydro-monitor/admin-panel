@@ -2,6 +2,7 @@ import React from "react";
 import "./App.css";
 import InitialDashboard from "./dashboard/InitialDashboard";
 import MeasurementsDashboard from "./dashboard/MeasurementsDashboard";
+import NodesDashboard from "./dashboard/NodesDashboard";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 function App() {
@@ -32,6 +33,17 @@ function App() {
           exact
           render={() => (
             <MeasurementsDashboard
+              open={open}
+              handleDrawerOpen={handleDrawerOpen}
+              handleDrawerClose={handleDrawerClose}
+            />
+          )}
+        />
+        <Route
+          path="/nodes"
+          exact
+          render={() => (
+            <NodesDashboard
               open={open}
               handleDrawerOpen={handleDrawerOpen}
               handleDrawerClose={handleDrawerClose}
