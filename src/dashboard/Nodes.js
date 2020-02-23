@@ -14,13 +14,15 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Typography from "@material-ui/core/Typography";
+import UndoIcon from "@material-ui/icons/Undo";
+import Alert from "@material-ui/lab/Alert";
 
 function sleep(milliseconds) {
   return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
 
 const useStyles = makeStyles(theme => ({
-  button: {
+  deleteButton: {
     marginBottom: theme.spacing(1)
   },
   buttonsGrid: {
@@ -36,8 +38,29 @@ const useStyles = makeStyles(theme => ({
   },
   updateButton: {
     marginTop: theme.spacing(1)
+  },
+  configButtons: {
+    display: "inline-flex",
+    justifyContent: "flex-end"
+  },
+  restoreButton: {
+    alignSelf: "flex-end",
+    marginRight: "10px",
+    marginBottom: "2px"
   }
 }));
+
+function RestoreConfigurationButton({ handleConfigurationRestore }) {
+  return (
+    <IconButton
+      aria-label="restore"
+      size="small"
+      onClick={handleConfigurationRestore}
+    >
+      <UndoIcon />
+    </IconButton>
+  );
+}
 
 function UpdateConfigurationButton({ node, configuration }) {
   const classes = useStyles();
@@ -59,7 +82,7 @@ function UpdateConfigurationButton({ node, configuration }) {
   );
 }
 
-function DeleteButton({ handleDeleteConfirmOpen }) {
+function DeleteButton({ handleDeleteConfirmOpen, disabled }) {
   const classes = useStyles();
 
   return (
@@ -67,8 +90,9 @@ function DeleteButton({ handleDeleteConfirmOpen }) {
       color="secondary"
       aria-label="delete"
       size="small"
-      className={classes.button}
+      className={classes.deleteButton}
       onClick={handleDeleteConfirmOpen}
+      disabled={disabled}
     >
       <DeleteIcon /* fontSize="small" */ />
     </IconButton>
@@ -154,6 +178,28 @@ export default function Nodes() {
   const [node, setNode] = useState(nodes[0]);
 
   const [config, updateConfig] = useState(undefined);
+  function handleErrors(response) {
+    if (!response.ok) {
+      throw Error(response.statusText);
+    }
+    return response;
+  }
+  async function fetchConfig(url) {
+    await sleep(1000); // TODO Remove when testing is done
+    await fetch(url)
+      .then(handleErrors)
+      .then(async response => {
+        console.log(response);
+        const json = await response.json();
+        updateConfig(JSON.stringify(json, null, 2));
+        handleDeleteNodeEnabled();
+      })
+      .catch(error => {
+        console.log(error);
+        updateConfig(null);
+        handleDeleteNodeDisabled();
+      });
+  }
   const changeNodeAndTable = name => {
     setNode(name);
     updateConfig(undefined);
@@ -162,6 +208,13 @@ export default function Nodes() {
     updateConfig(event.target.value);
   };
 
+  const [deleteNodeDisabled, setDeleteNodeDisabled] = useState(true);
+  const handleDeleteNodeDisabled = () => {
+    setDeleteNodeDisabled(true);
+  };
+  const handleDeleteNodeEnabled = () => {
+    setDeleteNodeDisabled(false);
+  };
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const handleDeleteConfirmOpen = () => {
     setDeleteConfirmOpen(true);
@@ -173,21 +226,19 @@ export default function Nodes() {
   function useFetch(url) {
     // empty array as second argument equivalent to componentDidMount
     useEffect(() => {
-      async function fetchConfig() {
-        await sleep(1000); // TODO Remove when testing is done
-        const response = await fetch(url);
-        console.log(response);
-        const json = await response.json();
-        updateConfig(json);
-      }
-      fetchConfig();
+      fetchConfig(url);
     }, [url]);
   }
 
   const getNodeConfigurationURL =
-    "http://antiguos.fi.uba.ar:443/api/nodes/" + node + "/configuration";
+    "https://my-json-server.typicode.com/hydro-monitor/web-api-mock/configurations/" +
+    node.split("-")[1]; //TODO "http://antiguos.fi.uba.ar:443/api/nodes/" + node + "/configuration";
   useFetch(getNodeConfigurationURL);
   console.log(config);
+
+  const handleConfigurationRestore = () => {
+    fetchConfig(getNodeConfigurationURL);
+  };
 
   function renderTable() {
     return (
@@ -196,11 +247,21 @@ export default function Nodes() {
           id="filled-multiline-static"
           multiline
           rows="30"
-          defaultValue={JSON.stringify(config, null, 2)}
+          value={config}
           variant="filled"
           onChange={handleConfigurationTextUpdate}
         />
-        <UpdateConfigurationButton node={node} configuration={config} />
+
+        <div className={classes.configButtons}>
+          <div className={classes.restoreButton}>
+            <RestoreConfigurationButton
+              handleConfigurationRestore={handleConfigurationRestore}
+            />
+          </div>
+          <div>
+            <UpdateConfigurationButton node={node} configuration={config} />
+          </div>
+        </div>
       </React.Fragment>
     );
   }
@@ -211,7 +272,9 @@ export default function Nodes() {
 
   function renderError() {
     return (
-      <LinearProgress variant="determinate" value={100} color="secondary" />
+      <Alert severity="error">
+        No se pudo consultar la configuración del nodo {node}
+      </Alert>
     );
   }
 
@@ -240,7 +303,10 @@ export default function Nodes() {
         </Grid>
         <Grid item xs={1} md={1} lg={1} className={classes.buttonsGrid}>
           <div>
-            <DeleteButton handleDeleteConfirmOpen={handleDeleteConfirmOpen} />
+            <DeleteButton
+              handleDeleteConfirmOpen={handleDeleteConfirmOpen}
+              disabled={deleteNodeDisabled}
+            />
             <NodeDeleteConfirmation
               open={deleteConfirmOpen}
               node={node}
