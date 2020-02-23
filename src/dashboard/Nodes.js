@@ -54,7 +54,7 @@ function UpdateConfigurationButton({ node, configuration }) {
       className={classes.updateButton}
       onClick={handleConfigurationUpdate}
     >
-      Update configuration
+      Actualizar configuración
     </Button>
   );
 }
