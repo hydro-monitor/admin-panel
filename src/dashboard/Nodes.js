@@ -25,26 +25,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function Nodes() {
-  const classes = useStyles();
-
-  const nodes = ["lujan-1", "lujan-2", "lujan-3", "areco-1"]; // TODO get nodes from server?
-  const [node, setNode] = useState(nodes[0]);
-
-  const [data, updateData] = useState(undefined);
-  const changeNodeAndTable = name => {
-    setNode(name);
-    updateData(undefined);
-  };
-
-  const [deleteConfirmOpen, setDeleteConfirmOpen] = React.useState(false);
-  const handleDeleteConfirmOpen = () => {
-    setDeleteConfirmOpen(true);
-  };
-  const handleDeleteConfirmClose = () => {
-    setDeleteConfirmOpen(false);
-  };
-
+function NodeDeleteConfirmation({ open, node, handleDeleteConfirmClose }) {
   const [nodeToDelete, setNodeToDelete] = useState("");
   const handleNodeToDelete = event => {
     console.log("handleNodeToDelete");
@@ -71,6 +52,69 @@ export default function Nodes() {
     } else {
       handleNodeToDeleteError();
     }
+  };
+
+  return (
+    <Dialog
+      open={open}
+      onClose={handleDeleteConfirmClose}
+      aria-labelledby="form-dialog-title"
+    >
+      <DialogTitle id="form-dialog-title">Eliminar nodo {node}</DialogTitle>
+      <DialogContent>
+        <DialogContentText component={"div"}>
+          <Typography gutterBottom>
+            ¿Desea eliminar el nodo {node}? De hacerlo, no recibirá más sus
+            mediciones ni podrá configurarlo.
+          </Typography>
+          <Typography gutterBottom>
+            Para eliminar al nodo, confirme escribiendo su nombre.
+          </Typography>
+        </DialogContentText>
+        <TextField
+          autoFocus
+          id="name"
+          label="Nombre"
+          onChange={handleNodeToDelete}
+          required={true}
+          error={nodeToDeleteError}
+          helperText={nodeToDeleteErrorMessage}
+          fullWidth
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleDeleteConfirmClose} color="primary">
+          Cancelar
+        </Button>
+        <Button
+          onClick={() => handleDeleteConfirmation(nodeToDelete)}
+          color="primary"
+        >
+          Eliminar
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
+
+export default function Nodes() {
+  const classes = useStyles();
+
+  const nodes = ["lujan-1", "lujan-2", "lujan-3", "areco-1"]; // TODO get nodes from server?
+  const [node, setNode] = useState(nodes[0]);
+
+  const [data, updateData] = useState(undefined);
+  const changeNodeAndTable = name => {
+    setNode(name);
+    updateData(undefined);
+  };
+
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const handleDeleteConfirmOpen = () => {
+    setDeleteConfirmOpen(true);
+  };
+  const handleDeleteConfirmClose = () => {
+    setDeleteConfirmOpen(false);
   };
 
   function useFetch(url) {
@@ -164,47 +208,11 @@ export default function Nodes() {
             >
               <DeleteIcon /* fontSize="small" */ />
             </IconButton>
-            <Dialog
+            <NodeDeleteConfirmation
               open={deleteConfirmOpen}
-              onClose={handleDeleteConfirmClose}
-              aria-labelledby="form-dialog-title"
-            >
-              <DialogTitle id="form-dialog-title">
-                Eliminar nodo {node}
-              </DialogTitle>
-              <DialogContent>
-                <DialogContentText component={"div"}>
-                  <Typography gutterBottom>
-                    ¿Desea eliminar el nodo {node}? De hacerlo, no recibirá más
-                    sus mediciones ni podrá configurarlo.
-                  </Typography>
-                  <Typography gutterBottom>
-                    Para eliminar al nodo, confirme escribiendo su nombre.
-                  </Typography>
-                </DialogContentText>
-                <TextField
-                  autoFocus
-                  id="name"
-                  label="Nombre"
-                  onChange={handleNodeToDelete}
-                  required={true}
-                  error={nodeToDeleteError}
-                  helperText={nodeToDeleteErrorMessage}
-                  fullWidth
-                />
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={handleDeleteConfirmClose} color="primary">
-                  Cancelar
-                </Button>
-                <Button
-                  onClick={() => handleDeleteConfirmation(nodeToDelete)}
-                  color="primary"
-                >
-                  Eliminar
-                </Button>
-              </DialogActions>
-            </Dialog>
+              node={node}
+              handleDeleteConfirmClose={handleDeleteConfirmClose}
+            />
           </div>
         </Grid>
       </Grid>
