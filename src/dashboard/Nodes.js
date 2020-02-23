@@ -2,11 +2,18 @@ import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Title from "./Title";
 import NodesSelect from "./NodesSelect";
-import TextField from "@material-ui/core/TextField";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Grid from "@material-ui/core/Grid";
 import IconButton from "@material-ui/core/IconButton";
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import Typography from "@material-ui/core/Typography";
 
 function sleep(milliseconds) {
   return new Promise(resolve => setTimeout(resolve, milliseconds));
@@ -23,11 +30,49 @@ export default function Nodes() {
 
   const nodes = ["lujan-1", "lujan-2", "lujan-3", "areco-1"]; // TODO get nodes from server?
   const [node, setNode] = useState(nodes[0]);
+
   const [data, updateData] = useState(undefined);
   const changeNodeAndTable = name => {
     setNode(name);
     updateData(undefined);
   };
+
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = React.useState(false);
+  const handleDeleteConfirmOpen = () => {
+    setDeleteConfirmOpen(true);
+  };
+  const handleDeleteConfirmClose = () => {
+    setDeleteConfirmOpen(false);
+  };
+
+  const [nodeToDelete, setNodeToDelete] = useState("");
+  const handleNodeToDelete = event => {
+    console.log("handleNodeToDelete");
+    setNodeToDelete(event.target.value);
+  };
+
+  const [nodeToDeleteError, setNodeToDeleteError] = useState(false);
+  const [nodeToDeleteErrorMessage, setNodeToDeleteErrorMessage] = useState("");
+  const handleNodeToDeleteError = () => {
+    setNodeToDeleteError(true);
+    setNodeToDeleteErrorMessage("El nombre del nodo a borrar es incorrecto");
+  };
+  const handleNodeToDeleteValidation = () => {
+    setNodeToDeleteError(false);
+    setNodeToDeleteErrorMessage("");
+  };
+  const handleDeleteConfirmation = nodeName => {
+    console.log("handleDeleteConfirmation");
+    console.log(nodeName);
+    if (nodeName === node) {
+      // TODO DELETE /api/nodes/{nodeName}
+      handleNodeToDeleteValidation();
+      handleDeleteConfirmClose();
+    } else {
+      handleNodeToDeleteError();
+    }
+  };
+
   function useFetch(url) {
     // empty array as second argument equivalent to componentDidMount
     useEffect(() => {
@@ -115,9 +160,51 @@ export default function Nodes() {
               aria-label="delete"
               size="small"
               className={classes.button}
+              onClick={handleDeleteConfirmOpen}
             >
               <DeleteIcon /* fontSize="small" */ />
             </IconButton>
+            <Dialog
+              open={deleteConfirmOpen}
+              onClose={handleDeleteConfirmClose}
+              aria-labelledby="form-dialog-title"
+            >
+              <DialogTitle id="form-dialog-title">
+                Eliminar nodo {node}
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText component={"div"}>
+                  <Typography gutterBottom>
+                    ¿Desea eliminar el nodo {node}? De hacerlo, no recibirá más
+                    sus mediciones ni podrá configurarlo.
+                  </Typography>
+                  <Typography gutterBottom>
+                    Para eliminar al nodo, confirme escribiendo su nombre.
+                  </Typography>
+                </DialogContentText>
+                <TextField
+                  autoFocus
+                  id="name"
+                  label="Nombre"
+                  onChange={handleNodeToDelete}
+                  required={true}
+                  error={nodeToDeleteError}
+                  helperText={nodeToDeleteErrorMessage}
+                  fullWidth
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleDeleteConfirmClose} color="primary">
+                  Cancelar
+                </Button>
+                <Button
+                  onClick={() => handleDeleteConfirmation(nodeToDelete)}
+                  color="primary"
+                >
+                  Eliminar
+                </Button>
+              </DialogActions>
+            </Dialog>
           </div>
         </Grid>
       </Grid>
@@ -125,21 +212,3 @@ export default function Nodes() {
     </React.Fragment>
   );
 }
-
-/*
-<div style={{ marginBottom: "5px" }}>
-<Button variant="contained" color="secondary">
-              Delete
-            </Button>
-
--------------
-
-<Button
-              variant="contained"
-              color="secondary"
-              className={classes.button}
-              startIcon={<DeleteIcon />}
-            >
-              Delete
-            </Button>
-*/
