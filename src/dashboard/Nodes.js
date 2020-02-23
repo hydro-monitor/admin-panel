@@ -22,6 +22,17 @@ function sleep(milliseconds) {
 const useStyles = makeStyles(theme => ({
   button: {
     marginBottom: theme.spacing(1)
+  },
+  buttonsGrid: {
+    display: "flex",
+    alignItems: "flex-end",
+    justifyContent: "flex-end"
+  },
+  titleGrid: {
+    display: "inline-flex"
+  },
+  titleDiv: {
+    alignSelf: "flex-end"
   }
 }));
 
@@ -137,7 +148,7 @@ export default function Nodes() {
     // empty array as second argument equivalent to componentDidMount
     useEffect(() => {
       async function fetchData() {
-        await sleep(2000); // FIXME Remove when testing is done
+        await sleep(1000); // FIXME Remove when testing is done
         const response = await fetch(url);
         console.log(response);
         const json = await response.json();
@@ -193,27 +204,15 @@ export default function Nodes() {
   return (
     <React.Fragment>
       <Grid container spacing={3}>
-        <Grid item xs={11} md={11} lg={11}>
-          <div style={{ display: "inline-flex" }}>
-            <div style={{ alignSelf: "flex-end" }}>
-              <Title>Configuración de nodo</Title>
-            </div>
-            <div>
-              <NodesSelect nodes={nodes} setParentNode={changeNodeAndTable} />
-            </div>
+        <Grid item xs={11} md={11} lg={11} className={classes.titleGrid}>
+          <div className={classes.titleDiv}>
+            <Title>Configuración de nodo</Title>
+          </div>
+          <div>
+            <NodesSelect nodes={nodes} setParentNode={changeNodeAndTable} />
           </div>
         </Grid>
-        <Grid
-          item
-          xs={1}
-          md={1}
-          lg={1}
-          style={{
-            display: "flex",
-            alignItems: "flex-end",
-            justifyContent: "flex-end"
-          }}
-        >
+        <Grid item xs={1} md={1} lg={1} className={classes.buttonsGrid}>
           <div>
             <DeleteButton handleDeleteConfirmOpen={handleDeleteConfirmOpen} />
             <NodeDeleteConfirmation
