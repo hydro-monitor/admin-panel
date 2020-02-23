@@ -25,6 +25,22 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+function DeleteButton({ handleDeleteConfirmOpen }) {
+  const classes = useStyles();
+
+  return (
+    <IconButton
+      color="secondary"
+      aria-label="delete"
+      size="small"
+      className={classes.button}
+      onClick={handleDeleteConfirmOpen}
+    >
+      <DeleteIcon /* fontSize="small" */ />
+    </IconButton>
+  );
+}
+
 function NodeDeleteConfirmation({ open, node, handleDeleteConfirmClose }) {
   const [nodeToDelete, setNodeToDelete] = useState("");
   const handleNodeToDelete = event => {
@@ -199,15 +215,7 @@ export default function Nodes() {
           }}
         >
           <div>
-            <IconButton
-              color="secondary"
-              aria-label="delete"
-              size="small"
-              className={classes.button}
-              onClick={handleDeleteConfirmOpen}
-            >
-              <DeleteIcon /* fontSize="small" */ />
-            </IconButton>
+            <DeleteButton handleDeleteConfirmOpen={handleDeleteConfirmOpen} />
             <NodeDeleteConfirmation
               open={deleteConfirmOpen}
               node={node}
