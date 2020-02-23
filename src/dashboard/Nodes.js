@@ -33,8 +33,31 @@ const useStyles = makeStyles(theme => ({
   },
   titleDiv: {
     alignSelf: "flex-end"
+  },
+  updateButton: {
+    marginTop: theme.spacing(1)
   }
 }));
+
+function UpdateConfigurationButton({ node, configuration }) {
+  const classes = useStyles();
+
+  const handleConfigurationUpdate = () => {
+    console.log("update configuration", node, configuration);
+    // TODO POST or PUT /api/nodes/<node>/configurations
+  };
+
+  return (
+    <Button
+      variant="contained"
+      color="primary"
+      className={classes.updateButton}
+      onClick={handleConfigurationUpdate}
+    >
+      Update configuration
+    </Button>
+  );
+}
 
 function DeleteButton({ handleDeleteConfirmOpen }) {
   const classes = useStyles();
@@ -130,10 +153,13 @@ export default function Nodes() {
   const nodes = ["lujan-1", "lujan-2", "lujan-3", "areco-1"]; // TODO get nodes from server?
   const [node, setNode] = useState(nodes[0]);
 
-  const [data, updateData] = useState(undefined);
+  const [config, updateConfig] = useState(undefined);
   const changeNodeAndTable = name => {
     setNode(name);
-    updateData(undefined);
+    updateConfig(undefined);
+  };
+  const handleConfigurationTextUpdate = event => {
+    updateConfig(event.target.value);
   };
 
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -147,22 +173,20 @@ export default function Nodes() {
   function useFetch(url) {
     // empty array as second argument equivalent to componentDidMount
     useEffect(() => {
-      async function fetchData() {
-        await sleep(1000); // FIXME Remove when testing is done
+      async function fetchConfig() {
+        await sleep(1000); // TODO Remove when testing is done
         const response = await fetch(url);
         console.log(response);
         const json = await response.json();
-        updateData(json);
+        updateConfig(json);
       }
-      fetchData();
+      fetchConfig();
     }, [url]);
-
-    return data;
   }
 
-  const URL =
+  const getNodeConfigurationURL =
     "http://antiguos.fi.uba.ar:443/api/nodes/" + node + "/configuration";
-  const config = useFetch(URL);
+  useFetch(getNodeConfigurationURL);
   console.log(config);
 
   function renderTable() {
@@ -174,7 +198,9 @@ export default function Nodes() {
           rows="30"
           defaultValue={JSON.stringify(config, null, 2)}
           variant="filled"
+          onChange={handleConfigurationTextUpdate}
         />
+        <UpdateConfigurationButton node={node} configuration={config} />
       </React.Fragment>
     );
   }
