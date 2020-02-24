@@ -99,7 +99,7 @@ function DeleteButton({ handleDeleteConfirmOpen, disabled }) {
   );
 }
 
-function NodeDeleteConfirmation({ open, node, handleDeleteConfirmClose }) {
+function NodeDeleteConfirmation({ open, node, handleDeleteDialogClose }) {
   const [nodeToDelete, setNodeToDelete] = useState("");
   const handleNodeToDelete = event => {
     console.log("handleNodeToDelete");
@@ -116,16 +116,21 @@ function NodeDeleteConfirmation({ open, node, handleDeleteConfirmClose }) {
     setNodeToDeleteError(false);
     setNodeToDeleteErrorMessage("");
   };
-  const handleDeleteConfirmation = nodeName => {
+  const handleDeleteConfirmation = () => {
     console.log("handleDeleteConfirmation");
-    console.log(nodeName);
-    if (nodeName === node) {
+    console.log(nodeToDelete);
+    if (nodeToDelete === node) {
       // TODO DELETE /api/nodes/{nodeName}
       handleNodeToDeleteValidation();
       handleDeleteConfirmClose();
     } else {
       handleNodeToDeleteError();
     }
+  };
+  const handleDeleteConfirmClose = () => {
+    setNodeToDelete("");
+    handleDeleteDialogClose();
+    handleNodeToDeleteValidation();
   };
 
   return (
@@ -160,10 +165,7 @@ function NodeDeleteConfirmation({ open, node, handleDeleteConfirmClose }) {
         <Button onClick={handleDeleteConfirmClose} color="primary">
           Cancelar
         </Button>
-        <Button
-          onClick={() => handleDeleteConfirmation(nodeToDelete)}
-          color="primary"
-        >
+        <Button onClick={handleDeleteConfirmation} color="primary">
           Eliminar
         </Button>
       </DialogActions>
@@ -310,7 +312,7 @@ export default function Nodes() {
             <NodeDeleteConfirmation
               open={deleteConfirmOpen}
               node={node}
-              handleDeleteConfirmClose={handleDeleteConfirmClose}
+              handleDeleteDialogClose={handleDeleteConfirmClose}
             />
           </div>
         </Grid>
