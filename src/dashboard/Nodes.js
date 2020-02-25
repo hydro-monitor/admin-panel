@@ -16,10 +16,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import Typography from "@material-ui/core/Typography";
 import UndoIcon from "@material-ui/icons/Undo";
 import Alert from "@material-ui/lab/Alert";
-
-function sleep(milliseconds) {
-  return new Promise(resolve => setTimeout(resolve, milliseconds));
-}
+import { handleErrors, sleep } from "./server";
 
 const useStyles = makeStyles(theme => ({
   deleteButton: {
@@ -180,12 +177,6 @@ export default function Nodes() {
   const [node, setNode] = useState(nodes[0]);
 
   const [config, updateConfig] = useState(undefined);
-  function handleErrors(response) {
-    if (!response.ok) {
-      throw Error(response.statusText);
-    }
-    return response;
-  }
   async function fetchConfig(url) {
     await sleep(1000); // TODO Remove when testing is done
     await fetch(url)

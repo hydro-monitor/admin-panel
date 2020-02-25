@@ -11,16 +11,14 @@ import NodesSelect from "./NodesSelect";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import PhotoIcon from "@material-ui/icons/Photo";
 import IconButton from "@material-ui/core/IconButton";
+import Alert from "@material-ui/lab/Alert";
+import { handleErrors, sleep } from "./server";
 
 function manualReadingBoolToString(wasManual) {
   if (wasManual) {
     return "Sí";
   }
   return "No";
-}
-
-function sleep(milliseconds) {
-  return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
 
 function preventDefault(event) {
@@ -36,12 +34,6 @@ const useStyles = makeStyles(theme => ({
 function PhotoLink({ node, readingId }) {
   const [photoNotFound, setPhotoNotFound] = useState(false);
 
-  function handleErrors(response) {
-    if (!response.ok) {
-      throw Error(response.statusText);
-    }
-    return response;
-  }
   async function fetchConfig(url) {
     await fetch(url)
       .then(handleErrors)
@@ -90,25 +82,32 @@ export default function Measurements() {
     setNode(name);
     updateData(undefined);
   };
-  function useFetch(url) {
-    // empty array as second argument equivalent to componentDidMount
-    useEffect(() => {
-      async function fetchData() {
-        await sleep(2000); // FIXME Remove when testing is done
-        const response = await fetch(url);
+
+  async function fetchData(url) {
+    await sleep(1000); // TODO Remove when testing is done
+    await fetch(url)
+      .then(handleErrors)
+      .then(async response => {
         console.log(response);
         const json = await response.json();
         updateData(json);
-      }
-      fetchData();
-    }, [url]);
+      })
+      .catch(error => {
+        console.log(error);
+        updateData(null);
+      });
+  }
 
-    return data;
+  function useFetch(url) {
+    // empty array as second argument equivalent to componentDidMount
+    useEffect(() => {
+      fetchData(url);
+    }, [url]);
   }
 
   const URL = "http://antiguos.fi.uba.ar:443/api/nodes/" + node + "/readings";
-  const rows = useFetch(URL);
-  console.log(rows);
+  useFetch(URL);
+  console.log(data);
 
   function renderTable() {
     return (
@@ -124,7 +123,7 @@ export default function Measurements() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map(row => (
+            {data.map(row => (
               <TableRow key={row.readingId}>
                 <TableCell>{row.readingId}</TableCell>
                 <TableCell>{row.readingTime}</TableCell>
@@ -154,17 +153,19 @@ export default function Measurements() {
 
   function renderError() {
     return (
-      <LinearProgress variant="determinate" value={100} color="secondary" />
+      <Alert severity="error">
+        No se pudieron consultar las mediciones del nodo {node}
+      </Alert>
     );
   }
 
   function renderContent() {
-    if (rows) {
+    if (data) {
       return renderTable();
-    } else if (rows === undefined) {
+    } else if (data === undefined) {
       // Cuando todavia no obtuve el resultado del servidor
       return renderLoading();
-    } else if (rows === null) {
+    } else if (data === null) {
       // Cuando no hay informacion para el nodo
       return renderError();
     }
