@@ -19,13 +19,9 @@ import { useStyles } from "./dashboardStyles";
 
 export default function Dashboard(props) {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(true);
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
+  const open = props.open;
+  const handleDrawerOpen = props.handleDrawerOpen;
+  const handleDrawerClose = props.handleDrawerClose;
 
   return (
     <div className={classes.root}>
