@@ -9,6 +9,8 @@ import TableRow from "@material-ui/core/TableRow";
 import Title from "./Title";
 import NodesSelect from "./NodesSelect";
 import LinearProgress from "@material-ui/core/LinearProgress";
+import PhotoIcon from "@material-ui/icons/Photo";
+import IconButton from "@material-ui/core/IconButton";
 
 function manualReadingBoolToString(wasManual) {
   if (wasManual) {
@@ -30,6 +32,54 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(3)
   }
 }));
+
+function PhotoLink({ node, readingId }) {
+  const [photoNotFound, setPhotoNotFound] = useState(false);
+
+  function handleErrors(response) {
+    if (!response.ok) {
+      throw Error(response.statusText);
+    }
+    return response;
+  }
+  async function fetchConfig(url) {
+    await fetch(url)
+      .then(handleErrors)
+      .then(async response => {
+        console.log(response);
+        setPhotoNotFound(false);
+      })
+      .catch(error => {
+        console.log(error);
+        setPhotoNotFound(true);
+      });
+  }
+  function useFetch(url) {
+    // empty array as second argument equivalent to componentDidMount
+    useEffect(() => {
+      fetchConfig(url);
+    }, [url]);
+  }
+
+  const getReadingPhotoURL =
+    "http://antiguos.fi.uba.ar:443/api/nodes/" +
+    node +
+    "/readings/" +
+    readingId +
+    "/photos";
+  useFetch(getReadingPhotoURL);
+
+  return (
+    <IconButton
+      aria-label="photo"
+      size="small"
+      disabled={photoNotFound}
+      href={getReadingPhotoURL}
+    >
+      <PhotoIcon />
+    </IconButton>
+  );
+}
 
 export default function Measurements() {
   const classes = useStyles();
@@ -69,7 +119,8 @@ export default function Measurements() {
               <TableCell>ID</TableCell>
               <TableCell>Timestamp</TableCell>
               <TableCell>Nivel de agua</TableCell>
-              <TableCell align="right">Medición Manual</TableCell>
+              <TableCell>Medición Manual</TableCell>
+              <TableCell align="right">Foto</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -78,8 +129,11 @@ export default function Measurements() {
                 <TableCell>{row.readingId}</TableCell>
                 <TableCell>{row.readingTime}</TableCell>
                 <TableCell>{row.waterLevel}</TableCell>
-                <TableCell align="right">
+                <TableCell>
                   {manualReadingBoolToString(row.manualReading)}
+                </TableCell>
+                <TableCell align="right">
+                  <PhotoLink node={node} readingId={row.readingId} />
                 </TableCell>
               </TableRow>
             ))}
