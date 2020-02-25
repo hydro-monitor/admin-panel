@@ -75,41 +75,80 @@ function PhotoLink({ node, readingId }) {
 
 export default function Measurements() {
   const classes = useStyles();
-  const nodes = ["lujan-1", "lujan-2", "lujan-3", "areco-1"]; // TODO get nodes from server?
-  const [node, setNode] = useState(nodes[0]);
+
+  const [nodes, setNodes] = useState([]);
+  const [node, setNode] = useState("");
   const [data, updateData] = useState(undefined);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingData, setIsLoadingData] = useState(true);
+  const nodesURL = "http://antiguos.fi.uba.ar:443/api/nodes";
+  const [measurementsURL, setMeasurementsURL] = useState("");
+
+  useEffect(() => {
+    const fetchNodes = async () => {
+      console.log("FETCH NODES HOOK");
+      setIsLoading(true);
+      await sleep(1000); // TODO Remove when testing is done
+      await fetch(nodesURL)
+        .then(handleErrors)
+        .then(async response => {
+          console.log(response);
+          const json = await response.json();
+          const nodesList = json.map(item => item.id).sort();
+          setNodes(nodesList);
+          setNode(nodesList[0]);
+          setIsLoading(false);
+          setMeasurementsURL(
+            "http://antiguos.fi.uba.ar:443/api/nodes/" +
+              nodesList[0] +
+              "/readings"
+          );
+        })
+        .catch(error => {
+          console.log(error);
+          setNodes([]);
+          // TODO handle loading on error
+        });
+    };
+    fetchNodes();
+  }, [nodesURL]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      console.log("FETCH DATA HOOK");
+      setIsLoadingData(true);
+      if (!isLoading) {
+        await sleep(1000); // TODO Remove when testing is done
+        await fetch(measurementsURL)
+          .then(handleErrors)
+          .then(async response => {
+            console.log(response);
+            const json = await response.json();
+            updateData(json);
+            setIsLoadingData(false);
+          })
+          .catch(error => {
+            console.log(error);
+            updateData(null);
+            // TODO handle loadingData on error
+          });
+      }
+    };
+    fetchData();
+  }, [measurementsURL, isLoading]); // FIXME review hooks
+
+  console.log(nodes, node, data, measurementsURL, isLoading, isLoadingData);
+
   const changeNodeAndTable = name => {
     setNode(name);
+    setMeasurementsURL(
+      "http://antiguos.fi.uba.ar:443/api/nodes/" + name + "/readings"
+    );
+    setIsLoadingData(true);
     updateData(undefined);
   };
 
-  async function fetchData(url) {
-    await sleep(1000); // TODO Remove when testing is done
-    await fetch(url)
-      .then(handleErrors)
-      .then(async response => {
-        console.log(response);
-        const json = await response.json();
-        updateData(json);
-      })
-      .catch(error => {
-        console.log(error);
-        updateData(null);
-      });
-  }
-
-  function useFetch(url) {
-    // empty array as second argument equivalent to componentDidMount
-    useEffect(() => {
-      fetchData(url);
-    }, [url]);
-  }
-
-  const URL = "http://antiguos.fi.uba.ar:443/api/nodes/" + node + "/readings";
-  useFetch(URL);
-  console.log(data);
-
-  function renderTable() {
+  function renderData() {
     return (
       <React.Fragment>
         <Table size="small">
@@ -159,29 +198,39 @@ export default function Measurements() {
     );
   }
 
-  function renderContent() {
-    if (data) {
-      return renderTable();
-    } else if (data === undefined) {
-      // Cuando todavia no obtuve el resultado del servidor
+  function renderTableContent() {
+    if (isLoadingData) {
       return renderLoading();
-    } else if (data === null) {
-      // Cuando no hay informacion para el nodo
+    } else if (!isLoadingData && data === null) {
       return renderError();
+    } else {
+      return renderData();
     }
   }
 
-  return (
-    <React.Fragment>
-      <div style={{ display: "inline-flex" }}>
-        <div style={{ alignSelf: "flex-end" }}>
-          <Title>Mediciones de nodo</Title>
+  function renderTable() {
+    return (
+      <React.Fragment>
+        <div style={{ display: "inline-flex" }}>
+          <div style={{ alignSelf: "flex-end" }}>
+            <Title>Mediciones de nodo</Title>
+          </div>
+          <div>
+            <NodesSelect nodes={nodes} setParentNode={changeNodeAndTable} />
+          </div>
         </div>
-        <div>
-          <NodesSelect nodes={nodes} setParentNode={changeNodeAndTable} />
-        </div>
-      </div>
-      {renderContent()}
-    </React.Fragment>
-  );
+        {renderTableContent()}
+      </React.Fragment>
+    );
+  }
+
+  function renderContent() {
+    if (isLoading) {
+      return renderLoading();
+    } else {
+      return renderTable();
+    }
+  }
+
+  return <React.Fragment>{renderContent()}</React.Fragment>;
 }
