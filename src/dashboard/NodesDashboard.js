@@ -19,13 +19,24 @@ const fabStyles = makeStyles(theme => ({
     position: "fixed",
     bottom: "20px",
     right: "20px"
+  },
+  nameForm: {
+    marginBottom: theme.spacing(1)
   }
 }));
 
 function NodeCreateConfirmation({ open, handleCreateDialogClose }) {
+  const fabClasses = fabStyles();
+
   const [nodeToCreate, setNodeToCreate] = useState("");
   const handleNodeToCreate = event => {
     setNodeToCreate(event.target.value);
+  };
+  const [descriptionOfNodeToCreate, setDescriptionOfNodeToCreate] = useState(
+    ""
+  );
+  const handleDescriptionOfNodeToCreate = event => {
+    setDescriptionOfNodeToCreate(event.target.value);
   };
 
   const [nodeToCreateError, setNodeToCreateError] = useState(false);
@@ -44,12 +55,13 @@ function NodeCreateConfirmation({ open, handleCreateDialogClose }) {
     if (nodeToCreate == "") {
       handleNodeToCreateError();
     } else {
-      // TODO POST /api/nodes/{nodeToCreate}
+      // TODO POST /api/nodes/ con nodeToCreate y descriptionOfNodeToCreate
       handleCreateConfirmClose();
     }
   };
   const handleCreateConfirmClose = () => {
     setNodeToCreate("");
+    setDescriptionOfNodeToCreate("");
     handleCreateDialogClose();
     handleNodeToCreateValidation();
   };
@@ -70,6 +82,16 @@ function NodeCreateConfirmation({ open, handleCreateDialogClose }) {
           required={true}
           error={nodeToCreateError}
           helperText={nodeToCreateErrorMessage}
+          className={fabClasses.nameForm}
+          fullWidth
+        />
+        <TextField
+          id="description"
+          label="Descripción"
+          value={descriptionOfNodeToCreate}
+          onChange={handleDescriptionOfNodeToCreate}
+          multiline
+          rows="4"
           fullWidth
         />
       </DialogContent>
