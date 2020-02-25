@@ -193,6 +193,10 @@ export default function Nodes() {
       .then(async response => {
         console.log(response);
         const json = await response.json();
+        if (json == null) {
+          updateConfig(null);
+          return;
+        }
         updateConfig(JSON.stringify(json, null, 2));
         handleDeleteNodeEnabled();
       })
@@ -233,8 +237,8 @@ export default function Nodes() {
   }
 
   const getNodeConfigurationURL =
-    "https://my-json-server.typicode.com/hydro-monitor/web-api-mock/configurations/" +
-    node.split("-")[1]; //TODO "http://antiguos.fi.uba.ar:443/api/nodes/" + node + "/configuration";
+    "http://antiguos.fi.uba.ar:443/api/nodes/" + node + "/configuration";
+  // "https://my-json-server.typicode.com/hydro-monitor/web-api-mock/configurations/" + node.split("-")[1];
   useFetch(getNodeConfigurationURL);
   console.log(config);
 
