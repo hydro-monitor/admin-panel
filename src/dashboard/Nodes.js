@@ -18,6 +18,8 @@ import UndoIcon from "@material-ui/icons/Undo";
 import Alert from "@material-ui/lab/Alert";
 import { handleErrors, sleep } from "./server";
 
+const webAPI = "http://localhost:8080"; //"http://antiguos.fi.uba.ar:443";
+
 const useStyles = makeStyles(theme => ({
   deleteButton: {
     marginBottom: theme.spacing(1)
@@ -173,32 +175,72 @@ function NodeDeleteConfirmation({ open, node, handleDeleteDialogClose }) {
 export default function Nodes() {
   const classes = useStyles();
 
-  const nodes = ["lujan-1", "lujan-2", "lujan-3", "areco-1"]; // TODO get nodes from server?
-  const [node, setNode] = useState(nodes[0]);
-
+  const [nodes, setNodes] = useState([]);
+  const [node, setNode] = useState("");
   const [config, updateConfig] = useState(undefined);
-  async function fetchConfig(url) {
-    await sleep(1000); // TODO Remove when testing is done
-    await fetch(url)
-      .then(handleErrors)
-      .then(async response => {
-        console.log(response);
-        const json = await response.json();
-        if (json == null) {
-          updateConfig(null);
-          return;
-        }
-        updateConfig(JSON.stringify(json, null, 2));
-        handleDeleteNodeEnabled();
-      })
-      .catch(error => {
-        console.log(error);
-        updateConfig(null);
-        handleDeleteNodeDisabled();
-      });
-  }
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingConfig, setIsLoadingConfig] = useState(true);
+  const nodesURL = webAPI + "/api/nodes";
+
+  useEffect(() => {
+    const fetchNodes = async () => {
+      console.log("FETCH NODES HOOK");
+      setIsLoading(true);
+      await sleep(1000); // TODO Remove when testing is done
+      await fetch(nodesURL)
+        .then(handleErrors)
+        .then(async response => {
+          console.log(response);
+          const json = await response.json();
+          const nodesList = json.map(item => item.id).sort();
+          setNodes(nodesList);
+          setNode(nodesList[0]);
+          setIsLoading(false);
+        })
+        .catch(error => {
+          console.log(error);
+          setNodes([]);
+          // TODO handle loading on error
+        });
+    };
+    fetchNodes();
+  }, [nodesURL]);
+
+  useEffect(() => {
+    const fetchConfig = async () => {
+      console.log("FETCH CONFIG HOOK");
+      setIsLoadingConfig(true);
+      if (!isLoading) {
+        await sleep(1000); // TODO Remove when testing is done
+        await fetch(webAPI + "/api/nodes/" + node + "/configuration") // setting to concat url because of bug that ends up fetching ui url
+          .then(handleErrors)
+          .then(async response => {
+            console.log(response);
+            const json = await response.json();
+            if (json == null) {
+              updateConfig(null);
+              return;
+            }
+            updateConfig(JSON.stringify(json, null, 2));
+            handleDeleteNodeEnabled();
+            setIsLoadingConfig(false);
+          })
+          .catch(error => {
+            console.log(error);
+            updateConfig(null);
+            handleDeleteNodeDisabled();
+            setIsLoadingConfig(false);
+          });
+      }
+    };
+    fetchConfig();
+  }, [node, isLoading]); // FIXME review hooks
+
+  console.log(nodes, node, config, isLoading, isLoadingConfig);
+
   const changeNodeAndTable = name => {
     setNode(name);
+    setIsLoadingConfig(true);
     updateConfig(undefined);
   };
   const handleConfigurationTextUpdate = event => {
@@ -220,21 +262,8 @@ export default function Nodes() {
     setDeleteConfirmOpen(false);
   };
 
-  function useFetch(url) {
-    // empty array as second argument equivalent to componentDidMount
-    useEffect(() => {
-      fetchConfig(url);
-    }, [url]);
-  }
-
-  const getNodeConfigurationURL =
-    "http://antiguos.fi.uba.ar:443/api/nodes/" + node + "/configuration";
-  // "https://my-json-server.typicode.com/hydro-monitor/web-api-mock/configurations/" + node.split("-")[1];
-  useFetch(getNodeConfigurationURL);
-  console.log(config);
-
   const handleConfigurationRestore = () => {
-    fetchConfig(getNodeConfigurationURL);
+    // FIXME fetchConfig(getNodeConfigurationURL);
   };
 
   function renderTable() {
@@ -275,44 +304,54 @@ export default function Nodes() {
     );
   }
 
-  function renderContent() {
-    if (config) {
-      return renderTable();
-    } else if (config === undefined) {
-      // Cuando todavia no obtuve el resultado del servidor
+  function renderConfigContent() {
+    if (isLoadingConfig) {
       return renderLoading();
-    } else if (config === null) {
-      // Cuando no hay informacion para el nodo
+    } else if (!isLoadingConfig && config === null) {
       return renderError();
+    } else {
+      return renderTable();
     }
   }
 
-  return (
-    <React.Fragment>
-      <Grid container spacing={3}>
-        <Grid item xs={11} md={11} lg={11} className={classes.titleGrid}>
-          <div className={classes.titleDiv}>
-            <Title>Configuración de nodo</Title>
-          </div>
-          <div>
-            <NodesSelect nodes={nodes} setParentNode={changeNodeAndTable} />
-          </div>
+  function renderConfig() {
+    return (
+      <React.Fragment>
+        <Grid container spacing={3}>
+          <Grid item xs={11} md={11} lg={11} className={classes.titleGrid}>
+            <div className={classes.titleDiv}>
+              <Title>Configuración de nodo</Title>
+            </div>
+            <div>
+              <NodesSelect nodes={nodes} setParentNode={changeNodeAndTable} />
+            </div>
+          </Grid>
+          <Grid item xs={1} md={1} lg={1} className={classes.buttonsGrid}>
+            <div>
+              <DeleteButton
+                handleDeleteConfirmOpen={handleDeleteConfirmOpen}
+                disabled={deleteNodeDisabled}
+              />
+              <NodeDeleteConfirmation
+                open={deleteConfirmOpen}
+                node={node}
+                handleDeleteDialogClose={handleDeleteConfirmClose}
+              />
+            </div>
+          </Grid>
         </Grid>
-        <Grid item xs={1} md={1} lg={1} className={classes.buttonsGrid}>
-          <div>
-            <DeleteButton
-              handleDeleteConfirmOpen={handleDeleteConfirmOpen}
-              disabled={deleteNodeDisabled}
-            />
-            <NodeDeleteConfirmation
-              open={deleteConfirmOpen}
-              node={node}
-              handleDeleteDialogClose={handleDeleteConfirmClose}
-            />
-          </div>
-        </Grid>
-      </Grid>
-      {renderContent()}
-    </React.Fragment>
-  );
+        {renderConfigContent()}
+      </React.Fragment>
+    );
+  }
+
+  function renderContent() {
+    if (isLoading) {
+      return renderLoading();
+    } else {
+      return renderConfig();
+    }
+  }
+
+  return <React.Fragment>{renderContent()}</React.Fragment>;
 }
