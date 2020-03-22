@@ -80,7 +80,6 @@ export default function Measurements() {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingData, setIsLoadingData] = useState(true);
   const nodesURL = webAPI + "/api/nodes";
-  const [measurementsURL, setMeasurementsURL] = useState("");
 
   useEffect(() => {
     const fetchNodes = async () => {
@@ -96,9 +95,6 @@ export default function Measurements() {
           setNodes(nodesList);
           setNode(nodesList[0]);
           setIsLoading(false);
-          setMeasurementsURL(
-            webAPI + "/api/nodes/" + nodesList[0] + "/readings"
-          );
         })
         .catch(error => {
           console.log(error);
@@ -115,7 +111,7 @@ export default function Measurements() {
       setIsLoadingData(true);
       if (!isLoading) {
         await sleep(1000); // TODO Remove when testing is done
-        await fetch(measurementsURL)
+        await fetch(webAPI + "/api/nodes/" + node + "/readings")
           .then(handleErrors)
           .then(async response => {
             console.log(response);
@@ -131,13 +127,12 @@ export default function Measurements() {
       }
     };
     fetchData();
-  }, [measurementsURL, isLoading]); // FIXME review hooks
+  }, [node, isLoading]); // FIXME review hooks
 
-  console.log(nodes, node, data, measurementsURL, isLoading, isLoadingData);
+  console.log(nodes, node, data, isLoading, isLoadingData);
 
   const changeNodeAndTable = name => {
     setNode(name);
-    setMeasurementsURL(webAPI + "/api/nodes/" + name + "/readings");
     setIsLoadingData(true);
     updateData(undefined);
   };
