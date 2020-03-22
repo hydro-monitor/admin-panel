@@ -14,6 +14,8 @@ import IconButton from "@material-ui/core/IconButton";
 import Alert from "@material-ui/lab/Alert";
 import { handleErrors, sleep } from "./server";
 
+const webAPI = "http://localhost:8080"; //"http://antiguos.fi.uba.ar:443";
+
 function manualReadingBoolToString(wasManual) {
   if (wasManual) {
     return "Sí";
@@ -54,11 +56,7 @@ function PhotoLink({ node, readingId }) {
   }
 
   const getReadingPhotoURL =
-    "http://antiguos.fi.uba.ar:443/api/nodes/" +
-    node +
-    "/readings/" +
-    readingId +
-    "/photos";
+    webAPI + "/api/nodes/" + node + "/readings/" + readingId + "/photos";
   useFetch(getReadingPhotoURL);
 
   return (
@@ -81,7 +79,7 @@ export default function Measurements() {
   const [data, updateData] = useState(undefined);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingData, setIsLoadingData] = useState(true);
-  const nodesURL = "http://antiguos.fi.uba.ar:443/api/nodes";
+  const nodesURL = webAPI + "/api/nodes";
   const [measurementsURL, setMeasurementsURL] = useState("");
 
   useEffect(() => {
@@ -99,9 +97,7 @@ export default function Measurements() {
           setNode(nodesList[0]);
           setIsLoading(false);
           setMeasurementsURL(
-            "http://antiguos.fi.uba.ar:443/api/nodes/" +
-              nodesList[0] +
-              "/readings"
+            webAPI + "/api/nodes/" + nodesList[0] + "/readings"
           );
         })
         .catch(error => {
@@ -141,9 +137,7 @@ export default function Measurements() {
 
   const changeNodeAndTable = name => {
     setNode(name);
-    setMeasurementsURL(
-      "http://antiguos.fi.uba.ar:443/api/nodes/" + name + "/readings"
-    );
+    setMeasurementsURL(webAPI + "/api/nodes/" + name + "/readings");
     setIsLoadingData(true);
     updateData(undefined);
   };
