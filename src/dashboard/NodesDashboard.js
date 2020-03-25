@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Dashboard from "./Dashboard";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
-import Nodes from "./Nodes";
+import Nodes from "../configuration/Nodes";
 import { useStyles } from "./dashboardStyles";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
@@ -52,7 +52,7 @@ function NodeCreateConfirmation({ open, handleCreateDialogClose }) {
   const handleCreateConfirmation = () => {
     console.log("handleCreateConfirmation");
     console.log(nodeToCreate);
-    if (nodeToCreate == "") {
+    if (nodeToCreate.localeCompare("") === 0) {
       handleNodeToCreateError();
     } else {
       // TODO POST /api/nodes/ con nodeToCreate y descriptionOfNodeToCreate
