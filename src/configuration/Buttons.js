@@ -4,6 +4,9 @@ import Button from "@material-ui/core/Button";
 import DeleteIcon from "@material-ui/icons/Delete";
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import NodesClient from "../api/NodesClient";
+
+const nodesClient = new NodesClient("http://localhost:8080/api/nodes");
 
 const useStyles = makeStyles(theme => ({
   deleteButton: {
@@ -31,6 +34,7 @@ function UpdateConfigurationButton({ node, configuration }) {
 
   const handleConfigurationUpdate = () => {
     console.log("update configuration", node, configuration);
+    nodesClient.updateNodeConfiguration(node, configuration);
     // TODO POST or PUT /api/nodes/<node>/configurations
   };
 

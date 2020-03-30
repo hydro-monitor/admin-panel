@@ -41,7 +41,6 @@ export default function NodeDeleteConfirmation({
     console.log("handleDeleteConfirmation");
     console.log(nodeToDelete);
     if (nodeToDelete === node) {
-      // TODO DELETE /api/nodes/{nodeName}
       const ok = await nodesClient.deleteNode(nodeToDelete);
       console.log(`Result: ${ok}`);
       if (ok) {
