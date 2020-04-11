@@ -17,7 +17,7 @@ function MeasurementList({ nodes }) {
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
   // FIXME Ask server for last measurements
-  let latestMeasurements = [
+  const latestMeasurements = [
     { measurement: 60, timestamp: "10/2/2020" },
     { measurement: 560, timestamp: "1/2/2020" },
     { measurement: 220, timestamp: "5/2/2020" },
@@ -31,8 +31,12 @@ function MeasurementList({ nodes }) {
         <Paper className={fixedHeightPaper}>
           <Measurement
             node={nodes[i]}
-            measurement={latestMeasurements[i].measurement}
-            timestamp={latestMeasurements[i].timestamp}
+            measurement={
+              latestMeasurements[i % latestMeasurements.length].measurement
+            }
+            timestamp={
+              latestMeasurements[i % latestMeasurements.length].timestamp
+            }
           />
         </Paper>
       </Grid>

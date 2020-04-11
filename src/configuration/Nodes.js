@@ -13,8 +13,8 @@ import {
 } from "./Buttons";
 import NodeDeleteConfirmation from "./NodeDeleteConfirmation";
 import NodesClient from "../api/NodesClient";
+import { useMountEffect } from "../common/UseMountEffect";
 
-const webAPI = "http://localhost:8080"; //"http://antiguos.fi.uba.ar:443";
 const nodesClient = new NodesClient("http://localhost:8080/api/nodes");
 
 const useStyles = makeStyles(theme => ({
@@ -40,23 +40,19 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function Nodes() {
+export default function Nodes({ setSnackbarData }) {
   const classes = useStyles();
 
   const [nodes, setNodes] = useState([]);
   const [node, setNode] = useState("");
-  const [config, updateConfig] = useState(undefined);
+  const [config, updateConfig] = useState("");
   const [originalConfig, updateOriginalConfig] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingConfig, setIsLoadingConfig] = useState(true);
-  const [snackbarData, setSnackbarData] = useState({
-    open: false,
-    message: "Test",
-    severity: "info"
-  });
-  const nodesURL = webAPI + "/api/nodes";
+  const [deleteNodeDisabled, setDeleteNodeDisabled] = useState(true);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
-  useEffect(() => {
+  useMountEffect(() => {
     (async () => {
       console.log("FETCH NODES HOOK");
       setIsLoading(true);
@@ -69,60 +65,57 @@ export default function Nodes() {
       } catch (error) {
         console.log(error);
         setNodes([]);
-        // TODO handle loading on error
+        setSnackbarData({
+          open: true,
+          severity: "error",
+          message: "Error al intentar obtener el listado de los nodos"
+        });
       }
     })();
-  }, [nodesURL]);
+  });
 
   useEffect(() => {
     (async () => {
-      console.log("FETCH CONFIG HOOK");
       setIsLoadingConfig(true);
+      console.log("FETCH CONFIG HOOK");
       if (!isLoading) {
+        console.log("FETCHING NODE CONFIG");
         try {
           await sleep(1000); // TODO Remove when testing is done
-          updateConfig(await nodesClient.getNodeConfiguration(node));
-          handleDeleteNodeEnabled();
-          setIsLoadingConfig(false);
+          const config = await nodesClient.getNodeConfiguration(node);
+          updateConfig(config);
+          updateOriginalConfig(config);
         } catch (error) {
-          console.log(error);
           updateConfig("");
-          handleDeleteNodeDisabled();
+          updateOriginalConfig("");
+          setSnackbarData({
+            open: true,
+            severity: "error",
+            message: "El nodo no posee una configuración activa"
+          });
+        } finally {
+          setDeleteNodeDisabled(false);
           setIsLoadingConfig(false);
         }
       }
     })();
-  }, [node, isLoading]); // FIXME review hooks
-
-  useEffect(() => setSnackbarData(snackbarData), [snackbarData]);
-
-  console.log(nodes, node, config, isLoading, isLoadingConfig);
+  }, [node, isLoading, setSnackbarData]);
 
   const changeNodeAndTable = name => {
     setNode(name);
+    setDeleteNodeDisabled(true);
     setIsLoadingConfig(true);
-    updateConfig(undefined);
+    updateConfig("");
   };
 
-  const handleConfigurationTextUpdate = event => {
+  const handleConfigurationTextUpdate = event =>
     updateConfig(event.target.value);
-  };
-
-  const [deleteNodeDisabled, setDeleteNodeDisabled] = useState(true);
-
-  const handleDeleteNodeDisabled = () => setDeleteNodeDisabled(true);
-
-  const handleDeleteNodeEnabled = () => setDeleteNodeDisabled(false);
-
-  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
   const handleDeleteConfirmOpen = () => setDeleteConfirmOpen(true);
 
   const handleDeleteConfirmClose = () => setDeleteConfirmOpen(false);
 
-  const handleConfigurationRestore = () => {
-    updateConfig(originalConfig);
-  };
+  const handleConfigurationRestore = () => updateConfig(originalConfig);
 
   function renderTable() {
     return (
@@ -143,7 +136,11 @@ export default function Nodes() {
             />
           </div>
           <div>
-            <UpdateConfigurationButton node={node} configuration={config} />
+            <UpdateConfigurationButton
+              node={node}
+              configuration={config}
+              setSnackbarData={setSnackbarData}
+            />
           </div>
         </div>
       </React.Fragment>
@@ -154,19 +151,9 @@ export default function Nodes() {
     return <LinearProgress />;
   }
 
-  function renderError() {
-    setSnackbarData({
-      open: true,
-      message: `No se pudo consultar la configuración del nodo ${node}`,
-      severity: "error"
-    });
-  }
-
   function renderConfigContent() {
     if (isLoadingConfig) {
       return renderLoading();
-    } else if (!isLoadingConfig && config === null) {
-      return renderError();
     } else {
       return renderTable();
     }

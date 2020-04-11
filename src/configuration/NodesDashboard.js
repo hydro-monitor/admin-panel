@@ -68,7 +68,6 @@ function NodeCreateConfirmation({
     if (nodeToCreate.localeCompare("") === 0) {
       handleNodeToCreateError();
     } else {
-      // TODO POST /api/nodes/ con nodeToCreate y descriptionOfNodeToCreate
       (async () => {
         const response = await nodesClient.createNode(
           nodeToCreate,
@@ -167,7 +166,7 @@ export default function NodesDashboard(props) {
       {/* Measurements table */}
       <Grid item xs={12}>
         <Paper className={classes.paper}>
-          <Nodes />
+          <Nodes setSnackbarData={setSnackbarData} />
         </Paper>
       </Grid>
       <Fab

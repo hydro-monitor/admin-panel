@@ -29,14 +29,16 @@ export default class NodesClient {
   }
 
   async updateNodeConfiguration(nodeId, configuration) {
-    let myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
+    console.log(configuration);
     const response = this.handleErrors(
       await fetch(`${this.url}/${nodeId}/configuration`),
       {
         method: "post",
         body: configuration,
-        headers: myHeaders
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        }
       }
     );
     const json = await response.json();

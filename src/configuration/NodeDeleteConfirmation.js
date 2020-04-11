@@ -93,18 +93,6 @@ export default function NodeDeleteConfirmation({
         />
       </DialogContent>
       <DialogActions>
-        <Button
-          variant="outlined"
-          onClick={() =>
-            setSnackbarData({
-              open: true,
-              message: "Nodo borrado satisfactoriamente",
-              severity: "success"
-            })
-          }
-        >
-          Open success snackbar
-        </Button>
         <Button onClick={handleDeleteConfirmClose} color="primary">
           Cancelar
         </Button>

@@ -29,13 +29,31 @@ function RestoreConfigurationButton({ handleConfigurationRestore }) {
   );
 }
 
-function UpdateConfigurationButton({ node, configuration }) {
+function UpdateConfigurationButton({ node, configuration, setSnackbarData }) {
   const classes = useStyles();
 
   const handleConfigurationUpdate = () => {
     console.log("update configuration", node, configuration);
-    nodesClient.updateNodeConfiguration(node, configuration);
-    // TODO POST or PUT /api/nodes/<node>/configurations
+    (async () => {
+      try {
+        const updatedConfiguration = await nodesClient.updateNodeConfiguration(
+          node,
+          configuration
+        );
+        console.log(updatedConfiguration);
+        setSnackbarData({
+          open: true,
+          severity: "success",
+          message: "Configuración del nodo actualizada con éxito"
+        });
+      } catch (e) {
+        setSnackbarData({
+          open: true,
+          severity: "error",
+          message: "Error al intentar actualizar la configuración del nodo"
+        });
+      }
+    })();
   };
 
   return (
