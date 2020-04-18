@@ -16,7 +16,7 @@ export default function NodesSelect({ nodes, setParentNode }) {
   const classes = useStyles();
   const [node, setNode] = useState(nodes[0]);
   const handleChange = event => {
-    if (node == event.target.value) {
+    if (node === event.target.value) {
       return;
     }
     setNode(event.target.value);

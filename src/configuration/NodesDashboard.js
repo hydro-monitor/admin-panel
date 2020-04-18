@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import Dashboard from "./Dashboard";
+import Dashboard from "../dashboard/Dashboard";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import Nodes from "./Nodes";
-import { useStyles } from "./dashboardStyles";
+import { useStyles } from "../dashboard/dashboardStyles";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
 import { makeStyles } from "@material-ui/core/styles";
@@ -13,6 +13,10 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
+import NodesClient from "../api/NodesClient";
+import CustomizedSnackbar from "../components/CustomizedSnackbar";
+
+const nodesClient = new NodesClient("http://localhost:8080/api/nodes");
 
 const fabStyles = makeStyles(theme => ({
   fab: {
@@ -25,45 +29,76 @@ const fabStyles = makeStyles(theme => ({
   }
 }));
 
-function NodeCreateConfirmation({ open, handleCreateDialogClose }) {
+function NodeCreateConfirmation({
+  open,
+  handleCreateDialogClose,
+  setSnackbarData
+}) {
   const fabClasses = fabStyles();
 
   const [nodeToCreate, setNodeToCreate] = useState("");
+  const [nodeToCreateError, setNodeToCreateError] = useState(false);
+  const [nodeToCreateErrorMessage, setNodeToCreateErrorMessage] = useState("");
+
   const handleNodeToCreate = event => {
     setNodeToCreate(event.target.value);
   };
+
   const [descriptionOfNodeToCreate, setDescriptionOfNodeToCreate] = useState(
     ""
   );
+
   const handleDescriptionOfNodeToCreate = event => {
     setDescriptionOfNodeToCreate(event.target.value);
   };
 
-  const [nodeToCreateError, setNodeToCreateError] = useState(false);
-  const [nodeToCreateErrorMessage, setNodeToCreateErrorMessage] = useState("");
   const handleNodeToCreateError = () => {
     setNodeToCreateError(true);
     setNodeToCreateErrorMessage("El nombre del nodo no puede ser vacío");
   };
+
   const handleNodeToCreateValidation = () => {
     setNodeToCreateError(false);
     setNodeToCreateErrorMessage("");
   };
+
   const handleCreateConfirmation = () => {
     console.log("handleCreateConfirmation");
     console.log(nodeToCreate);
-    if (nodeToCreate == "") {
+    if (nodeToCreate.localeCompare("") === 0) {
       handleNodeToCreateError();
     } else {
-      // TODO POST /api/nodes/ con nodeToCreate y descriptionOfNodeToCreate
-      handleCreateConfirmClose();
+      (async () => {
+        const response = await nodesClient.createNode(
+          nodeToCreate,
+          descriptionOfNodeToCreate
+        );
+        handleNodeCreationResult(response);
+        handleCreateConfirmClose();
+      })();
     }
   };
+
   const handleCreateConfirmClose = () => {
     setNodeToCreate("");
     setDescriptionOfNodeToCreate("");
     handleCreateDialogClose();
     handleNodeToCreateValidation();
+  };
+
+  const handleNodeCreationResult = response => {
+    if (response.ok)
+      setSnackbarData({
+        open: true,
+        severity: "success",
+        message: "Nodo creado con éxito"
+      });
+    else
+      setSnackbarData({
+        open: true,
+        severity: "error",
+        message: `Error al crear nodo: ${response.body}`
+      });
   };
 
   return (
@@ -112,9 +147,16 @@ export default function NodesDashboard(props) {
   const fabClasses = fabStyles();
 
   const [createConfirmOpen, setCreateConfirmOpen] = useState(false);
+  const [snackbarData, setSnackbarData] = useState({
+    open: false,
+    severity: "",
+    message: ""
+  });
+
   const handleCreateConfirmOpen = () => {
     setCreateConfirmOpen(true);
   };
+
   const handleCreateConfirmClose = () => {
     setCreateConfirmOpen(false);
   };
@@ -124,7 +166,7 @@ export default function NodesDashboard(props) {
       {/* Measurements table */}
       <Grid item xs={12}>
         <Paper className={classes.paper}>
-          <Nodes />
+          <Nodes setSnackbarData={setSnackbarData} />
         </Paper>
       </Grid>
       <Fab
@@ -138,6 +180,11 @@ export default function NodesDashboard(props) {
       <NodeCreateConfirmation
         open={createConfirmOpen}
         handleCreateDialogClose={handleCreateConfirmClose}
+        setSnackbarData={setSnackbarData}
+      />
+      <CustomizedSnackbar
+        props={snackbarData}
+        setSnackbarData={setSnackbarData}
       />
     </Dashboard>
   );

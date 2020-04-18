@@ -2,7 +2,7 @@ import React from "react";
 import "./App.css";
 import InitialDashboard from "./dashboard/InitialDashboard";
 import MeasurementsDashboard from "./dashboard/MeasurementsDashboard";
-import NodesDashboard from "./dashboard/NodesDashboard";
+import NodesDashboard from "./configuration/NodesDashboard";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 function App() {
