@@ -2,7 +2,10 @@ import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import store from "store";
 import Avatar from "@material-ui/core/Avatar";
+import Alert from "@material-ui/lab/Alert";
 import Button from "@material-ui/core/Button";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -57,6 +60,13 @@ export default function SignIn() {
     history.push("/");
   };
 
+  const handleErrorClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setError(false);
+  };
+
   const handleEmailChange = e => {
     setEmail(e.target.value);
   };
@@ -73,7 +83,7 @@ export default function SignIn() {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Sign in
+          Iniciar sesión
         </Typography>
         <form className={classes.form} noValidate>
           <TextField
@@ -82,7 +92,7 @@ export default function SignIn() {
             required
             fullWidth
             id="email"
-            label="Email Address"
+            label="Dirección email"
             name="email"
             autoComplete="email"
             autoFocus
@@ -94,7 +104,7 @@ export default function SignIn() {
             required
             fullWidth
             name="password"
-            label="Password"
+            label="Contraseña"
             type="password"
             id="password"
             autoComplete="current-password"
@@ -102,7 +112,7 @@ export default function SignIn() {
           />
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
+            label="Recuérdame"
           />
           <Button
             type="submit"
@@ -112,22 +122,27 @@ export default function SignIn() {
             className={classes.submit}
             onClick={signIn}
           >
-            Sign In
+            Iniciar sesión
           </Button>
           <Grid container>
             <Grid item xs>
               <Link href="#" variant="body2">
-                Forgot password?
+                Recuperar contraseña
               </Link>
             </Grid>
             <Grid item>
               <Link href="#" variant="body2">
-                {"Don't have an account? Sign Up"}
+                {"Crear nueva cuenta"}
               </Link>
             </Grid>
           </Grid>
         </form>
       </div>
+      <Snackbar open={error} autoHideDuration={6000} onClose={handleErrorClose}>
+        <Alert onClose={handleErrorClose} severity="error">
+          Las credenciales ingresadas son incorrectas
+        </Alert>
+      </Snackbar>
       <Box mt={8}>
         <Copyright />
       </Box>
