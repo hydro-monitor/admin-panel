@@ -2,7 +2,7 @@ import React from "react";
 import clsx from "clsx";
 import store from "store";
 import { Redirect, useHistory } from "react-router-dom";
-import isLoggedIn from "../login/isLoggedIn";
+import isLoggedIn from "../signin/isLoggedIn";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Drawer from "@material-ui/core/Drawer";
 import Box from "@material-ui/core/Box";
