@@ -102,6 +102,7 @@ export default function Nodes({ setSnackbarData }) {
   }, [node, isLoading, setSnackbarData]);
 
   const changeNodeAndTable = name => {
+    console.log("changing node and table to ", name);
     setNode(name);
     setDeleteNodeDisabled(true);
     setIsLoadingConfig(true);
@@ -159,6 +160,14 @@ export default function Nodes({ setSnackbarData }) {
     }
   }
 
+  function nextNode() {
+    let i = nodes.indexOf(node);
+    if (i == nodes.length - 1) {
+      return nodes[0];
+    }
+    return nodes[i + 1];
+  }
+
   function renderConfig() {
     return (
       <React.Fragment>
@@ -168,7 +177,12 @@ export default function Nodes({ setSnackbarData }) {
               <Title>Configuración de nodo</Title>
             </div>
             <div>
-              <NodesSelect nodes={nodes} setParentNode={changeNodeAndTable} />
+              <NodesSelect
+                node={node}
+                setNode={setNode}
+                nodes={nodes}
+                setParentNode={changeNodeAndTable}
+              />
             </div>
           </Grid>
           <Grid item xs={1} md={1} lg={1} className={classes.buttonsGrid}>
@@ -180,7 +194,9 @@ export default function Nodes({ setSnackbarData }) {
               <NodeDeleteConfirmation
                 open={deleteConfirmOpen}
                 node={node}
+                nextNode={nextNode()}
                 handleDeleteDialogClose={handleDeleteConfirmClose}
+                setParentNode={changeNodeAndTable}
                 setSnackbarData={setSnackbarData}
               />
             </div>
