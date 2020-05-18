@@ -40,16 +40,24 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function Nodes({ setSnackbarData }) {
+export default function Nodes({
+  node,
+  setNode,
+  nodes,
+  setNodes,
+  config,
+  updateConfig,
+  isLoadingConfig,
+  setIsLoadingConfig,
+  deleteNodeDisabled,
+  setDeleteNodeDisabled,
+  changeNodeAndTable,
+  setSnackbarData
+}) {
   const classes = useStyles();
 
-  const [nodes, setNodes] = useState([]);
-  const [node, setNode] = useState("");
-  const [config, updateConfig] = useState("");
   const [originalConfig, updateOriginalConfig] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [isLoadingConfig, setIsLoadingConfig] = useState(true);
-  const [deleteNodeDisabled, setDeleteNodeDisabled] = useState(true);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
   useMountEffect(() => {
@@ -72,7 +80,7 @@ export default function Nodes({ setSnackbarData }) {
         });
       }
     })();
-  });
+  }, [nodes]);
 
   useEffect(() => {
     (async () => {
@@ -101,6 +109,7 @@ export default function Nodes({ setSnackbarData }) {
     })();
   }, [node, isLoading, setSnackbarData]);
 
+  /*
   const changeNodeAndTable = name => {
     console.log("changing node and table to ", name);
     setNode(name);
@@ -108,6 +117,7 @@ export default function Nodes({ setSnackbarData }) {
     setIsLoadingConfig(true);
     updateConfig("");
   };
+  */
 
   const handleConfigurationTextUpdate = event =>
     updateConfig(event.target.value);
