@@ -17,6 +17,7 @@ export default function NodeDeleteConfirmation({
   nextNode,
   handleDeleteDialogClose,
   setParentNode,
+  deleteOldNode,
   setSnackbarData
 }) {
   const [nodeToDelete, setNodeToDelete] = useState("");
@@ -50,6 +51,7 @@ export default function NodeDeleteConfirmation({
         handleDeleteConfirmClose();
         console.log("nextNode", nextNode);
         setParentNode(nextNode);
+        deleteOldNode(nodeToDelete);
         setSnackbarData({
           open: true,
           message: "Nodo borrado satisfactoriamente",

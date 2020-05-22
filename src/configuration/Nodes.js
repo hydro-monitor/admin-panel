@@ -82,6 +82,8 @@ export default function Nodes({
     })();
   }, [nodes]);
 
+  console.log("nodes", nodes);
+
   useEffect(() => {
     (async () => {
       setIsLoadingConfig(true);
@@ -109,15 +111,12 @@ export default function Nodes({
     })();
   }, [node, isLoading, setSnackbarData]);
 
-  /*
-  const changeNodeAndTable = name => {
-    console.log("changing node and table to ", name);
-    setNode(name);
-    setDeleteNodeDisabled(true);
-    setIsLoadingConfig(true);
-    updateConfig("");
+  const deleteOldNode = name => {
+    console.log("deleting old node", name);
+    var nodesUpdated = nodes.slice();
+    nodesUpdated.splice(nodesUpdated.indexOf(name), 1);
+    setNodes(nodesUpdated);
   };
-  */
 
   const handleConfigurationTextUpdate = event =>
     updateConfig(event.target.value);
@@ -207,6 +206,7 @@ export default function Nodes({
                 nextNode={nextNode()}
                 handleDeleteDialogClose={handleDeleteConfirmClose}
                 setParentNode={changeNodeAndTable}
+                deleteOldNode={deleteOldNode}
                 setSnackbarData={setSnackbarData}
               />
             </div>
