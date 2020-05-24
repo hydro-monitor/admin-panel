@@ -171,7 +171,7 @@ export default function Nodes({
 
   function nextNode() {
     let i = nodes.indexOf(node);
-    if (i == nodes.length - 1) {
+    if (i === nodes.length - 1) {
       return nodes[0];
     }
     return nodes[i + 1];
