@@ -4,7 +4,8 @@ import InitialDashboard from "./dashboard/InitialDashboard";
 import MeasurementsDashboard from "./dashboard/MeasurementsDashboard";
 import NodesDashboard from "./configuration/NodesDashboard";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import SignIn from "./login/SignIn";
+import SignIn from "./signin/SignIn";
+import SignUp from "./signup/SignUp";
 
 function App() {
   const [open, setOpen] = React.useState(true);
@@ -52,6 +53,7 @@ function App() {
             />
           )}
         />
+        <Route path="/signup" exact render={() => <SignUp />} />
       </Switch>
     </Router>
   );
