@@ -29,7 +29,12 @@ function RestoreConfigurationButton({ handleConfigurationRestore }) {
   );
 }
 
-function UpdateConfigurationButton({ node, configuration, setSnackbarData }) {
+function UpdateConfigurationButton({
+  node,
+  configuration,
+  clearConfigChangesNotSaved,
+  setSnackbarData
+}) {
   const classes = useStyles();
 
   const handleConfigurationUpdate = () => {
@@ -41,6 +46,7 @@ function UpdateConfigurationButton({ node, configuration, setSnackbarData }) {
           configuration
         );
         console.log(updatedConfiguration);
+        clearConfigChangesNotSaved();
         setSnackbarData({
           open: true,
           severity: "success",
