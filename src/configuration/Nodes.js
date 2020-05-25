@@ -143,6 +143,11 @@ export default function Nodes({
   const handleConfigurationRestore = () => {
     updateConfig(originalConfig);
     clearConfigChangesNotSaved();
+    setSnackbarData({
+      open: true,
+      severity: "info",
+      message: "Configuración de nodo restaurada"
+    });
   };
 
   function renderTable() {

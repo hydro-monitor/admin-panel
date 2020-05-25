@@ -50,13 +50,13 @@ function UpdateConfigurationButton({
         setSnackbarData({
           open: true,
           severity: "success",
-          message: "Configuración del nodo actualizada con éxito"
+          message: "Configuración de nodo actualizada con éxito"
         });
       } catch (e) {
         setSnackbarData({
           open: true,
           severity: "error",
-          message: "Error al intentar actualizar la configuración del nodo"
+          message: "Error al intentar actualizar la configuración de nodo"
         });
       }
     })();
