@@ -54,6 +54,7 @@ export default function SignIn() {
 
     console.log("you're logged in. yay!");
     store.set("loggedIn", true);
+    store.set("user", email);
     history.push("/");
   };
 
