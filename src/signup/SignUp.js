@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import Snackbar from "@material-ui/core/Snackbar";
-import Alert from "@material-ui/lab/Alert";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -15,6 +13,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Copyright from "../components/Copyright";
 import { sleep } from "../dashboard/server";
+import CustomizedSnackbar from "../components/CustomizedSnackbar";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -48,7 +47,11 @@ export default function SignUp() {
   const [emailError, setEmailError] = useState(false);
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState(false);
-  const [created, setCreated] = useState(false);
+  const [snackbarData, setSnackbarData] = useState({
+    open: false,
+    severity: "",
+    message: ""
+  });
 
   const isValidEmail = email => {
     var re = /\S+@\S+\.\S+/;
@@ -57,7 +60,7 @@ export default function SignUp() {
 
   const signUp = async e => {
     e.preventDefault();
-    setCreated(false);
+    closeSnack();
 
     if (fisrtname === "") {
       setFirstNameError(true);
@@ -72,11 +75,13 @@ export default function SignUp() {
       setPasswordError(true);
       return;
     }
-    // TODO register user on server
+    /* TODO register user on server
+    in case of error use showSignUpErrorSnack()
+    */
 
     console.log(fisrtname, lastname, email, password);
     console.log("you're registered. yay!");
-    setCreated(true);
+    showSignUpSuccessSnack();
     await sleep(2000); // Time for user to read success snackbar
     history.push("/signin");
   };
@@ -101,11 +106,26 @@ export default function SignUp() {
     setPassword(e.target.value);
   };
 
-  const handleErrorClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setCreated(false);
+  const showSignUpErrorSnack = () => {
+    setSnackbarData({
+      open: true,
+      severity: "error",
+      message: "Error al registrar nuevo usuario"
+    });
+  };
+  const showSignUpSuccessSnack = () => {
+    setSnackbarData({
+      open: true,
+      severity: "success",
+      message: "Usuario registrado, redireccionando a ingreso..."
+    });
+  };
+  const closeSnack = () => {
+    setSnackbarData({
+      open: false,
+      severity: "",
+      message: ""
+    });
   };
 
   return (
@@ -194,15 +214,10 @@ export default function SignUp() {
           </Grid>
         </form>
       </div>
-      <Snackbar
-        open={created}
-        autoHideDuration={6000}
-        onClose={handleErrorClose}
-      >
-        <Alert onClose={handleErrorClose} severity="success">
-          Usuario registrado, redireccionando a ingreso...
-        </Alert>
-      </Snackbar>
+      <CustomizedSnackbar
+        props={snackbarData}
+        setSnackbarData={setSnackbarData}
+      />
       <Box mt={5}>
         <Copyright />
       </Box>

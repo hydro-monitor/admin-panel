@@ -2,9 +2,7 @@ import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import store from "store";
 import Avatar from "@material-ui/core/Avatar";
-import Alert from "@material-ui/lab/Alert";
 import Button from "@material-ui/core/Button";
-import Snackbar from "@material-ui/core/Snackbar";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
 import Link from "@material-ui/core/Link";
@@ -15,6 +13,7 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Copyright from "../components/Copyright";
+import CustomizedSnackbar from "../components/CustomizedSnackbar";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -39,17 +38,22 @@ const useStyles = makeStyles(theme => ({
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(false);
+  const [snackbarData, setSnackbarData] = useState({
+    open: false,
+    severity: "",
+    message: ""
+  });
 
   const classes = useStyles();
   const history = useHistory();
 
   const signIn = e => {
     e.preventDefault();
-    setError(false);
+    closeSnack();
 
     if (!(email === "admin" && password === "admin")) {
-      return setError(true);
+      signInErrorSnack();
+      return;
     }
 
     console.log("you're logged in. yay!");
@@ -58,19 +62,27 @@ export default function SignIn() {
     history.push("/");
   };
 
-  const handleErrorClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setError(false);
-  };
-
   const handleEmailChange = e => {
     setEmail(e.target.value);
   };
 
   const handlePasswordChange = e => {
     setPassword(e.target.value);
+  };
+
+  const signInErrorSnack = () => {
+    setSnackbarData({
+      open: true,
+      severity: "error",
+      message: "Las credenciales ingresadas son incorrectas"
+    });
+  };
+  const closeSnack = () => {
+    setSnackbarData({
+      open: false,
+      severity: "",
+      message: ""
+    });
   };
 
   return (
@@ -132,11 +144,10 @@ export default function SignIn() {
           </Grid>
         </form>
       </div>
-      <Snackbar open={error} autoHideDuration={6000} onClose={handleErrorClose}>
-        <Alert onClose={handleErrorClose} severity="error">
-          Las credenciales ingresadas son incorrectas
-        </Alert>
-      </Snackbar>
+      <CustomizedSnackbar
+        props={snackbarData}
+        setSnackbarData={setSnackbarData}
+      />
       <Box mt={8}>
         <Copyright />
       </Box>
