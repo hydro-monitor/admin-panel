@@ -13,7 +13,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Copyright from "../components/Copyright";
 import { sleep } from "../dashboard/server";
-import CustomizedSnackbar from "../components/CustomizedSnackbar";
+import CustomizedSnackbar, {
+  closeSnack
+} from "../components/CustomizedSnackbar";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -60,7 +62,7 @@ export default function SignUp() {
 
   const signUp = async e => {
     e.preventDefault();
-    closeSnack();
+    closeSnack(setSnackbarData);
 
     if (fisrtname === "") {
       setFirstNameError(true);
@@ -118,13 +120,6 @@ export default function SignUp() {
       open: true,
       severity: "success",
       message: "Usuario registrado, redireccionando a ingreso..."
-    });
-  };
-  const closeSnack = () => {
-    setSnackbarData({
-      open: false,
-      severity: "",
-      message: ""
     });
   };
 

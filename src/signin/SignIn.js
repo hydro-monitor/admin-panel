@@ -13,7 +13,9 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Copyright from "../components/Copyright";
-import CustomizedSnackbar from "../components/CustomizedSnackbar";
+import CustomizedSnackbar, {
+  closeSnack
+} from "../components/CustomizedSnackbar";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -49,7 +51,7 @@ export default function SignIn() {
 
   const signIn = e => {
     e.preventDefault();
-    closeSnack();
+    closeSnack(setSnackbarData);
 
     if (!(email === "admin" && password === "admin")) {
       signInErrorSnack();
@@ -75,13 +77,6 @@ export default function SignIn() {
       open: true,
       severity: "error",
       message: "Las credenciales ingresadas son incorrectas"
-    });
-  };
-  const closeSnack = () => {
-    setSnackbarData({
-      open: false,
-      severity: "",
-      message: ""
     });
   };
 

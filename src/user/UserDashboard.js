@@ -12,7 +12,9 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
-import CustomizedSnackbar from "../components/CustomizedSnackbar";
+import CustomizedSnackbar, {
+  closeSnack
+} from "../components/CustomizedSnackbar";
 
 const useFormStyles = makeStyles(theme => ({
   paper: {
@@ -122,16 +124,9 @@ function UserInfo() {
       message: "Contraseña cambiada correctamente"
     });
   };
-  const closeSnack = () => {
-    setSnackbarData({
-      open: false,
-      severity: "",
-      message: ""
-    });
-  };
   const changePassword = e => {
     e.preventDefault();
-    closeSnack();
+    closeSnack(setSnackbarData);
 
     if (typedPassword !== password) {
       setTypedPasswordError(true);
