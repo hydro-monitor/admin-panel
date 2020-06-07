@@ -189,7 +189,6 @@ export default function NodesDashboard(props) {
 
   return (
     <Dashboard {...props} title="Nodos">
-      {/* Measurements table */}
       <Grid item xs={12}>
         <Paper className={classes.paper}>
           <Nodes

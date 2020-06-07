@@ -3,6 +3,7 @@ import "./App.css";
 import InitialDashboard from "./dashboard/InitialDashboard";
 import MeasurementsDashboard from "./dashboard/MeasurementsDashboard";
 import NodesDashboard from "./configuration/NodesDashboard";
+import UserDashboard from "./user/UserDashboard";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import SignIn from "./signin/SignIn";
 import SignUp from "./signup/SignUp";
@@ -47,6 +48,17 @@ function App() {
           exact
           render={() => (
             <NodesDashboard
+              open={open}
+              handleDrawerOpen={handleDrawerOpen}
+              handleDrawerClose={handleDrawerClose}
+            />
+          )}
+        />
+        <Route
+          path="/user"
+          exact
+          render={() => (
+            <UserDashboard
               open={open}
               handleDrawerOpen={handleDrawerOpen}
               handleDrawerClose={handleDrawerClose}

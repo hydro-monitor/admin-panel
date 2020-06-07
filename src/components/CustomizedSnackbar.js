@@ -2,6 +2,14 @@ import React, { useEffect, useState } from "react";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 
+export const closeSnack = setSnackbarData => {
+  setSnackbarData({
+    open: false,
+    severity: "",
+    message: ""
+  });
+};
+
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
