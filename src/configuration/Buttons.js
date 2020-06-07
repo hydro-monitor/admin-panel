@@ -29,7 +29,12 @@ function RestoreConfigurationButton({ handleConfigurationRestore }) {
   );
 }
 
-function UpdateConfigurationButton({ node, configuration, setSnackbarData }) {
+function UpdateConfigurationButton({
+  node,
+  configuration,
+  clearConfigChangesNotSaved,
+  setSnackbarData
+}) {
   const classes = useStyles();
 
   const handleConfigurationUpdate = () => {
@@ -41,16 +46,17 @@ function UpdateConfigurationButton({ node, configuration, setSnackbarData }) {
           configuration
         );
         console.log(updatedConfiguration);
+        clearConfigChangesNotSaved();
         setSnackbarData({
           open: true,
           severity: "success",
-          message: "Configuración del nodo actualizada con éxito"
+          message: "Configuración de nodo actualizada con éxito"
         });
       } catch (e) {
         setSnackbarData({
           open: true,
           severity: "error",
-          message: "Error al intentar actualizar la configuración del nodo"
+          message: "Error al intentar actualizar la configuración de nodo"
         });
       }
     })();

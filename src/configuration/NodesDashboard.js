@@ -32,6 +32,8 @@ const fabStyles = makeStyles(theme => ({
 function NodeCreateConfirmation({
   open,
   handleCreateDialogClose,
+  setParentNode,
+  addNewNode,
   setSnackbarData
 }) {
   const fabClasses = fabStyles();
@@ -73,7 +75,7 @@ function NodeCreateConfirmation({
           nodeToCreate,
           descriptionOfNodeToCreate
         );
-        handleNodeCreationResult(response);
+        handleNodeCreationResult(response, nodeToCreate);
         handleCreateConfirmClose();
       })();
     }
@@ -86,19 +88,22 @@ function NodeCreateConfirmation({
     handleNodeToCreateValidation();
   };
 
-  const handleNodeCreationResult = response => {
-    if (response.ok)
+  const handleNodeCreationResult = (response, nodeName) => {
+    if (response.ok) {
       setSnackbarData({
         open: true,
         severity: "success",
         message: "Nodo creado con éxito"
       });
-    else
+      addNewNode(nodeName);
+      setParentNode(nodeName);
+    } else {
       setSnackbarData({
         open: true,
         severity: "error",
         message: `Error al crear nodo: ${response.body}`
       });
+    }
   };
 
   return (
@@ -146,6 +151,27 @@ export default function NodesDashboard(props) {
   const classes = useStyles();
   const fabClasses = fabStyles();
 
+  const [node, setNode] = useState("");
+  const [nodes, setNodes] = useState([]);
+  const [config, updateConfig] = useState("");
+  const [isLoadingConfig, setIsLoadingConfig] = useState(true);
+  const [deleteNodeDisabled, setDeleteNodeDisabled] = useState(true);
+
+  const changeNodeAndTable = name => {
+    console.log("changing node and table to ", name);
+    setNode(name);
+    setDeleteNodeDisabled(true);
+    setIsLoadingConfig(true);
+    updateConfig("");
+  };
+
+  const addNewNode = name => {
+    console.log("adding new node", name);
+    var nodesUpdated = nodes.slice();
+    nodesUpdated.push(name);
+    setNodes(nodesUpdated);
+  };
+
   const [createConfirmOpen, setCreateConfirmOpen] = useState(false);
   const [snackbarData, setSnackbarData] = useState({
     open: false,
@@ -163,10 +189,22 @@ export default function NodesDashboard(props) {
 
   return (
     <Dashboard {...props} title="Nodos">
-      {/* Measurements table */}
       <Grid item xs={12}>
         <Paper className={classes.paper}>
-          <Nodes setSnackbarData={setSnackbarData} />
+          <Nodes
+            node={node}
+            setNode={setNode}
+            nodes={nodes}
+            setNodes={setNodes}
+            config={config}
+            updateConfig={updateConfig}
+            isLoadingConfig={isLoadingConfig}
+            setIsLoadingConfig={setIsLoadingConfig}
+            deleteNodeDisabled={deleteNodeDisabled}
+            setDeleteNodeDisabled={setDeleteNodeDisabled}
+            changeNodeAndTable={changeNodeAndTable}
+            setSnackbarData={setSnackbarData}
+          />
         </Paper>
       </Grid>
       <Fab
@@ -180,6 +218,8 @@ export default function NodesDashboard(props) {
       <NodeCreateConfirmation
         open={createConfirmOpen}
         handleCreateDialogClose={handleCreateConfirmClose}
+        setParentNode={changeNodeAndTable}
+        addNewNode={addNewNode}
         setSnackbarData={setSnackbarData}
       />
       <CustomizedSnackbar

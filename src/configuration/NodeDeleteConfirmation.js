@@ -14,7 +14,10 @@ const nodesClient = new NodesClient("http://localhost:8080/api/nodes/");
 export default function NodeDeleteConfirmation({
   open,
   node,
+  nextNode,
   handleDeleteDialogClose,
+  setParentNode,
+  deleteOldNode,
   setSnackbarData
 }) {
   const [nodeToDelete, setNodeToDelete] = useState("");
@@ -46,6 +49,9 @@ export default function NodeDeleteConfirmation({
       if (ok) {
         handleNodeToDeleteValidation();
         handleDeleteConfirmClose();
+        console.log("nextNode", nextNode);
+        setParentNode(nextNode);
+        deleteOldNode(nodeToDelete);
         setSnackbarData({
           open: true,
           message: "Nodo borrado satisfactoriamente",

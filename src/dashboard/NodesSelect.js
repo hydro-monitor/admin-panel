@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -12,9 +12,8 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function NodesSelect({ nodes, setParentNode }) {
+export default function NodesSelect({ node, setNode, nodes, setParentNode }) {
   const classes = useStyles();
-  const [node, setNode] = useState(nodes[0]);
   const handleChange = event => {
     if (node === event.target.value) {
       return;

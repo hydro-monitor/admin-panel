@@ -37,20 +37,34 @@ const useStyles = makeStyles(theme => ({
     alignSelf: "flex-end",
     marginRight: "10px",
     marginBottom: "2px"
+  },
+  configChangesNotSaved: {
+    alignSelf: "flex-end",
+    marginRight: "10px",
+    marginBottom: "8px"
   }
 }));
 
-export default function Nodes({ setSnackbarData }) {
+export default function Nodes({
+  node,
+  setNode,
+  nodes,
+  setNodes,
+  config,
+  updateConfig,
+  isLoadingConfig,
+  setIsLoadingConfig,
+  deleteNodeDisabled,
+  setDeleteNodeDisabled,
+  changeNodeAndTable,
+  setSnackbarData
+}) {
   const classes = useStyles();
 
-  const [nodes, setNodes] = useState([]);
-  const [node, setNode] = useState("");
-  const [config, updateConfig] = useState("");
   const [originalConfig, updateOriginalConfig] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [isLoadingConfig, setIsLoadingConfig] = useState(true);
-  const [deleteNodeDisabled, setDeleteNodeDisabled] = useState(true);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [configChangesNotSaved, updateConfigChangesNotSaved] = useState("");
 
   useMountEffect(() => {
     (async () => {
@@ -72,7 +86,7 @@ export default function Nodes({ setSnackbarData }) {
         });
       }
     })();
-  });
+  }, [nodes]);
 
   useEffect(() => {
     (async () => {
@@ -94,6 +108,7 @@ export default function Nodes({ setSnackbarData }) {
             message: "El nodo no posee una configuración activa"
           });
         } finally {
+          clearConfigChangesNotSaved();
           setDeleteNodeDisabled(false);
           setIsLoadingConfig(false);
         }
@@ -101,21 +116,39 @@ export default function Nodes({ setSnackbarData }) {
     })();
   }, [node, isLoading, setSnackbarData]);
 
-  const changeNodeAndTable = name => {
-    setNode(name);
-    setDeleteNodeDisabled(true);
-    setIsLoadingConfig(true);
-    updateConfig("");
+  const deleteOldNode = name => {
+    console.log("deleting old node", name);
+    var nodesUpdated = nodes.slice();
+    nodesUpdated.splice(nodesUpdated.indexOf(name), 1);
+    setNodes(nodesUpdated);
   };
 
-  const handleConfigurationTextUpdate = event =>
+  const clearConfigChangesNotSaved = () => {
+    updateConfigChangesNotSaved("");
+  };
+
+  const setConfigChangesNotSaved = () => {
+    updateConfigChangesNotSaved("Cambios de configuración no guardados");
+  };
+
+  const handleConfigurationTextUpdate = event => {
     updateConfig(event.target.value);
+    setConfigChangesNotSaved();
+  };
 
   const handleDeleteConfirmOpen = () => setDeleteConfirmOpen(true);
 
   const handleDeleteConfirmClose = () => setDeleteConfirmOpen(false);
 
-  const handleConfigurationRestore = () => updateConfig(originalConfig);
+  const handleConfigurationRestore = () => {
+    updateConfig(originalConfig);
+    clearConfigChangesNotSaved();
+    setSnackbarData({
+      open: true,
+      severity: "info",
+      message: "Configuración de nodo restaurada"
+    });
+  };
 
   function renderTable() {
     return (
@@ -130,6 +163,9 @@ export default function Nodes({ setSnackbarData }) {
         />
 
         <div className={classes.configButtons}>
+          <div className={classes.configChangesNotSaved}>
+            {configChangesNotSaved}
+          </div>
           <div className={classes.restoreButton}>
             <RestoreConfigurationButton
               handleConfigurationRestore={handleConfigurationRestore}
@@ -139,6 +175,7 @@ export default function Nodes({ setSnackbarData }) {
             <UpdateConfigurationButton
               node={node}
               configuration={config}
+              clearConfigChangesNotSaved={clearConfigChangesNotSaved}
               setSnackbarData={setSnackbarData}
             />
           </div>
@@ -159,6 +196,14 @@ export default function Nodes({ setSnackbarData }) {
     }
   }
 
+  function nextNode() {
+    let i = nodes.indexOf(node);
+    if (i === nodes.length - 1) {
+      return nodes[0];
+    }
+    return nodes[i + 1];
+  }
+
   function renderConfig() {
     return (
       <React.Fragment>
@@ -168,7 +213,12 @@ export default function Nodes({ setSnackbarData }) {
               <Title>Configuración de nodo</Title>
             </div>
             <div>
-              <NodesSelect nodes={nodes} setParentNode={changeNodeAndTable} />
+              <NodesSelect
+                node={node}
+                setNode={setNode}
+                nodes={nodes}
+                setParentNode={changeNodeAndTable}
+              />
             </div>
           </Grid>
           <Grid item xs={1} md={1} lg={1} className={classes.buttonsGrid}>
@@ -180,7 +230,10 @@ export default function Nodes({ setSnackbarData }) {
               <NodeDeleteConfirmation
                 open={deleteConfirmOpen}
                 node={node}
+                nextNode={nextNode()}
                 handleDeleteDialogClose={handleDeleteConfirmClose}
+                setParentNode={changeNodeAndTable}
+                deleteOldNode={deleteOldNode}
                 setSnackbarData={setSnackbarData}
               />
             </div>
