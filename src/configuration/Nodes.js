@@ -209,7 +209,7 @@ export default function Nodes({
     return (
       <React.Fragment>
         <Grid container spacing={3}>
-          <Grid item xs={11} md={11} lg={11} className={classes.titleGrid}>
+          <Grid item xs={10} md={10} lg={10} className={classes.titleGrid}>
             <div className={classes.titleDiv}>
               <Title>Configuración de nodo</Title>
             </div>
@@ -222,7 +222,7 @@ export default function Nodes({
               />
             </div>
           </Grid>
-          <Grid item xs={1} md={1} lg={1} className={classes.buttonsGrid}>
+          <Grid item xs={2} md={2} lg={2} className={classes.buttonsGrid}>
             <div>
               <DeleteButton
                 handleDeleteConfirmOpen={handleDeleteConfirmOpen}
