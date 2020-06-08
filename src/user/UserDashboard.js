@@ -15,6 +15,7 @@ import Button from "@material-ui/core/Button";
 import CustomizedSnackbar, {
   closeSnack
 } from "../components/CustomizedSnackbar";
+//import { WEB_API } from "../common/constants";
 
 const useFormStyles = makeStyles(theme => ({
   paper: {
@@ -69,8 +70,8 @@ function UserInfo() {
       setLastName("McAdmin");
       setEmail("admin@imadmin.admin");
       setPassword("admin");
-      /* TODO integrar con webAPI
-            await fetch(webAPI + "/api/users/" + store.get("user"))
+      /* TODO integrar con WEB_API
+            await fetch(WEB_API + "/api/users/" + store.get("user"))
                 .then(handleErrors)
                 .then(async response => {
                     console.log(response);

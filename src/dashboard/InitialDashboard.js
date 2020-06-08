@@ -9,8 +9,7 @@ import Measurement from "./Measurement";
 import { useStyles } from "./dashboardStyles";
 import { handleErrors, sleep } from "./server";
 import { makeStyles } from "@material-ui/core/styles";
-
-const webAPI = "http://localhost:8080"; //"http://antiguos.fi.uba.ar:443";
+import { WEB_API } from "../common/constants";
 
 function MeasurementList({ nodes }) {
   const classes = useStyles();
@@ -48,7 +47,7 @@ function MeasurementList({ nodes }) {
 export default function InitialDashboard(props) {
   const [isLoading, setIsLoading] = useState(true);
   const [nodes, setNodes] = useState([]);
-  const nodesURL = webAPI + "/api/nodes";
+  const nodesURL = WEB_API + "/api/nodes";
   useEffect(() => {
     const fetchNodes = async () => {
       console.log("FETCH NODES HOOK");

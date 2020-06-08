@@ -5,8 +5,9 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import NodesClient from "../api/NodesClient";
+import { NODES_API } from "../common/constants";
 
-const nodesClient = new NodesClient("http://localhost:8080/api/nodes");
+const nodesClient = new NodesClient(NODES_API);
 
 const useStyles = makeStyles(theme => ({
   deleteButton: {

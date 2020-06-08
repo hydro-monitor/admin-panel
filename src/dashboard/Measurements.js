@@ -13,8 +13,7 @@ import PhotoIcon from "@material-ui/icons/Photo";
 import IconButton from "@material-ui/core/IconButton";
 import Alert from "@material-ui/lab/Alert";
 import { handleErrors, sleep } from "./server";
-
-const webAPI = "http://localhost:8080"; //"http://antiguos.fi.uba.ar:443";
+import { WEB_API } from "../common/constants";
 
 function manualReadingBoolToString(wasManual) {
   if (wasManual) {
@@ -56,7 +55,7 @@ function PhotoLink({ node, readingId }) {
   }
 
   const getReadingPhotoURL =
-    webAPI + "/api/nodes/" + node + "/readings/" + readingId + "/photos";
+    WEB_API + "/api/nodes/" + node + "/readings/" + readingId + "/photos";
   useFetch(getReadingPhotoURL);
 
   return (
@@ -79,7 +78,7 @@ export default function Measurements() {
   const [data, updateData] = useState(undefined);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingData, setIsLoadingData] = useState(true);
-  const nodesURL = webAPI + "/api/nodes";
+  const nodesURL = WEB_API + "/api/nodes";
 
   useEffect(() => {
     const fetchNodes = async () => {
@@ -111,7 +110,7 @@ export default function Measurements() {
       setIsLoadingData(true);
       if (!isLoading) {
         await sleep(1000); // TODO Remove when testing is done
-        await fetch(webAPI + "/api/nodes/" + node + "/readings")
+        await fetch(WEB_API + "/api/nodes/" + node + "/readings")
           .then(handleErrors)
           .then(async response => {
             console.log(response);

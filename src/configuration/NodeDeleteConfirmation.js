@@ -8,8 +8,9 @@ import TextField from "@material-ui/core/TextField";
 import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
 import NodesClient from "../api/NodesClient";
+import { NODES_API } from "../common/constants";
 
-const nodesClient = new NodesClient("http://localhost:8080/api/nodes/");
+const nodesClient = new NodesClient(NODES_API);
 
 export default function NodeDeleteConfirmation({
   open,

@@ -14,8 +14,9 @@ import {
 import NodeDeleteConfirmation from "./NodeDeleteConfirmation";
 import NodesClient from "../api/NodesClient";
 import { useMountEffect } from "../common/UseMountEffect";
+import { NODES_API } from "../common/constants";
 
-const nodesClient = new NodesClient("http://localhost:8080/api/nodes");
+const nodesClient = new NodesClient(NODES_API);
 
 const useStyles = makeStyles(theme => ({
   buttonsGrid: {

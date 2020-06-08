@@ -15,8 +15,9 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import NodesClient from "../api/NodesClient";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
+import { NODES_API } from "../common/constants";
 
-const nodesClient = new NodesClient("http://localhost:8080/api/nodes");
+const nodesClient = new NodesClient(NODES_API);
 
 const fabStyles = makeStyles(theme => ({
   fab: {
