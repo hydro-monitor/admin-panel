@@ -11,6 +11,7 @@ import {
   UpdateConfigurationButton,
   DeleteButton
 } from "./Buttons";
+import EditableTextField from "../components/EditableTextField";
 import NodeDeleteConfirmation from "./NodeDeleteConfirmation";
 import NodesClient from "../api/NodesClient";
 import { useMountEffect } from "../common/UseMountEffect";
@@ -43,6 +44,10 @@ const useStyles = makeStyles(theme => ({
     alignSelf: "flex-end",
     marginRight: "10px",
     marginBottom: "8px"
+  },
+  description: {
+    paddingTop: "10px",
+    paddingBottom: "10px"
   }
 }));
 
@@ -155,6 +160,7 @@ export default function Nodes({
     return (
       <React.Fragment>
         <TextField
+          label="Configuración"
           id="filled-multiline-static"
           multiline
           rows="30"
@@ -208,7 +214,7 @@ export default function Nodes({
   function renderConfig() {
     return (
       <React.Fragment>
-        <Grid container spacing={3}>
+        <Grid container>
           <Grid item xs={10} md={10} lg={10} className={classes.titleGrid}>
             <div className={classes.titleDiv}>
               <Title>Configuración de nodo</Title>
@@ -238,6 +244,9 @@ export default function Nodes({
                 setSnackbarData={setSnackbarData}
               />
             </div>
+          </Grid>
+          <Grid item xs={12} md={12} lg={12} className={classes.description}>
+            <EditableTextField label="Descripción" value="zalala" />
           </Grid>
         </Grid>
         {renderConfigContent()}
