@@ -11,10 +11,18 @@ export default class NodesClient {
     return response;
   }
 
+  arrToObj(arr) {
+    var o = {};
+    for (var i = 0; i < arr.length; ++i) {
+      o[arr[i].id] = arr[i];
+    }
+    return o;
+  }
+
   async getNodes() {
     const response = this.handleErrors(await fetch(this.url));
     const json = await response.json();
-    return json.map(item => item.id).sort();
+    return this.arrToObj(json);
   }
 
   async getNodeConfiguration(nodeId) {
@@ -61,7 +69,7 @@ export default class NodesClient {
   }
 
   async deleteNode(nodeId) {
-    const response = await fetch(`${this.url}${nodeId}`, { method: "delete" });
+    const response = await fetch(`${this.url}/${nodeId}`, { method: "delete" });
     console.log(response);
     return response.ok;
   }

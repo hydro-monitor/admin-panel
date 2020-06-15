@@ -56,6 +56,10 @@ export default function Nodes({
   setNode,
   nodes,
   setNodes,
+  nodesData,
+  setNodesData,
+  nodeDescription,
+  setNodeDescription,
   config,
   updateConfig,
   isLoadingConfig,
@@ -78,9 +82,12 @@ export default function Nodes({
       setIsLoading(true);
       await sleep(1000); // TODO Remove when testing is done
       try {
-        const nodeList = await nodesClient.getNodes();
+        const nodesAndDescriptions = await nodesClient.getNodes();
+        setNodesData(nodesAndDescriptions);
+        const nodeList = Object.keys(nodesAndDescriptions).sort();
         setNodes(nodeList);
         setNode(nodeList[0]);
+        setNodeDescription(nodesAndDescriptions[nodeList[0]].description);
         setIsLoading(false);
       } catch (error) {
         console.log(error);
@@ -127,6 +134,9 @@ export default function Nodes({
     var nodesUpdated = nodes.slice();
     nodesUpdated.splice(nodesUpdated.indexOf(name), 1);
     setNodes(nodesUpdated);
+    // Delete old description
+    let { [name]: omit, ...nodesDataUpdated } = nodesData;
+    setNodesData(nodesDataUpdated);
   };
 
   const clearConfigChangesNotSaved = () => {
@@ -154,6 +164,11 @@ export default function Nodes({
       severity: "info",
       message: "Configuración de nodo restaurada"
     });
+  };
+
+  const handleDescriptionUpdate = () => {
+    // TODO Add PUT to update description
+    console.log("Saving new descrption", nodeDescription);
   };
 
   function renderTable() {
@@ -246,7 +261,12 @@ export default function Nodes({
             </div>
           </Grid>
           <Grid item xs={12} md={12} lg={12} className={classes.description}>
-            <EditableTextField label="Descripción" value="zalala" />
+            <EditableTextField
+              label="Descripción"
+              value={nodeDescription}
+              setValue={setNodeDescription}
+              onSave={handleDescriptionUpdate}
+            />
           </Grid>
         </Grid>
         {renderConfigContent()}

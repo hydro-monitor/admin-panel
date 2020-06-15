@@ -18,31 +18,42 @@ const styles = theme => ({
 });
 
 function EditableTextField(props) {
+  const { classes, value, setValue, label, onSave } = props;
+
   const [state, setState] = useState({
-    email: "zarlompa",
-    editMode: false
+    text: value,
+    onEdit: false
   });
 
   const handleChange = event => {
+    setValue(event.target.value);
     setState({
-      email: event.target.value,
-      editMode: state.editMode
+      text: event.target.value,
+      onEdit: state.onEdit
     });
   };
 
   const handleClick = () => {
+    if (state.onEdit) {
+      // User is saving
+      onSave();
+      setState({
+        text: state.text,
+        onEdit: false
+      });
+      return;
+    }
+    // User is trying to edit
     setState({
-      email: state.email,
-      editMode: !state.editMode
+      text: state.text,
+      onEdit: true
     });
   };
-
-  const { classes, value, label } = props;
 
   console.log(state);
 
   const renderButton = () => {
-    if (state.editMode) {
+    if (state.onEdit) {
       return <SaveIcon />;
     }
     return <EditIcon />;
@@ -51,10 +62,10 @@ function EditableTextField(props) {
   return (
     <TextField
       multiline
-      defaultValue={value}
+      value={value}
       label={label}
       onChange={handleChange}
-      disabled={!state.editMode}
+      disabled={!state.onEdit}
       variant="outlined"
       className={classes.textField}
       InputProps={{

@@ -76,7 +76,11 @@ function NodeCreateConfirmation({
           nodeToCreate,
           descriptionOfNodeToCreate
         );
-        handleNodeCreationResult(response, nodeToCreate);
+        handleNodeCreationResult(
+          response,
+          nodeToCreate,
+          descriptionOfNodeToCreate
+        );
         handleCreateConfirmClose();
       })();
     }
@@ -89,15 +93,15 @@ function NodeCreateConfirmation({
     handleNodeToCreateValidation();
   };
 
-  const handleNodeCreationResult = (response, nodeName) => {
+  const handleNodeCreationResult = (response, nodeName, description) => {
     if (response.ok) {
       setSnackbarData({
         open: true,
         severity: "success",
         message: "Nodo creado con éxito"
       });
-      addNewNode(nodeName);
-      setParentNode(nodeName);
+      addNewNode(nodeName, description);
+      setParentNode(nodeName, description);
     } else {
       setSnackbarData({
         open: true,
@@ -157,20 +161,35 @@ export default function NodesDashboard(props) {
   const [config, updateConfig] = useState("");
   const [isLoadingConfig, setIsLoadingConfig] = useState(true);
   const [deleteNodeDisabled, setDeleteNodeDisabled] = useState(true);
+  const [nodesData, setNodesData] = useState({});
+  const [nodeDescription, setNodeDescription] = useState("");
 
-  const changeNodeAndTable = name => {
+  const changeNodeAndTable = (name, description) => {
     console.log("changing node and table to ", name);
     setNode(name);
+    if (description) {
+      setNodeDescription(description);
+    } else {
+      setNodeDescription(nodesData[name].description);
+    }
     setDeleteNodeDisabled(true);
     setIsLoadingConfig(true);
     updateConfig("");
   };
 
-  const addNewNode = name => {
+  console.log("ACA PARA DEBUGGEAR", nodesData);
+
+  const addNewNode = (name, description) => {
     console.log("adding new node", name);
     var nodesUpdated = nodes.slice();
     nodesUpdated.push(name);
     setNodes(nodesUpdated);
+    // Add new description
+    var nodesDataUpdated = {
+      [name]: { description: description },
+      ...nodesData
+    };
+    setNodesData(nodesDataUpdated);
   };
 
   const [createConfirmOpen, setCreateConfirmOpen] = useState(false);
@@ -197,6 +216,10 @@ export default function NodesDashboard(props) {
             setNode={setNode}
             nodes={nodes}
             setNodes={setNodes}
+            nodesData={nodesData}
+            setNodesData={setNodesData}
+            nodeDescription={nodeDescription}
+            setNodeDescription={setNodeDescription}
             config={config}
             updateConfig={updateConfig}
             isLoadingConfig={isLoadingConfig}
