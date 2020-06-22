@@ -10,9 +10,6 @@ import { NODES_API } from "../common/constants";
 const nodesClient = new NodesClient(NODES_API);
 
 const useStyles = makeStyles(theme => ({
-  deleteButton: {
-    marginBottom: theme.spacing(1)
-  },
   updateButton: {
     marginTop: theme.spacing(1)
   }
@@ -75,16 +72,14 @@ function UpdateConfigurationButton({
   );
 }
 
-function DeleteButton({ handleDeleteConfirmOpen, disabled }) {
-  const classes = useStyles();
-
+function DeleteButton({ classes, onClick, disabled }) {
   return (
     <IconButton
       color="secondary"
       aria-label="delete"
       size="small"
-      className={classes.deleteButton}
-      onClick={handleDeleteConfirmOpen}
+      className={classes}
+      onClick={onClick}
       disabled={disabled}
     >
       <DeleteIcon />

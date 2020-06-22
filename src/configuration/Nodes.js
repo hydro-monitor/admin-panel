@@ -16,6 +16,8 @@ import NodeDeleteConfirmation from "./NodeDeleteConfirmation";
 import NodesClient from "../api/NodesClient";
 import { useMountEffect } from "../common/UseMountEffect";
 import { NODES_API } from "../common/constants";
+import { isNumeric } from "../common/utils";
+import ConfigurationForm from "./ConfigurationForm";
 
 const nodesClient = new NodesClient(NODES_API);
 
@@ -48,6 +50,9 @@ const useStyles = makeStyles(theme => ({
   description: {
     paddingTop: "10px",
     paddingBottom: "10px"
+  },
+  deleteButton: {
+    marginBottom: theme.spacing(1)
   }
 }));
 
@@ -71,7 +76,7 @@ export default function Nodes({
 }) {
   const classes = useStyles();
 
-  const [originalConfig, updateOriginalConfig] = useState("");
+  const [originalConfig, updateOriginalConfig] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [configChangesNotSaved, updateConfigChangesNotSaved] = useState("");
@@ -113,8 +118,8 @@ export default function Nodes({
           updateConfig(config);
           updateOriginalConfig(config);
         } catch (error) {
-          updateConfig("");
-          updateOriginalConfig("");
+          updateConfig({});
+          updateOriginalConfig({});
           setSnackbarData({
             open: true,
             severity: "error",
@@ -147,8 +152,46 @@ export default function Nodes({
     updateConfigChangesNotSaved("Cambios de configuración no guardados");
   };
 
-  const handleConfigurationTextUpdate = event => {
-    updateConfig(event.target.value);
+  const handleConfigurationUpdate = (stateName, propName, value) => {
+    let configUpdated = {};
+    if (!(stateName in config)) {
+      configUpdated = {
+        [stateName]: { [propName]: value },
+        ...config
+      };
+    } else {
+      let { [stateName]: oldState, ...configWithoutUpdatedState } = config;
+      let { [propName]: omit, ...stateWithoutUpdatedProp } = oldState;
+      if (propName !== "stateName" && isNumeric(value)) {
+        value = parseInt(value);
+      }
+      configUpdated = {
+        [stateName]: { [propName]: value, ...stateWithoutUpdatedProp },
+        ...configWithoutUpdatedState
+      };
+    }
+    updateConfig(configUpdated);
+    setConfigChangesNotSaved();
+  };
+
+  const handleCustomStateAddition = () => {
+    let randomStateName = Math.floor(Math.random() * 101);
+    let configUpdated = {
+      [randomStateName]: {
+        interval: "",
+        picturesNum: "",
+        upperLimit: "",
+        lowerLimit: ""
+      },
+      ...config
+    };
+    updateConfig(configUpdated);
+    setConfigChangesNotSaved();
+  };
+
+  const handleCustomStateDeletion = deletedStateName => {
+    let { [deletedStateName]: omit, ...configUpdated } = config;
+    updateConfig(configUpdated);
     setConfigChangesNotSaved();
   };
 
@@ -171,17 +214,16 @@ export default function Nodes({
     console.log("Saving new descrption", nodeDescription);
   };
 
+  console.log("CONFIG DEBBUG ACA: ", config);
+
   function renderTable() {
     return (
       <React.Fragment>
-        <TextField
-          label="Configuración"
-          id="filled-multiline-static"
-          multiline
-          rows="30"
-          value={config}
-          variant="filled"
-          onChange={handleConfigurationTextUpdate}
+        <ConfigurationForm
+          config={config}
+          handleConfigurationUpdate={handleConfigurationUpdate}
+          handleCustomStateAddition={handleCustomStateAddition}
+          handleCustomStateDeletion={handleCustomStateDeletion}
         />
 
         <div className={classes.configButtons}>
@@ -246,8 +288,9 @@ export default function Nodes({
           <Grid item xs={2} md={2} lg={2} className={classes.buttonsGrid}>
             <div>
               <DeleteButton
-                handleDeleteConfirmOpen={handleDeleteConfirmOpen}
+                onClick={handleDeleteConfirmOpen}
                 disabled={deleteNodeDisabled}
+                classes={classes.deleteButton}
               />
               <NodeDeleteConfirmation
                 open={deleteConfirmOpen}

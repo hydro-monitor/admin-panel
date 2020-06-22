@@ -158,7 +158,7 @@ export default function NodesDashboard(props) {
 
   const [node, setNode] = useState("");
   const [nodes, setNodes] = useState([]);
-  const [config, updateConfig] = useState("");
+  const [config, updateConfig] = useState({});
   const [isLoadingConfig, setIsLoadingConfig] = useState(true);
   const [deleteNodeDisabled, setDeleteNodeDisabled] = useState(true);
   const [nodesData, setNodesData] = useState({});
@@ -174,7 +174,7 @@ export default function NodesDashboard(props) {
     }
     setDeleteNodeDisabled(true);
     setIsLoadingConfig(true);
-    updateConfig("");
+    updateConfig({});
   };
 
   console.log("ACA PARA DEBUGGEAR", nodesData);
