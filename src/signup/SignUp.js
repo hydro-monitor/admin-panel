@@ -16,6 +16,9 @@ import { sleep } from "../dashboard/server";
 import CustomizedSnackbar, {
   closeSnack
 } from "../components/CustomizedSnackbar";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Checkbox from "@material-ui/core/Checkbox";
+import SignInFields from "../signin/SignInFields";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -54,29 +57,68 @@ export default function SignUp() {
     severity: "",
     message: ""
   });
+  const [registerAsAdminChecked, setRegisterAsAdminChecked] = useState(false);
+  const [adminEmail, setAdminEmail] = useState("");
+  const [adminPassword, setAdminPassword] = useState("");
+  const [adminEmailError, setAdminEmailError] = useState(false);
+  const [adminPasswordError, setAdminPasswordError] = useState(false);
 
   const isValidEmail = email => {
     var re = /\S+@\S+\.\S+/;
     return re.test(email);
+  };
+  const signUpDataIsValid = () => {
+    if (fisrtname === "") {
+      setFirstNameError(true);
+      return false;
+    } else if (lastname === "") {
+      setLastNameError(true);
+      return false;
+    } else if (email === "" || !isValidEmail(email)) {
+      setEmailError(true);
+      return false;
+    } else if (password === "") {
+      setPasswordError(true);
+      return false;
+    }
+    if (registerAsAdminChecked) {
+      if (adminEmail === "" || !isValidEmail(adminEmail)) {
+        setAdminEmailError(true);
+        return false;
+      } else if (adminPassword === "") {
+        setAdminPasswordError(true);
+        return false;
+      }
+    }
+    return true;
+  };
+  const parentAdminCredentialsAreValid = () => {
+    if (registerAsAdminChecked) {
+      console.log("Validating parent admin credentials");
+      // TODO sign in parent admin
+      // if sign in fails, display error on form
+      let parentAdminSignInSuccess = false;
+      if (!parentAdminSignInSuccess) {
+        setAdminEmailError(true);
+        setAdminPasswordError(true);
+        return false;
+      }
+    }
+    return true;
   };
 
   const signUp = async e => {
     e.preventDefault();
     closeSnack(setSnackbarData);
 
-    if (fisrtname === "") {
-      setFirstNameError(true);
-      return;
-    } else if (lastname === "") {
-      setLastNameError(true);
-      return;
-    } else if (email === "" || !isValidEmail(email)) {
-      setEmailError(true);
-      return;
-    } else if (password === "") {
-      setPasswordError(true);
+    if (!signUpDataIsValid()) {
       return;
     }
+
+    if (!parentAdminCredentialsAreValid()) {
+      return;
+    }
+
     /* TODO register user on server
     in case of error use showSignUpErrorSnack()
     */
@@ -121,6 +163,29 @@ export default function SignUp() {
       severity: "success",
       message: "Usuario registrado, redireccionando a ingreso..."
     });
+  };
+  const registerAsAdmin = () => {
+    setRegisterAsAdminChecked(!registerAsAdminChecked);
+  };
+
+  const parentAdminSignIn = () => {
+    if (registerAsAdminChecked) {
+      return (
+        <Grid item xs={12}>
+          <Typography variant="subtitle1">
+            Ingrese las credenciales de un administrador
+          </Typography>
+          <SignInFields
+            setEmail={setAdminEmail}
+            emailError={adminEmailError}
+            setEmailError={setAdminEmailError}
+            setPassword={setAdminPassword}
+            setPasswordError={setAdminPasswordError}
+            passwordError={adminPasswordError}
+          />
+        </Grid>
+      );
+    }
   };
 
   return (
@@ -189,6 +254,20 @@ export default function SignUp() {
                 error={passwordError}
               />
             </Grid>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={registerAsAdminChecked}
+                    onChange={registerAsAdmin}
+                    name="admin"
+                    color="primary"
+                  />
+                }
+                label="Registrarme como administrador"
+              />
+            </Grid>
+            {parentAdminSignIn()}
           </Grid>
           <Button
             type="submit"
