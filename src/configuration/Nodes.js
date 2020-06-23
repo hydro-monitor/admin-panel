@@ -11,6 +11,7 @@ import {
   UpdateConfigurationButton,
   DeleteButton
 } from "./Buttons";
+import EditableTextField from "../components/EditableTextField";
 import NodeDeleteConfirmation from "./NodeDeleteConfirmation";
 import NodesClient from "../api/NodesClient";
 import { useMountEffect } from "../common/UseMountEffect";
@@ -43,6 +44,10 @@ const useStyles = makeStyles(theme => ({
     alignSelf: "flex-end",
     marginRight: "10px",
     marginBottom: "8px"
+  },
+  description: {
+    paddingTop: "10px",
+    paddingBottom: "10px"
   }
 }));
 
@@ -51,6 +56,10 @@ export default function Nodes({
   setNode,
   nodes,
   setNodes,
+  nodesData,
+  setNodesData,
+  nodeDescription,
+  setNodeDescription,
   config,
   updateConfig,
   isLoadingConfig,
@@ -73,9 +82,12 @@ export default function Nodes({
       setIsLoading(true);
       await sleep(1000); // TODO Remove when testing is done
       try {
-        const nodeList = await nodesClient.getNodes();
+        const nodesAndDescriptions = await nodesClient.getNodes();
+        setNodesData(nodesAndDescriptions);
+        const nodeList = Object.keys(nodesAndDescriptions).sort();
         setNodes(nodeList);
         setNode(nodeList[0]);
+        setNodeDescription(nodesAndDescriptions[nodeList[0]].description);
         setIsLoading(false);
       } catch (error) {
         console.log(error);
@@ -122,6 +134,9 @@ export default function Nodes({
     var nodesUpdated = nodes.slice();
     nodesUpdated.splice(nodesUpdated.indexOf(name), 1);
     setNodes(nodesUpdated);
+    // Delete old description
+    let { [name]: omit, ...nodesDataUpdated } = nodesData;
+    setNodesData(nodesDataUpdated);
   };
 
   const clearConfigChangesNotSaved = () => {
@@ -151,10 +166,16 @@ export default function Nodes({
     });
   };
 
+  const handleDescriptionUpdate = () => {
+    // TODO Add PUT to update description
+    console.log("Saving new descrption", nodeDescription);
+  };
+
   function renderTable() {
     return (
       <React.Fragment>
         <TextField
+          label="Configuración"
           id="filled-multiline-static"
           multiline
           rows="30"
@@ -208,7 +229,7 @@ export default function Nodes({
   function renderConfig() {
     return (
       <React.Fragment>
-        <Grid container spacing={3}>
+        <Grid container>
           <Grid item xs={10} md={10} lg={10} className={classes.titleGrid}>
             <div className={classes.titleDiv}>
               <Title>Configuración de nodo</Title>
@@ -238,6 +259,14 @@ export default function Nodes({
                 setSnackbarData={setSnackbarData}
               />
             </div>
+          </Grid>
+          <Grid item xs={12} md={12} lg={12} className={classes.description}>
+            <EditableTextField
+              label="Descripción"
+              value={nodeDescription}
+              setValue={setNodeDescription}
+              onSave={handleDescriptionUpdate}
+            />
           </Grid>
         </Grid>
         {renderConfigContent()}
