@@ -4,6 +4,7 @@ import Title from "../dashboard/Title";
 import NodesSelect from "../dashboard/NodesSelect";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Grid from "@material-ui/core/Grid";
+import Box from "@material-ui/core/Box";
 import { sleep } from "../common/utils";
 import {
   RestoreConfigurationButton,
@@ -21,17 +22,6 @@ import ConfigurationForm from "./ConfigurationForm";
 const nodesClient = new NodesClient(NODES_API);
 
 const useStyles = makeStyles(theme => ({
-  buttonsGrid: {
-    display: "flex",
-    alignItems: "flex-end",
-    justifyContent: "flex-end"
-  },
-  titleGrid: {
-    display: "inline-flex"
-  },
-  titleDiv: {
-    alignSelf: "flex-end"
-  },
   configButtons: {
     display: "inline-flex",
     justifyContent: "flex-end"
@@ -268,36 +258,44 @@ export default function Nodes({
     return (
       <React.Fragment>
         <Grid container>
-          <Grid item xs={10} md={10} lg={10} className={classes.titleGrid}>
-            <div className={classes.titleDiv}>
-              <Title>Configuración de nodo</Title>
-            </div>
-            <div>
-              <NodesSelect
-                node={node}
-                setNode={setNode}
-                nodes={nodes}
-                setParentNode={changeNodeAndTable}
-              />
-            </div>
-          </Grid>
-          <Grid item xs={2} md={2} lg={2} className={classes.buttonsGrid}>
-            <div>
-              <DeleteButton
-                onClick={handleDeleteConfirmOpen}
-                disabled={deleteNodeDisabled}
-                classes={classes.deleteButton}
-              />
-              <NodeDeleteConfirmation
-                open={deleteConfirmOpen}
-                node={node}
-                nextNode={nextNode()}
-                handleDeleteDialogClose={handleDeleteConfirmClose}
-                setParentNode={changeNodeAndTable}
-                deleteOldNode={deleteOldNode}
-                setSnackbarData={setSnackbarData}
-              />
-            </div>
+          <Grid item xs={12} md={12} lg={12}>
+            <Box display="flex">
+              <Box
+                display="inline-flex"
+                justifyContent="flex-start"
+                flexGrow={1}
+              >
+                <Box alignSelf="flex-end">
+                  <Title>Configuración de nodo</Title>
+                </Box>
+                <Box>
+                  <div>
+                    <NodesSelect
+                      node={node}
+                      setNode={setNode}
+                      nodes={nodes}
+                      setParentNode={changeNodeAndTable}
+                    />
+                  </div>
+                </Box>
+              </Box>
+              <Box alignSelf="flex-end">
+                <DeleteButton
+                  onClick={handleDeleteConfirmOpen}
+                  disabled={deleteNodeDisabled}
+                  classes={classes.deleteButton}
+                />
+                <NodeDeleteConfirmation
+                  open={deleteConfirmOpen}
+                  node={node}
+                  nextNode={nextNode()}
+                  handleDeleteDialogClose={handleDeleteConfirmClose}
+                  setParentNode={changeNodeAndTable}
+                  deleteOldNode={deleteOldNode}
+                  setSnackbarData={setSnackbarData}
+                />
+              </Box>
+            </Box>
           </Grid>
           <Grid item xs={12} md={12} lg={12} className={classes.description}>
             <EditableTextField
