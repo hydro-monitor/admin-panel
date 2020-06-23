@@ -5,11 +5,7 @@ import Grid from "@material-ui/core/Grid";
 import StateForm from "./StateForm";
 import Typography from "@material-ui/core/Typography";
 
-const styles = theme => ({
-  addStateButton: {
-    marginTop: theme.spacing(1)
-  }
-});
+const styles = theme => ({});
 
 function ConfigurationForm(props) {
   const {
@@ -64,17 +60,11 @@ function ConfigurationForm(props) {
           />
         </Grid>
         <Grid item xs={12}>
-          <Typography variant="subtitle1" gutterBottom>
-            Configuraciones avanzadas
-          </Typography>
+          <Typography variant="subtitle1">Configuraciones avanzadas</Typography>
         </Grid>
         {renderCustomStateForms()}
         <Grid item xs={12}>
-          <Button
-            variant="contained"
-            className={classes.addStateButton}
-            onClick={handleCustomStateAddition}
-          >
+          <Button variant="contained" onClick={handleCustomStateAddition}>
             Agregar configuración avanzada
           </Button>
         </Grid>
