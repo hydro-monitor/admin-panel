@@ -4,8 +4,7 @@ import Title from "../dashboard/Title";
 import NodesSelect from "../dashboard/NodesSelect";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Grid from "@material-ui/core/Grid";
-import TextField from "@material-ui/core/TextField";
-import { sleep } from "../dashboard/server";
+import { sleep } from "../common/utils";
 import {
   RestoreConfigurationButton,
   UpdateConfigurationButton,

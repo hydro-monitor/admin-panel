@@ -4,7 +4,3 @@ export const handleErrors = response => {
   }
   return response;
 };
-
-export const sleep = milliseconds => {
-  return new Promise(resolve => setTimeout(resolve, milliseconds));
-};

@@ -12,7 +12,8 @@ import LinearProgress from "@material-ui/core/LinearProgress";
 import PhotoIcon from "@material-ui/icons/Photo";
 import IconButton from "@material-ui/core/IconButton";
 import Alert from "@material-ui/lab/Alert";
-import { handleErrors, sleep } from "./server";
+import { handleErrors } from "../common/server";
+import { sleep } from "../common/utils";
 import { WEB_API } from "../common/constants";
 
 function manualReadingBoolToString(wasManual) {
