@@ -82,7 +82,6 @@ export default function Nodes({
 
   useMountEffect(() => {
     (async () => {
-      console.log("FETCH NODES HOOK");
       setIsLoading(true);
       await sleep(1000); // TODO Remove when testing is done
       try {
@@ -108,9 +107,7 @@ export default function Nodes({
   useEffect(() => {
     (async () => {
       setIsLoadingConfig(true);
-      console.log("FETCH CONFIG HOOK");
       if (!isLoading) {
-        console.log("FETCHING NODE CONFIG");
         try {
           await sleep(1000); // TODO Remove when testing is done
           const config = await nodesClient.getNodeConfiguration(node);

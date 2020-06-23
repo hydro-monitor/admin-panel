@@ -50,8 +50,6 @@ function EditableTextField(props) {
     });
   };
 
-  console.log(state);
-
   const renderButton = () => {
     if (state.onEdit) {
       return <SaveIcon />;

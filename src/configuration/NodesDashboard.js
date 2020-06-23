@@ -177,8 +177,6 @@ export default function NodesDashboard(props) {
     updateConfig({});
   };
 
-  console.log("ACA PARA DEBUGGEAR", nodesData);
-
   const addNewNode = (name, description) => {
     console.log("adding new node", name);
     var nodesUpdated = nodes.slice();
