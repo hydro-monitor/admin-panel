@@ -29,13 +29,14 @@ function RestoreConfigurationButton({ handleConfigurationRestore }) {
 
 function UpdateConfigurationButton({
   node,
-  configuration,
+  getUpdatedConfiguration,
   clearConfigChangesNotSaved,
   setSnackbarData
 }) {
   const classes = useStyles();
 
   const handleConfigurationUpdate = () => {
+    const configuration = getUpdatedConfiguration();
     console.log("update configuration", node, configuration);
     (async () => {
       try {

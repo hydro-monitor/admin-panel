@@ -100,10 +100,11 @@ export default function Nodes({
       if (!isLoading) {
         try {
           await sleep(1000); // TODO Remove when testing is done
-          const config = await nodesClient.getNodeConfiguration(node);
-          updateConfig(config);
-          updateOriginalConfig(config);
-        } catch (error) {
+          const configuration = await nodesClient.getNodeConfiguration(node);
+          addStateNamePropertyToConfiguration(configuration);
+          updateConfig(configuration);
+          updateOriginalConfig(configuration);
+        } catch (configuration) {
           updateConfig({});
           updateOriginalConfig({});
           setSnackbarData({
@@ -119,6 +120,15 @@ export default function Nodes({
       }
     })();
   }, [node, isLoading, setSnackbarData]);
+
+  const addStateNamePropertyToConfiguration = configuration => {
+    let stateNames = Object.keys(configuration);
+    let statesNum = stateNames.length;
+    for (let i = 0; i < statesNum; i++) {
+      let stateName = stateNames[i];
+      configuration[stateName].stateName = stateName;
+    }
+  };
 
   const deleteOldNode = name => {
     console.log("deleting old node", name);
@@ -164,6 +174,7 @@ export default function Nodes({
     let randomStateName = Math.floor(Math.random() * 101);
     let configUpdated = {
       [randomStateName]: {
+        stateName: "",
         interval: "",
         picturesNum: "",
         upperLimit: "",
@@ -200,6 +211,21 @@ export default function Nodes({
     console.log("Saving new descrption", nodeDescription);
   };
 
+  const prepareConfigurationForUpdate = () => {
+    let stateNames = Object.keys(config);
+    let statesNum = stateNames.length;
+    let updatedConfig = {};
+    for (let i = 0; i < statesNum; i++) {
+      let state = config[stateNames[i]];
+      let newStateName = state.stateName;
+      var clonedState = Object.assign({}, state);
+      delete clonedState.stateName;
+      updatedConfig[newStateName] = clonedState;
+    }
+    updateOriginalConfig(config);
+    return updatedConfig;
+  };
+
   console.log("CONFIG DEBBUG ACA: ", config);
 
   function renderTable() {
@@ -224,7 +250,7 @@ export default function Nodes({
           <div>
             <UpdateConfigurationButton
               node={node}
-              configuration={config}
+              getUpdatedConfiguration={prepareConfigurationForUpdate}
               clearConfigChangesNotSaved={clearConfigChangesNotSaved}
               setSnackbarData={setSnackbarData}
             />

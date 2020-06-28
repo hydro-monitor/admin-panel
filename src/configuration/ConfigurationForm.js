@@ -27,7 +27,7 @@ function ConfigurationForm(props) {
       customStates.push(
         <Grid item xs={12} key={stateNames[i]}>
           <StateForm
-            stateNameValue={stateNames[i]}
+            stateNameValue={config[stateNames[i]].stateName}
             intervalValue={config[stateNames[i]].interval}
             picturesNumValue={config[stateNames[i]].picturesNum}
             lowerLimitValue={config[stateNames[i]].lowerLimit}
