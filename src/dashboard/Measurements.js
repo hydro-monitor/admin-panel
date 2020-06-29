@@ -187,11 +187,17 @@ export default function Measurements() {
     );
   }
 
+  function renderNoMeasurements() {
+    return <Alert severity="info">El nodo {node} no tiene mediciones</Alert>;
+  }
+
   function renderTableContent() {
     if (isLoadingData) {
       return renderLoading();
     } else if (!isLoadingData && data === null) {
       return renderError();
+    } else if (!isLoadingData && Array.isArray(data) && data.length === 0) {
+      return renderNoMeasurements();
     } else {
       return renderData();
     }
