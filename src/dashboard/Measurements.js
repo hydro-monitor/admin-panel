@@ -205,7 +205,12 @@ export default function Measurements() {
             <Title>Mediciones de nodo</Title>
           </div>
           <div>
-            <NodesSelect nodes={nodes} setParentNode={changeNodeAndTable} />
+            <NodesSelect
+              node={node}
+              setNode={setNode}
+              nodes={nodes}
+              setParentNode={changeNodeAndTable}
+            />
           </div>
         </div>
         {renderTableContent()}
