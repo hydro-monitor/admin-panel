@@ -17,7 +17,7 @@ function ConfigurationForm(props) {
   } = props;
 
   const renderCustomStateForms = () => {
-    let stateNames = Object.keys(config);
+    let stateNames = Object.keys(config).sort(); // Sort to that state forms are always rendered in the same order
     let statesNum = stateNames.length;
     let customStates = [];
     for (let i = 0; i < statesNum; i++) {
