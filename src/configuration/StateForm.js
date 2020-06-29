@@ -4,6 +4,7 @@ import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Box from "@material-ui/core/Box";
 import { DeleteButton } from "./Buttons";
+import { isNumeric } from "../common/utils";
 
 const styles = theme => ({
   outline: {
@@ -45,6 +46,7 @@ function StateForm(props) {
               name="stateName"
               label="Nombre"
               value={stateNameValue}
+              error={!stateNameValue}
               onChange={handleChange}
             />
           </Grid>
@@ -65,6 +67,7 @@ function StateForm(props) {
               name="lowerLimit"
               label="Límite inferior"
               value={lowerLimitValue}
+              error={!lowerLimitValue || !isNumeric(lowerLimitValue)}
               onChange={handleChange}
             />
           </Grid>
@@ -76,6 +79,7 @@ function StateForm(props) {
               name="upperLimit"
               label="Límite superior"
               value={upperLimitValue}
+              error={!upperLimitValue || !isNumeric(upperLimitValue)}
               onChange={handleChange}
             />
           </Grid>
@@ -101,6 +105,7 @@ function StateForm(props) {
             name="interval"
             label="Intervalo entre fotos"
             value={intervalValue}
+            error={!intervalValue || !isNumeric(intervalValue)}
             onChange={handleChange}
           />
         </Grid>
@@ -112,6 +117,7 @@ function StateForm(props) {
             name="picturesNum"
             label="Cantidad de fotos por medición"
             value={picturesNumValue}
+            error={!picturesNumValue || !isNumeric(picturesNumValue)}
             onChange={handleChange}
           />
         </Grid>
