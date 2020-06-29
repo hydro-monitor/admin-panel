@@ -171,16 +171,20 @@ export default function Nodes({
   };
 
   const handleCustomStateAddition = () => {
-    let randomStateName = Math.floor(Math.random() * 101);
+    let randomStateName =
+      "z" +
+      Object.keys(config)
+        .sort()
+        .slice(-1)[0];
     let configUpdated = {
+      ...config,
       [randomStateName]: {
         stateName: "",
         interval: "",
         picturesNum: "",
         upperLimit: "",
         lowerLimit: ""
-      },
-      ...config
+      }
     };
     updateConfig(configUpdated);
     setConfigChangesNotSaved();
