@@ -11,6 +11,7 @@ function ConfigurationForm(props) {
   const {
     classes,
     config,
+    disabled,
     handleConfigurationUpdate,
     handleCustomStateAddition,
     handleCustomStateDeletion
@@ -36,6 +37,7 @@ function ConfigurationForm(props) {
               handleConfigurationUpdate(stateNames[i], propName, value)
             }
             onDeleteStateClick={() => handleCustomStateDeletion(stateNames[i])}
+            disabled={disabled}
           />
         </Grid>
       );
@@ -57,6 +59,7 @@ function ConfigurationForm(props) {
               handleConfigurationUpdate("default", propName, value)
             }
             onDeleteStateClick={() => handleCustomStateDeletion("default")}
+            disabled={disabled}
           />
         </Grid>
         <Grid item xs={12}>
@@ -64,7 +67,11 @@ function ConfigurationForm(props) {
         </Grid>
         {renderCustomStateForms()}
         <Grid item xs={12}>
-          <Button variant="contained" onClick={handleCustomStateAddition}>
+          <Button
+            variant="contained"
+            onClick={handleCustomStateAddition}
+            disabled={disabled}
+          >
             Agregar configuración avanzada
           </Button>
         </Grid>

@@ -18,7 +18,7 @@ const styles = theme => ({
 });
 
 function EditableTextField(props) {
-  const { classes, value, setValue, label, onSave } = props;
+  const { classes, value, setValue, label, onSave, disabled } = props;
 
   const [state, setState] = useState({
     text: value,
@@ -72,6 +72,7 @@ function EditableTextField(props) {
             onClick={handleClick}
             size="small"
             className={classes.button}
+            disabled={disabled}
             disableRipple
           >
             <InputAdornment position="end">{renderButton()}</InputAdornment>

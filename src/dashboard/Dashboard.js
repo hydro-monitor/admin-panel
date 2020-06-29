@@ -2,7 +2,7 @@ import React from "react";
 import clsx from "clsx";
 import store from "store";
 import { Redirect, useHistory } from "react-router-dom";
-import isLoggedIn from "../signin/isLoggedIn";
+import { isLoggedIn } from "../signin/utils";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Drawer from "@material-ui/core/Drawer";
 import Box from "@material-ui/core/Box";
@@ -32,6 +32,8 @@ export default function Dashboard(props) {
 
   const handleLogout = () => {
     store.remove("loggedIn");
+    store.remove("user");
+    store.remove("admin");
     history.push("/signin");
   };
 
