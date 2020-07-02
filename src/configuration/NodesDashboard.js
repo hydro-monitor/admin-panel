@@ -16,6 +16,7 @@ import Button from "@material-ui/core/Button";
 import NodesClient from "../api/NodesClient";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import { NODES_API } from "../common/constants";
+import { isAdmin } from "../signin/utils";
 
 const nodesClient = new NodesClient(NODES_API);
 
@@ -158,7 +159,7 @@ export default function NodesDashboard(props) {
 
   const [node, setNode] = useState("");
   const [nodes, setNodes] = useState([]);
-  const [config, updateConfig] = useState("");
+  const [config, updateConfig] = useState({});
   const [isLoadingConfig, setIsLoadingConfig] = useState(true);
   const [deleteNodeDisabled, setDeleteNodeDisabled] = useState(true);
   const [nodesData, setNodesData] = useState({});
@@ -174,10 +175,8 @@ export default function NodesDashboard(props) {
     }
     setDeleteNodeDisabled(true);
     setIsLoadingConfig(true);
-    updateConfig("");
+    updateConfig({});
   };
-
-  console.log("ACA PARA DEBUGGEAR", nodesData);
 
   const addNewNode = (name, description) => {
     console.log("adding new node", name);
@@ -236,6 +235,7 @@ export default function NodesDashboard(props) {
         color="primary"
         className={fabClasses.fab}
         onClick={handleCreateConfirmOpen}
+        disabled={!isAdmin()}
       >
         <AddIcon />
       </Fab>

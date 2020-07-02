@@ -4,8 +4,8 @@ import Title from "../dashboard/Title";
 import NodesSelect from "../dashboard/NodesSelect";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Grid from "@material-ui/core/Grid";
-import TextField from "@material-ui/core/TextField";
-import { sleep } from "../dashboard/server";
+import Box from "@material-ui/core/Box";
+import { sleep } from "../common/utils";
 import {
   RestoreConfigurationButton,
   UpdateConfigurationButton,
@@ -16,21 +16,13 @@ import NodeDeleteConfirmation from "./NodeDeleteConfirmation";
 import NodesClient from "../api/NodesClient";
 import { useMountEffect } from "../common/UseMountEffect";
 import { NODES_API } from "../common/constants";
+import { isNumeric } from "../common/utils";
+import ConfigurationForm from "./ConfigurationForm";
+import { isAdmin } from "../signin/utils";
 
 const nodesClient = new NodesClient(NODES_API);
 
 const useStyles = makeStyles(theme => ({
-  buttonsGrid: {
-    display: "flex",
-    alignItems: "flex-end",
-    justifyContent: "flex-end"
-  },
-  titleGrid: {
-    display: "inline-flex"
-  },
-  titleDiv: {
-    alignSelf: "flex-end"
-  },
   configButtons: {
     display: "inline-flex",
     justifyContent: "flex-end"
@@ -48,6 +40,9 @@ const useStyles = makeStyles(theme => ({
   description: {
     paddingTop: "10px",
     paddingBottom: "10px"
+  },
+  deleteButton: {
+    marginBottom: theme.spacing(1)
   }
 }));
 
@@ -71,14 +66,13 @@ export default function Nodes({
 }) {
   const classes = useStyles();
 
-  const [originalConfig, updateOriginalConfig] = useState("");
+  const [originalConfig, updateOriginalConfig] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [configChangesNotSaved, updateConfigChangesNotSaved] = useState("");
 
   useMountEffect(() => {
     (async () => {
-      console.log("FETCH NODES HOOK");
       setIsLoading(true);
       await sleep(1000); // TODO Remove when testing is done
       try {
@@ -104,17 +98,16 @@ export default function Nodes({
   useEffect(() => {
     (async () => {
       setIsLoadingConfig(true);
-      console.log("FETCH CONFIG HOOK");
       if (!isLoading) {
-        console.log("FETCHING NODE CONFIG");
         try {
           await sleep(1000); // TODO Remove when testing is done
-          const config = await nodesClient.getNodeConfiguration(node);
-          updateConfig(config);
-          updateOriginalConfig(config);
-        } catch (error) {
-          updateConfig("");
-          updateOriginalConfig("");
+          const configuration = await nodesClient.getNodeConfiguration(node);
+          addStateNamePropertyToConfiguration(configuration);
+          updateConfig(configuration);
+          updateOriginalConfig(configuration);
+        } catch (configuration) {
+          updateConfig({});
+          updateOriginalConfig({});
           setSnackbarData({
             open: true,
             severity: "error",
@@ -122,12 +115,21 @@ export default function Nodes({
           });
         } finally {
           clearConfigChangesNotSaved();
-          setDeleteNodeDisabled(false);
+          setDeleteNodeDisabled(!isAdmin());
           setIsLoadingConfig(false);
         }
       }
     })();
   }, [node, isLoading, setSnackbarData]);
+
+  const addStateNamePropertyToConfiguration = configuration => {
+    let stateNames = Object.keys(configuration);
+    let statesNum = stateNames.length;
+    for (let i = 0; i < statesNum; i++) {
+      let stateName = stateNames[i];
+      configuration[stateName].stateName = stateName;
+    }
+  };
 
   const deleteOldNode = name => {
     console.log("deleting old node", name);
@@ -147,8 +149,51 @@ export default function Nodes({
     updateConfigChangesNotSaved("Cambios de configuración no guardados");
   };
 
-  const handleConfigurationTextUpdate = event => {
-    updateConfig(event.target.value);
+  const handleConfigurationUpdate = (stateName, propName, value) => {
+    let configUpdated = {};
+    if (!(stateName in config)) {
+      configUpdated = {
+        [stateName]: { [propName]: value },
+        ...config
+      };
+    } else {
+      let { [stateName]: oldState, ...configWithoutUpdatedState } = config;
+      let { [propName]: omit, ...stateWithoutUpdatedProp } = oldState;
+      if (propName !== "stateName" && isNumeric(value)) {
+        value = parseInt(value);
+      }
+      configUpdated = {
+        [stateName]: { [propName]: value, ...stateWithoutUpdatedProp },
+        ...configWithoutUpdatedState
+      };
+    }
+    updateConfig(configUpdated);
+    setConfigChangesNotSaved();
+  };
+
+  const handleCustomStateAddition = () => {
+    let randomStateName =
+      "z" +
+      Object.keys(config)
+        .sort()
+        .slice(-1)[0];
+    let configUpdated = {
+      ...config,
+      [randomStateName]: {
+        stateName: "",
+        interval: "",
+        picturesNum: "",
+        upperLimit: "",
+        lowerLimit: ""
+      }
+    };
+    updateConfig(configUpdated);
+    setConfigChangesNotSaved();
+  };
+
+  const handleCustomStateDeletion = deletedStateName => {
+    let { [deletedStateName]: omit, ...configUpdated } = config;
+    updateConfig(configUpdated);
     setConfigChangesNotSaved();
   };
 
@@ -171,17 +216,32 @@ export default function Nodes({
     console.log("Saving new descrption", nodeDescription);
   };
 
+  const prepareConfigurationForUpdate = () => {
+    let stateNames = Object.keys(config);
+    let statesNum = stateNames.length;
+    let updatedConfig = {};
+    for (let i = 0; i < statesNum; i++) {
+      let state = config[stateNames[i]];
+      let newStateName = state.stateName;
+      var clonedState = Object.assign({}, state);
+      delete clonedState.stateName;
+      updatedConfig[newStateName] = clonedState;
+    }
+    updateOriginalConfig(config);
+    return updatedConfig;
+  };
+
+  console.log("CONFIG DEBBUG ACA: ", config);
+
   function renderTable() {
     return (
       <React.Fragment>
-        <TextField
-          label="Configuración"
-          id="filled-multiline-static"
-          multiline
-          rows="30"
-          value={config}
-          variant="filled"
-          onChange={handleConfigurationTextUpdate}
+        <ConfigurationForm
+          config={config}
+          handleConfigurationUpdate={handleConfigurationUpdate}
+          handleCustomStateAddition={handleCustomStateAddition}
+          handleCustomStateDeletion={handleCustomStateDeletion}
+          disabled={!isAdmin()}
         />
 
         <div className={classes.configButtons}>
@@ -191,14 +251,16 @@ export default function Nodes({
           <div className={classes.restoreButton}>
             <RestoreConfigurationButton
               handleConfigurationRestore={handleConfigurationRestore}
+              disabled={!isAdmin()}
             />
           </div>
           <div>
             <UpdateConfigurationButton
               node={node}
-              configuration={config}
+              getUpdatedConfiguration={prepareConfigurationForUpdate}
               clearConfigChangesNotSaved={clearConfigChangesNotSaved}
               setSnackbarData={setSnackbarData}
+              disabled={!isAdmin()}
             />
           </div>
         </div>
@@ -230,35 +292,44 @@ export default function Nodes({
     return (
       <React.Fragment>
         <Grid container>
-          <Grid item xs={10} md={10} lg={10} className={classes.titleGrid}>
-            <div className={classes.titleDiv}>
-              <Title>Configuración de nodo</Title>
-            </div>
-            <div>
-              <NodesSelect
-                node={node}
-                setNode={setNode}
-                nodes={nodes}
-                setParentNode={changeNodeAndTable}
-              />
-            </div>
-          </Grid>
-          <Grid item xs={2} md={2} lg={2} className={classes.buttonsGrid}>
-            <div>
-              <DeleteButton
-                handleDeleteConfirmOpen={handleDeleteConfirmOpen}
-                disabled={deleteNodeDisabled}
-              />
-              <NodeDeleteConfirmation
-                open={deleteConfirmOpen}
-                node={node}
-                nextNode={nextNode()}
-                handleDeleteDialogClose={handleDeleteConfirmClose}
-                setParentNode={changeNodeAndTable}
-                deleteOldNode={deleteOldNode}
-                setSnackbarData={setSnackbarData}
-              />
-            </div>
+          <Grid item xs={12} md={12} lg={12}>
+            <Box display="flex">
+              <Box
+                display="inline-flex"
+                justifyContent="flex-start"
+                flexGrow={1}
+              >
+                <Box alignSelf="flex-end">
+                  <Title>Configuración de nodo</Title>
+                </Box>
+                <Box>
+                  <div>
+                    <NodesSelect
+                      node={node}
+                      setNode={setNode}
+                      nodes={nodes}
+                      setParentNode={changeNodeAndTable}
+                    />
+                  </div>
+                </Box>
+              </Box>
+              <Box alignSelf="flex-end">
+                <DeleteButton
+                  onClick={handleDeleteConfirmOpen}
+                  disabled={deleteNodeDisabled}
+                  classes={classes.deleteButton}
+                />
+                <NodeDeleteConfirmation
+                  open={deleteConfirmOpen}
+                  node={node}
+                  nextNode={nextNode()}
+                  handleDeleteDialogClose={handleDeleteConfirmClose}
+                  setParentNode={changeNodeAndTable}
+                  deleteOldNode={deleteOldNode}
+                  setSnackbarData={setSnackbarData}
+                />
+              </Box>
+            </Box>
           </Grid>
           <Grid item xs={12} md={12} lg={12} className={classes.description}>
             <EditableTextField
@@ -266,6 +337,7 @@ export default function Nodes({
               value={nodeDescription}
               setValue={setNodeDescription}
               onSave={handleDescriptionUpdate}
+              disabled={!isAdmin()}
             />
           </Grid>
         </Grid>

@@ -12,7 +12,7 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Copyright from "../components/Copyright";
-import { sleep } from "../dashboard/server";
+import { sleep } from "../common/utils";
 import CustomizedSnackbar, {
   closeSnack
 } from "../components/CustomizedSnackbar";

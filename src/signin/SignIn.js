@@ -61,6 +61,7 @@ export default function SignIn() {
     console.log("you're logged in. yay!");
     store.set("loggedIn", true);
     store.set("user", email);
+    store.set("admin", true); // TODO set to true if server says user is admin, otherwise false
     history.push("/");
   };
 

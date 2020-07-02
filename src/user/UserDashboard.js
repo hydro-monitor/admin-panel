@@ -4,7 +4,7 @@ import Dashboard from "../dashboard/Dashboard";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import { useStyles } from "../dashboard/dashboardStyles";
-//import { handleErrors } from "../dashboard/server";
+//import { handleErrors } from "../common/server";
 import Avatar from "@material-ui/core/Avatar";
 import TextField from "@material-ui/core/TextField";
 import PersonIcon from "@material-ui/icons/Person";

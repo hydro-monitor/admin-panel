@@ -10,20 +10,18 @@ import { NODES_API } from "../common/constants";
 const nodesClient = new NodesClient(NODES_API);
 
 const useStyles = makeStyles(theme => ({
-  deleteButton: {
-    marginBottom: theme.spacing(1)
-  },
   updateButton: {
     marginTop: theme.spacing(1)
   }
 }));
 
-function RestoreConfigurationButton({ handleConfigurationRestore }) {
+function RestoreConfigurationButton({ handleConfigurationRestore, disabled }) {
   return (
     <IconButton
       aria-label="restore"
       size="small"
       onClick={handleConfigurationRestore}
+      disabled={disabled}
     >
       <UndoIcon />
     </IconButton>
@@ -32,13 +30,15 @@ function RestoreConfigurationButton({ handleConfigurationRestore }) {
 
 function UpdateConfigurationButton({
   node,
-  configuration,
+  getUpdatedConfiguration,
   clearConfigChangesNotSaved,
-  setSnackbarData
+  setSnackbarData,
+  disabled
 }) {
   const classes = useStyles();
 
   const handleConfigurationUpdate = () => {
+    const configuration = getUpdatedConfiguration();
     console.log("update configuration", node, configuration);
     (async () => {
       try {
@@ -69,22 +69,21 @@ function UpdateConfigurationButton({
       color="primary"
       className={classes.updateButton}
       onClick={handleConfigurationUpdate}
+      disabled={disabled}
     >
       Actualizar configuración
     </Button>
   );
 }
 
-function DeleteButton({ handleDeleteConfirmOpen, disabled }) {
-  const classes = useStyles();
-
+function DeleteButton({ classes, onClick, disabled }) {
   return (
     <IconButton
       color="secondary"
       aria-label="delete"
       size="small"
-      className={classes.deleteButton}
-      onClick={handleDeleteConfirmOpen}
+      className={classes}
+      onClick={onClick}
       disabled={disabled}
     >
       <DeleteIcon />

@@ -7,7 +7,8 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import Backdrop from "@material-ui/core/Backdrop";
 import Measurement from "./Measurement";
 import { useStyles } from "./dashboardStyles";
-import { handleErrors, sleep } from "./server";
+import { handleErrors } from "../common/server";
+import { sleep } from "../common/utils";
 import { makeStyles } from "@material-ui/core/styles";
 import { WEB_API } from "../common/constants";
 

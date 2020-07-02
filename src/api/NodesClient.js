@@ -33,16 +33,18 @@ export default class NodesClient {
     if (json == null) {
       return "";
     }
-    return JSON.stringify(json, null, 2);
+    return json;
   }
 
   async updateNodeConfiguration(nodeId, configuration) {
     console.log("Updating configuration...");
     console.log(configuration);
+    const configurationString = JSON.stringify(configuration, null, 2);
+    console.log(configurationString);
     const response = this.handleErrors(
       await fetch(`${this.url}/${nodeId}/configuration`, {
         method: "post",
-        body: configuration,
+        body: configurationString,
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json"
@@ -53,7 +55,7 @@ export default class NodesClient {
     if (json == null) {
       throw Error("No se ha podido actualizar/crear la configuración del nodo");
     }
-    return JSON.stringify(json, null, 2);
+    return json;
   }
 
   async createNode(nodeId, description) {

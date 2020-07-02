@@ -6,14 +6,20 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
+import TextField from "@material-ui/core/TextField";
+import Grid from "@material-ui/core/Grid";
 import Title from "./Title";
 import NodesSelect from "./NodesSelect";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import PhotoIcon from "@material-ui/icons/Photo";
 import IconButton from "@material-ui/core/IconButton";
 import Alert from "@material-ui/lab/Alert";
-import { handleErrors, sleep } from "./server";
-import { WEB_API } from "../common/constants";
+import { handleErrors } from "../common/server";
+import { sleep } from "../common/utils";
+import NodesClient from "../api/NodesClient";
+import { WEB_API, NODES_API } from "../common/constants";
+
+const nodesClient = new NodesClient(NODES_API);
 
 function manualReadingBoolToString(wasManual) {
   if (wasManual) {
@@ -29,6 +35,10 @@ function preventDefault(event) {
 const useStyles = makeStyles(theme => ({
   seeMore: {
     marginTop: theme.spacing(3)
+  },
+  description: {
+    paddingTop: "10px",
+    paddingBottom: "10px"
   }
 }));
 
@@ -78,31 +88,28 @@ export default function Measurements() {
   const [data, updateData] = useState(undefined);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingData, setIsLoadingData] = useState(true);
-  const nodesURL = WEB_API + "/api/nodes";
+  const [nodesData, setNodesData] = useState({});
+  const [nodeDescription, setNodeDescription] = useState("");
 
   useEffect(() => {
-    const fetchNodes = async () => {
-      console.log("FETCH NODES HOOK");
+    (async () => {
       setIsLoading(true);
       await sleep(1000); // TODO Remove when testing is done
-      await fetch(nodesURL)
-        .then(handleErrors)
-        .then(async response => {
-          console.log(response);
-          const json = await response.json();
-          const nodesList = json.map(item => item.id).sort();
-          setNodes(nodesList);
-          setNode(nodesList[0]);
-          setIsLoading(false);
-        })
-        .catch(error => {
-          console.log(error);
-          setNodes([]);
-          // TODO handle loading on error
-        });
-    };
-    fetchNodes();
-  }, [nodesURL]);
+      try {
+        const nodesAndDescriptions = await nodesClient.getNodes();
+        setNodesData(nodesAndDescriptions);
+        const nodeList = Object.keys(nodesAndDescriptions).sort();
+        setNodes(nodeList);
+        setNode(nodeList[0]);
+        setNodeDescription(nodesAndDescriptions[nodeList[0]].description);
+        setIsLoading(false);
+      } catch (error) {
+        console.log(error);
+        setNodes([]);
+        // TODO handle loading on error
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -132,6 +139,7 @@ export default function Measurements() {
 
   const changeNodeAndTable = name => {
     setNode(name);
+    setNodeDescription(nodesData[name].description);
     setIsLoadingData(true);
     updateData(undefined);
   };
@@ -186,11 +194,17 @@ export default function Measurements() {
     );
   }
 
+  function renderNoMeasurements() {
+    return <Alert severity="info">El nodo {node} no tiene mediciones</Alert>;
+  }
+
   function renderTableContent() {
     if (isLoadingData) {
       return renderLoading();
     } else if (!isLoadingData && data === null) {
       return renderError();
+    } else if (!isLoadingData && Array.isArray(data) && data.length === 0) {
+      return renderNoMeasurements();
     } else {
       return renderData();
     }
@@ -199,14 +213,33 @@ export default function Measurements() {
   function renderTable() {
     return (
       <React.Fragment>
-        <div style={{ display: "inline-flex" }}>
-          <div style={{ alignSelf: "flex-end" }}>
-            <Title>Mediciones de nodo</Title>
-          </div>
-          <div>
-            <NodesSelect nodes={nodes} setParentNode={changeNodeAndTable} />
-          </div>
-        </div>
+        <Grid container>
+          <Grid item xs={12} md={12} lg={12}>
+            <div style={{ display: "inline-flex" }}>
+              <div style={{ alignSelf: "flex-end" }}>
+                <Title>Mediciones de nodo</Title>
+              </div>
+              <div>
+                <NodesSelect
+                  node={node}
+                  setNode={setNode}
+                  nodes={nodes}
+                  setParentNode={changeNodeAndTable}
+                />
+              </div>
+            </div>
+          </Grid>
+          <Grid item xs={12} md={12} lg={12} className={classes.description}>
+            <TextField
+              label="Descripción"
+              value={nodeDescription}
+              variant="outlined"
+              fullWidth
+              multiline
+              disabled
+            />
+          </Grid>
+        </Grid>
         {renderTableContent()}
       </React.Fragment>
     );
