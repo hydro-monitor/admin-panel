@@ -16,6 +16,7 @@ import Button from "@material-ui/core/Button";
 import NodesClient from "../api/NodesClient";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import { NODES_API } from "../common/constants";
+import { isAdmin } from "../signin/utils";
 
 const nodesClient = new NodesClient(NODES_API);
 
@@ -234,6 +235,7 @@ export default function NodesDashboard(props) {
         color="primary"
         className={fabClasses.fab}
         onClick={handleCreateConfirmOpen}
+        disabled={!isAdmin()}
       >
         <AddIcon />
       </Fab>

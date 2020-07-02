@@ -15,12 +15,13 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function RestoreConfigurationButton({ handleConfigurationRestore }) {
+function RestoreConfigurationButton({ handleConfigurationRestore, disabled }) {
   return (
     <IconButton
       aria-label="restore"
       size="small"
       onClick={handleConfigurationRestore}
+      disabled={disabled}
     >
       <UndoIcon />
     </IconButton>
@@ -31,7 +32,8 @@ function UpdateConfigurationButton({
   node,
   getUpdatedConfiguration,
   clearConfigChangesNotSaved,
-  setSnackbarData
+  setSnackbarData,
+  disabled
 }) {
   const classes = useStyles();
 
@@ -67,6 +69,7 @@ function UpdateConfigurationButton({
       color="primary"
       className={classes.updateButton}
       onClick={handleConfigurationUpdate}
+      disabled={disabled}
     >
       Actualizar configuración
     </Button>

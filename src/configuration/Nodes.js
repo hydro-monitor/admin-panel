@@ -18,6 +18,7 @@ import { useMountEffect } from "../common/UseMountEffect";
 import { NODES_API } from "../common/constants";
 import { isNumeric } from "../common/utils";
 import ConfigurationForm from "./ConfigurationForm";
+import { isAdmin } from "../signin/utils";
 
 const nodesClient = new NodesClient(NODES_API);
 
@@ -114,7 +115,7 @@ export default function Nodes({
           });
         } finally {
           clearConfigChangesNotSaved();
-          setDeleteNodeDisabled(false);
+          setDeleteNodeDisabled(!isAdmin());
           setIsLoadingConfig(false);
         }
       }
@@ -240,6 +241,7 @@ export default function Nodes({
           handleConfigurationUpdate={handleConfigurationUpdate}
           handleCustomStateAddition={handleCustomStateAddition}
           handleCustomStateDeletion={handleCustomStateDeletion}
+          disabled={!isAdmin()}
         />
 
         <div className={classes.configButtons}>
@@ -249,6 +251,7 @@ export default function Nodes({
           <div className={classes.restoreButton}>
             <RestoreConfigurationButton
               handleConfigurationRestore={handleConfigurationRestore}
+              disabled={!isAdmin()}
             />
           </div>
           <div>
@@ -257,6 +260,7 @@ export default function Nodes({
               getUpdatedConfiguration={prepareConfigurationForUpdate}
               clearConfigChangesNotSaved={clearConfigChangesNotSaved}
               setSnackbarData={setSnackbarData}
+              disabled={!isAdmin()}
             />
           </div>
         </div>
@@ -333,6 +337,7 @@ export default function Nodes({
               value={nodeDescription}
               setValue={setNodeDescription}
               onSave={handleDescriptionUpdate}
+              disabled={!isAdmin()}
             />
           </Grid>
         </Grid>

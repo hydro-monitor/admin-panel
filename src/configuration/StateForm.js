@@ -22,7 +22,8 @@ function StateForm(props) {
     upperLimitValue,
     onChange,
     isDefault,
-    onDeleteStateClick
+    onDeleteStateClick,
+    disabled
   } = props;
 
   const handleChange = event => {
@@ -35,7 +36,7 @@ function StateForm(props) {
         <React.Fragment>
           <Grid item xs={12}>
             <Box display="flex" flexDirection="row-reverse">
-              <DeleteButton onClick={onDeleteStateClick} />
+              <DeleteButton onClick={onDeleteStateClick} disabled={disabled} />
             </Box>
           </Grid>
           <Grid item xs={12}>
@@ -48,6 +49,7 @@ function StateForm(props) {
               value={stateNameValue}
               error={!stateNameValue}
               onChange={handleChange}
+              disabled={disabled}
             />
           </Grid>
         </React.Fragment>
@@ -69,6 +71,7 @@ function StateForm(props) {
               value={lowerLimitValue}
               error={!lowerLimitValue || !isNumeric(lowerLimitValue)}
               onChange={handleChange}
+              disabled={disabled}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -81,6 +84,7 @@ function StateForm(props) {
               value={upperLimitValue}
               error={!upperLimitValue || !isNumeric(upperLimitValue)}
               onChange={handleChange}
+              disabled={disabled}
             />
           </Grid>
         </React.Fragment>
@@ -107,6 +111,7 @@ function StateForm(props) {
             value={intervalValue}
             error={!intervalValue || !isNumeric(intervalValue)}
             onChange={handleChange}
+            disabled={disabled}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -119,6 +124,7 @@ function StateForm(props) {
             value={picturesNumValue}
             error={!picturesNumValue || !isNumeric(picturesNumValue)}
             onChange={handleChange}
+            disabled={disabled}
           />
         </Grid>
         {renderExtraFields()}
