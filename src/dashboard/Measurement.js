@@ -16,14 +16,19 @@ const useStyles = makeStyles({
 
 export default function Measurement({ node, measurement, timestamp }) {
   const classes = useStyles();
+  const parsedDate = new Date(timestamp).toUTCString();
   return (
     <React.Fragment>
       <Title>{node}</Title>
       <Typography component="p" variant="h4">
         {measurement} metros
       </Typography>
-      <Typography color="textSecondary" className={classes.depositContext}>
-        tomada el {timestamp}
+      <Typography
+        color="textSecondary"
+        variant="body2"
+        className={classes.depositContext}
+      >
+        {parsedDate}
       </Typography>
       <div>
         <Link color="primary" href="#" onClick={preventDefault}>
