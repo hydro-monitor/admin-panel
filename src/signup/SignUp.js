@@ -19,6 +19,10 @@ import CustomizedSnackbar, {
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import SignInFields from "../signin/SignInFields";
+import UsersClient from "../api/UsersClient";
+import { USERS_API } from "../common/constants";
+
+const usersClient = new UsersClient(USERS_API);
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -119,15 +123,20 @@ export default function SignUp() {
       return;
     }
 
-    /* TODO register user on server
-    in case of error use showSignUpErrorSnack()
-    */
-
-    console.log(fisrtname, lastname, email, password);
-    console.log("you're registered. yay!");
-    showSignUpSuccessSnack();
-    await sleep(2000); // Time for user to read success snackbar
-    history.push("/signin");
+    const user = {
+      name: fisrtname,
+      lastName: lastname,
+      email,
+      password
+    };
+    console.log(user);
+    if (await usersClient.createUser(user)) {
+      showSignUpSuccessSnack();
+      await sleep(2000); // Time for user to read success snackbar
+      history.push("/signin");
+    } else {
+      showSignUpErrorSnack();
+    }
   };
 
   const handleFirstNameChange = e => {
