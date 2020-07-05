@@ -5,62 +5,55 @@ import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Backdrop from "@material-ui/core/Backdrop";
+import EmptyMeasurement from "./EmptyMeasurement";
 import Measurement from "./Measurement";
 import { useStyles } from "./dashboardStyles";
 import { handleErrors } from "../common/server";
-import { sleep } from "../common/utils";
 import { makeStyles } from "@material-ui/core/styles";
 import { WEB_API } from "../common/constants";
 
 function MeasurementList({ nodes }) {
   const classes = useStyles();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
-
-  // FIXME Ask server for last measurements
-  const latestMeasurements = [
-    { measurement: 60, timestamp: "10/2/2020" },
-    { measurement: 560, timestamp: "1/2/2020" },
-    { measurement: 220, timestamp: "5/2/2020" },
-    { measurement: 600, timestamp: "8/2/2020" }
-  ];
-
   let measurements = [];
-  for (let i = 0; i < nodes.length; i++) {
-    measurements.push(
-      <Grid item xs={12} md={4} lg={3} key={i}>
-        <Paper className={fixedHeightPaper}>
-          <Measurement
-            node={nodes[i]}
-            measurement={
-              latestMeasurements[i % latestMeasurements.length].measurement
-            }
-            timestamp={
-              latestMeasurements[i % latestMeasurements.length].timestamp
-            }
-          />
-        </Paper>
-      </Grid>
-    );
-  }
+  Object.keys(nodes).forEach(id => {
+    if (nodes[id]) {
+      measurements.push(
+        <Grid item xs={12} md={4} lg={3} key={id}>
+          <Paper className={fixedHeightPaper}>
+            <Measurement
+              node={id}
+              measurement={nodes[id].waterLevel}
+              timestamp={nodes[id].readingTime}
+            />
+          </Paper>
+        </Grid>
+      );
+    } else {
+      measurements.push(
+        <Grid item xs={12} md={4} lg={3} key={id}>
+          <Paper className={fixedHeightPaper}>
+            <EmptyMeasurement node={id} />
+          </Paper>
+        </Grid>
+      );
+    }
+  });
   return measurements;
 }
 
 export default function InitialDashboard(props) {
   const [isLoading, setIsLoading] = useState(true);
   const [nodes, setNodes] = useState([]);
-  const nodesURL = WEB_API + "/api/nodes";
+  const nodesURL = WEB_API + "/api/nodes/last-reading";
   useEffect(() => {
     const fetchNodes = async () => {
-      console.log("FETCH NODES HOOK");
       setIsLoading(true);
-      await sleep(2000); // TODO Remove when testing is done
       await fetch(nodesURL)
         .then(handleErrors)
         .then(async response => {
-          console.log(response);
           const json = await response.json();
-          const nodesList = json.map(item => item.id).sort();
-          setNodes(nodesList);
+          setNodes(json);
           setIsLoading(false);
         })
         .catch(error => {
