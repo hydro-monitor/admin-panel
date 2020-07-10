@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
-//import store from "store";
+import store from "store";
 import Dashboard from "../dashboard/Dashboard";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import { useStyles } from "../dashboard/dashboardStyles";
-//import { handleErrors } from "../common/server";
 import Avatar from "@material-ui/core/Avatar";
 import TextField from "@material-ui/core/TextField";
 import PersonIcon from "@material-ui/icons/Person";
@@ -15,8 +14,10 @@ import Button from "@material-ui/core/Button";
 import CustomizedSnackbar, {
   closeSnack
 } from "../components/CustomizedSnackbar";
-//import { WEB_API } from "../common/constants";
+import UsersClient from "../api/UsersClient";
+import { USERS_API } from "../common/constants";
 
+const usersClient = new UsersClient(USERS_API);
 const useFormStyles = makeStyles(theme => ({
   paper: {
     display: "flex",
@@ -44,8 +45,8 @@ const useFormStyles = makeStyles(theme => ({
 function UserInfo() {
   const classes = useFormStyles();
 
-  const [firstname, setFirstName] = useState("");
-  const [lastname, setLastName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [typedPassword, setTypedPassword] = useState("");
@@ -66,25 +67,12 @@ function UserInfo() {
 
   useEffect(() => {
     const fetchData = async () => {
-      setFirstName("Admin");
-      setLastName("McAdmin");
-      setEmail("admin@imadmin.admin");
+      const userInfo = await usersClient.getUserInfo(store.get("user"));
+      if (userInfo === null) return;
+      setFirstName(userInfo.name);
+      setLastName(userInfo.lastName);
+      setEmail(userInfo.email);
       setPassword("admin");
-      /* TODO integrar con WEB_API
-            await fetch(WEB_API + "/api/users/" + store.get("user"))
-                .then(handleErrors)
-                .then(async response => {
-                    console.log(response);
-                    const json = await response.json();
-                    setFirstName(json.firstName);
-                    setLastName(json.lastName);
-                    setEmail(json.email);
-                })
-                .catch(error => {
-                    console.log(error);
-                    // handle error
-                });
-            */
     };
     fetchData();
   }, []);
@@ -172,7 +160,7 @@ function UserInfo() {
                 id="firstName"
                 label="Nombre"
                 autoComplete="fname"
-                value={firstname}
+                value={firstName}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -184,7 +172,7 @@ function UserInfo() {
                 label="Apellido"
                 name="lastName"
                 autoComplete="lname"
-                value={lastname}
+                value={lastName}
               />
             </Grid>
             <Grid item xs={12}>
