@@ -5,6 +5,7 @@ import NodesSelect from "../dashboard/NodesSelect";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
+import Alert from "@material-ui/lab/Alert";
 import { sleep } from "../common/utils";
 import {
   RestoreConfigurationButton,
@@ -62,7 +63,9 @@ export default function Nodes({
   deleteNodeDisabled,
   setDeleteNodeDisabled,
   changeNodeAndTable,
-  setSnackbarData
+  setSnackbarData,
+  configGetError,
+  setConfigGetError
 }) {
   const classes = useStyles();
 
@@ -70,6 +73,8 @@ export default function Nodes({
   const [isLoading, setIsLoading] = useState(true);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [configChangesNotSaved, updateConfigChangesNotSaved] = useState("");
+  const [nodesGetError, setNodesGetError] = useState(false);
+  const [nodesEmpty, setNodesEmpty] = useState(false);
 
   useMountEffect(() => {
     (async () => {
@@ -80,17 +85,19 @@ export default function Nodes({
         setNodesData(nodesAndDescriptions);
         const nodeList = Object.keys(nodesAndDescriptions).sort();
         setNodes(nodeList);
+        if (Object.entries(nodesAndDescriptions).length === 0) {
+          setNodesEmpty(true);
+          return;
+        }
         setNode(nodeList[0]);
         setNodeDescription(nodesAndDescriptions[nodeList[0]].description);
         setIsLoading(false);
       } catch (error) {
         console.log(error);
         setNodes([]);
-        setSnackbarData({
-          open: true,
-          severity: "error",
-          message: "Error al intentar obtener el listado de los nodos"
-        });
+        setNodesGetError(true);
+      } finally {
+        setIsLoading(false);
       }
     })();
   }, [nodes]);
@@ -98,21 +105,27 @@ export default function Nodes({
   useEffect(() => {
     (async () => {
       setIsLoadingConfig(true);
-      if (!isLoading) {
+      if (!isLoading && !nodesEmpty) {
         try {
           await sleep(1000); // TODO Remove when testing is done
           const configuration = await nodesClient.getNodeConfiguration(node);
           addStateNamePropertyToConfiguration(configuration);
           updateConfig(configuration);
           updateOriginalConfig(configuration);
-        } catch (configuration) {
+        } catch (error) {
+          console.log("error get config", error);
           updateConfig({});
           updateOriginalConfig({});
-          setSnackbarData({
-            open: true,
-            severity: "error",
-            message: "El nodo no posee una configuración activa"
-          });
+          if (error.message === "Not Found") {
+            setSnackbarData({
+              open: true,
+              severity: "error",
+              message: "El nodo no posee una configuración activa"
+            });
+          } else {
+            // If the error is not found, allow to send a config, if not, set config get error
+            setConfigGetError(true);
+          }
         } finally {
           clearConfigChangesNotSaved();
           setDeleteNodeDisabled(!isAdmin());
@@ -275,6 +288,8 @@ export default function Nodes({
   function renderConfigContent() {
     if (isLoadingConfig) {
       return renderLoading();
+    } else if (configGetError) {
+      return renderConfigGetError();
     } else {
       return renderTable();
     }
@@ -286,6 +301,24 @@ export default function Nodes({
       return nodes[0];
     }
     return nodes[i + 1];
+  }
+
+  function renderNodesGetError() {
+    return (
+      <Alert severity="error">No se pudo consultar la lista de nodos</Alert>
+    );
+  }
+
+  function renderNodesEmpty() {
+    return <Alert severity="info">No hay nodos registrados</Alert>;
+  }
+
+  function renderConfigGetError() {
+    return (
+      <Alert severity="error">
+        No se pudo consultar la configuración del nodo {node}
+      </Alert>
+    );
   }
 
   function renderConfig() {
@@ -349,6 +382,10 @@ export default function Nodes({
   function renderContent() {
     if (isLoading) {
       return renderLoading();
+    } else if (nodesGetError) {
+      return renderNodesGetError();
+    } else if (nodesEmpty) {
+      return renderNodesEmpty();
     } else {
       return renderConfig();
     }

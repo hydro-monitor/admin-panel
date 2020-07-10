@@ -22,6 +22,9 @@ export default class NodesClient {
   async getNodes() {
     const response = this.handleErrors(await fetch(this.url));
     const json = await response.json();
+    if (json == null) {
+      return {};
+    }
     return this.arrToObj(json);
   }
 
@@ -31,6 +34,7 @@ export default class NodesClient {
     );
     const json = await response.json();
     if (json == null) {
+      console.log("Error turning config to json");
       return "";
     }
     return json;
