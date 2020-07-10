@@ -12,8 +12,8 @@ export default class NodesClient {
   }
 
   arrToObj(arr) {
-    var o = {};
-    for (var i = 0; i < arr.length; ++i) {
+    let o = {};
+    for (let i = 0; i < arr.length; ++i) {
       o[arr[i].id] = arr[i];
     }
     return o;
