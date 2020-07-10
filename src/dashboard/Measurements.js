@@ -90,6 +90,8 @@ export default function Measurements() {
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [nodesData, setNodesData] = useState({});
   const [nodeDescription, setNodeDescription] = useState("");
+  const [nodesGetError, setNodesGetError] = useState(false);
+  const [nodesEmpty, setNodesEmpty] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -100,13 +102,19 @@ export default function Measurements() {
         setNodesData(nodesAndDescriptions);
         const nodeList = Object.keys(nodesAndDescriptions).sort();
         setNodes(nodeList);
+        if (Object.entries(nodesAndDescriptions).length === 0) {
+          setNodesEmpty(true);
+          return;
+        }
         setNode(nodeList[0]);
         setNodeDescription(nodesAndDescriptions[nodeList[0]].description);
         setIsLoading(false);
       } catch (error) {
         console.log(error);
         setNodes([]);
-        // TODO handle loading on error
+        setNodesGetError(true);
+      } finally {
+        setIsLoading(false);
       }
     })();
   }, []);
@@ -115,7 +123,7 @@ export default function Measurements() {
     const fetchData = async () => {
       console.log("FETCH DATA HOOK");
       setIsLoadingData(true);
-      if (!isLoading) {
+      if (!isLoading && !nodesEmpty) {
         await sleep(1000); // TODO Remove when testing is done
         await fetch(WEB_API + "/api/nodes/" + node + "/readings")
           .then(handleErrors)
@@ -128,7 +136,7 @@ export default function Measurements() {
           .catch(error => {
             console.log(error);
             updateData(null);
-            // TODO handle loadingData on error
+            setIsLoadingData(false);
           });
       }
     };
@@ -198,6 +206,24 @@ export default function Measurements() {
     return <Alert severity="info">El nodo {node} no tiene mediciones</Alert>;
   }
 
+  function renderNodesGetError() {
+    return (
+      <Alert severity="error">No se pudo consultar la lista de nodos</Alert>
+    );
+  }
+
+  function renderNodesEmpty() {
+    return <Alert severity="info">No hay nodos registrados</Alert>;
+  }
+
+  function renderMeasurementsGetError() {
+    return (
+      <Alert severity="error">
+        No se pudo consultar la lista de mediciones para el nodo {node}
+      </Alert>
+    );
+  }
+
   function renderTableContent() {
     if (isLoadingData) {
       return renderLoading();
@@ -205,6 +231,8 @@ export default function Measurements() {
       return renderError();
     } else if (!isLoadingData && Array.isArray(data) && data.length === 0) {
       return renderNoMeasurements();
+    } else if (!isLoadingData && data === null) {
+      return renderMeasurementsGetError();
     } else {
       return renderData();
     }
@@ -248,6 +276,10 @@ export default function Measurements() {
   function renderContent() {
     if (isLoading) {
       return renderLoading();
+    } else if (nodesGetError) {
+      return renderNodesGetError();
+    } else if (nodesEmpty) {
+      return renderNodesEmpty();
     } else {
       return renderTable();
     }

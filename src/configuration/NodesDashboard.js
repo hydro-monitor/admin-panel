@@ -164,6 +164,7 @@ export default function NodesDashboard(props) {
   const [deleteNodeDisabled, setDeleteNodeDisabled] = useState(true);
   const [nodesData, setNodesData] = useState({});
   const [nodeDescription, setNodeDescription] = useState("");
+  const [configGetError, setConfigGetError] = useState(false);
 
   const changeNodeAndTable = (name, description) => {
     console.log("changing node and table to ", name);
@@ -174,6 +175,7 @@ export default function NodesDashboard(props) {
       setNodeDescription(nodesData[name].description);
     }
     setDeleteNodeDisabled(true);
+    setConfigGetError(false);
     setIsLoadingConfig(true);
     updateConfig({});
   };
@@ -227,6 +229,8 @@ export default function NodesDashboard(props) {
             setDeleteNodeDisabled={setDeleteNodeDisabled}
             changeNodeAndTable={changeNodeAndTable}
             setSnackbarData={setSnackbarData}
+            configGetError={configGetError}
+            setConfigGetError={setConfigGetError}
           />
         </Paper>
       </Grid>
