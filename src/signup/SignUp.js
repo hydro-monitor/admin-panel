@@ -20,9 +20,11 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import SignInFields from "../signin/SignInFields";
 import UsersClient from "../api/UsersClient";
-import { USERS_API } from "../common/constants";
+import SessionClient from "../api/SessionClient";
+import { USERS_API, SESSION_API } from "../common/constants";
 
 const usersClient = new UsersClient(USERS_API);
+const sessionClient = new SessionClient(SESSION_API);
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -48,10 +50,10 @@ export default function SignUp() {
   const classes = useStyles();
   const history = useHistory();
 
-  const [fisrtname, setFirstName] = useState("");
-  const [fisrtnameError, setFirstNameError] = useState(false);
-  const [lastname, setLastName] = useState("");
-  const [lastnameError, setLastNameError] = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [firstNameError, setFirstNameError] = useState(false);
+  const [lastName, setLastName] = useState("");
+  const [lastNameError, setLastNameError] = useState(false);
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState(false);
   const [password, setPassword] = useState("");
@@ -68,14 +70,14 @@ export default function SignUp() {
   const [adminPasswordError, setAdminPasswordError] = useState(false);
 
   const isValidEmail = email => {
-    var re = /\S+@\S+\.\S+/;
+    const re = /\S+@\S+\.\S+/;
     return re.test(email);
   };
   const signUpDataIsValid = () => {
-    if (fisrtname === "") {
+    if (firstName === "") {
       setFirstNameError(true);
       return false;
-    } else if (lastname === "") {
+    } else if (lastName === "") {
       setLastNameError(true);
       return false;
     } else if (email === "" || !isValidEmail(email)) {
@@ -96,20 +98,8 @@ export default function SignUp() {
     }
     return true;
   };
-  const parentAdminCredentialsAreValid = () => {
-    if (registerAsAdminChecked) {
-      console.log("Validating parent admin credentials");
-      // TODO sign in parent admin
-      // if sign in fails, display error on form
-      let parentAdminSignInSuccess = false;
-      if (!parentAdminSignInSuccess) {
-        setAdminEmailError(true);
-        setAdminPasswordError(true);
-        return false;
-      }
-    }
-    return true;
-  };
+  const parentAdminCredentialsAreValid = () =>
+    sessionClient.signIn(adminEmail, adminPassword) !== null;
 
   const signUp = async e => {
     e.preventDefault();
@@ -119,17 +109,20 @@ export default function SignUp() {
       return;
     }
 
-    if (!parentAdminCredentialsAreValid()) {
-      return;
-    }
-
-    const user = {
-      name: fisrtname,
-      lastName: lastname,
+    let user = {
+      name: firstName,
+      lastName: lastName,
       email,
       password
     };
-    console.log(user);
+    if (registerAsAdminChecked && (await parentAdminCredentialsAreValid())) {
+      user = { admin: true, ...user };
+    } else {
+      setAdminEmailError(true);
+      setAdminPasswordError(true);
+      return;
+    }
+
     if (await usersClient.createUser(user)) {
       showSignUpSuccessSnack();
       await sleep(2000); // Time for user to read success snackbar
@@ -220,7 +213,7 @@ export default function SignUp() {
                 label="Nombre"
                 autoFocus
                 onChange={handleFirstNameChange}
-                error={fisrtnameError}
+                error={firstNameError}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -233,7 +226,7 @@ export default function SignUp() {
                 name="lastName"
                 autoComplete="lname"
                 onChange={handleLastNameChange}
-                error={lastnameError}
+                error={lastNameError}
               />
             </Grid>
             <Grid item xs={12}>

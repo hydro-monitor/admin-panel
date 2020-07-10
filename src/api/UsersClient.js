@@ -13,4 +13,17 @@ export default class UsersClient {
     });
     return response.ok;
   }
+
+  async getUserInfo(userName) {
+    let headers = new Headers();
+    headers.append("Accept", "application/json");
+    const response = await fetch(`${this.baseUrl}/${userName}`, {
+      method: "get",
+      headers: headers
+    });
+    if (response.ok) {
+      return await response.json();
+    }
+    return null;
+  }
 }

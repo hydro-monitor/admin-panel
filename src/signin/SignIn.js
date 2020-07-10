@@ -16,7 +16,10 @@ import SignInFields from "./SignInFields";
 import CustomizedSnackbar, {
   closeSnack
 } from "../components/CustomizedSnackbar";
+import { SESSION_API } from "../common/constants";
+import SessionClient from "../api/SessionClient";
 
+const sessionClient = new SessionClient(SESSION_API);
 const useStyles = makeStyles(theme => ({
   paper: {
     marginTop: theme.spacing(8),
@@ -49,20 +52,20 @@ export default function SignIn() {
   const classes = useStyles();
   const history = useHistory();
 
-  const signIn = e => {
+  const signIn = async e => {
     e.preventDefault();
     closeSnack(setSnackbarData);
-
-    if (!(email === "admin" && password === "admin")) {
+    const token = await sessionClient.signIn(email, password);
+    if (token !== null) {
+      console.log("you're logged in. yay!");
+      store.set("loggedIn", true);
+      store.set("user", email);
+      store.set("admin", true); // TODO set to true if server says user is admin, otherwise false
+      store.set("token", token);
+      history.push("/");
+    } else {
       signInErrorSnack();
-      return;
     }
-
-    console.log("you're logged in. yay!");
-    store.set("loggedIn", true);
-    store.set("user", email);
-    store.set("admin", true); // TODO set to true if server says user is admin, otherwise false
-    history.push("/");
   };
 
   const signInErrorSnack = () => {
