@@ -26,4 +26,15 @@ export default class UsersClient {
     }
     return null;
   }
+
+  async updateUserInfo(user, userInfo) {
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    const response = await fetch(`${this.baseUrl}/${user}`, {
+      method: "put",
+      headers: headers,
+      body: JSON.stringify(userInfo)
+    });
+    return response.ok;
+  }
 }
