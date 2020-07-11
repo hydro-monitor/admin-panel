@@ -15,9 +15,11 @@ import CustomizedSnackbar, {
   closeSnack
 } from "../components/CustomizedSnackbar";
 import UsersClient from "../api/UsersClient";
-import { USERS_API } from "../common/constants";
+import SessionClient from "../api/SessionClient";
+import { USERS_API, SESSION_API } from "../common/constants";
 
 const usersClient = new UsersClient(USERS_API);
+const sessionClient = new SessionClient(SESSION_API);
 const useFormStyles = makeStyles(theme => ({
   paper: {
     display: "flex",
@@ -113,31 +115,43 @@ function UserInfo() {
       message: "Contraseña cambiada correctamente"
     });
   };
-  const changePassword = e => {
+  const changePassword = async e => {
     e.preventDefault();
     closeSnack(setSnackbarData);
 
-    if (typedPassword !== password) {
-      setTypedPasswordError(true);
-      setTypedPasswordHelper(
-        "La contraseña ingresada no coincide con la contraseña actual"
-      );
-      return;
-    } else if (newPassword !== newPasswordRepetition) {
+    if (newPassword !== newPasswordRepetition) {
       setNewPasswordError(true);
       setNewPasswordRepetitionHelper(
         "La contraseña ingresada no coincide con la contraseña nueva"
       );
       return;
     }
-    /* TODO change pass on server
-    in case of error use showPasswordChangeErrorSnack()
-    */
 
-    console.log(password, typedPassword, newPassword, newPasswordRepetition);
-    console.log("you've changed your pass. yay!");
-    showPasswordChangeSuccessSnack();
-    clearPasswordFields();
+    const user = store.get("user");
+    const token = await sessionClient.signIn(store.get("user"), typedPassword);
+    if (token !== null) {
+      store.set("token", token);
+      const userInfo = { password: newPassword };
+      if (await usersClient.updateUserInfo(user, userInfo)) {
+        console.log(
+          password,
+          typedPassword,
+          newPassword,
+          newPasswordRepetition
+        );
+        console.log("you've changed your pass. yay!");
+        showPasswordChangeSuccessSnack();
+        clearPasswordFields();
+      } else {
+        showPasswordChangeErrorSnack();
+        clearPasswordFields();
+      }
+    } else {
+      setTypedPasswordError(true);
+      setTypedPasswordHelper(
+        "La contraseña ingresada no coincide con la contraseña actual"
+      );
+    }
   };
 
   return (
