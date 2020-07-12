@@ -262,7 +262,7 @@ export default function Measurements() {
                     numberOfDeletesChecked(data) !== data.length &&
                     numberOfDeletesChecked(data) !== 0
                   }
-                  disabled={data.length === 0}
+                  disabled={!isAdmin() || data.length === 0}
                 />
               </TableCell>
               <TableCell>ID</TableCell>
@@ -281,6 +281,7 @@ export default function Measurements() {
                     className={classes.deleteCheckbox}
                     onClick={handleDeleteCheckToggle(row)}
                     checked={checked.indexOf(row) !== -1}
+                    disabled={!isAdmin()}
                   />
                 </TableCell>
                 <TableCell>{row.readingId}</TableCell>
