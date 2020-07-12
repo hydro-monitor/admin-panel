@@ -6,6 +6,7 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
+import Checkbox from "@material-ui/core/Checkbox";
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
@@ -17,11 +18,12 @@ import LinearProgress from "@material-ui/core/LinearProgress";
 import PhotoIcon from "@material-ui/icons/Photo";
 import Alert from "@material-ui/lab/Alert";
 import { handleErrors } from "../common/server";
-import { sleep } from "../common/utils";
+import { sleep, not, union, intersection } from "../common/utils";
 import NodesClient from "../api/NodesClient";
 import { WEB_API, NODES_API } from "../common/constants";
 import { isAdmin } from "../signin/utils";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
+import { DeleteButton } from "../configuration/Buttons";
 
 const nodesClient = new NodesClient(NODES_API);
 
@@ -46,6 +48,9 @@ const useStyles = makeStyles(theme => ({
   },
   newMeasurementButton: {
     marginBottom: theme.spacing(1)
+  },
+  deleteMeasurementsButton: {
+    paddingLeft: "20px"
   }
 }));
 
@@ -118,6 +123,7 @@ export default function Measurements() {
     severity: "",
     message: ""
   });
+  const [checked, setChecked] = useState([]);
 
   useEffect(() => {
     (async () => {
@@ -169,13 +175,22 @@ export default function Measurements() {
     fetchData();
   }, [node, isLoading]); // FIXME review hooks
 
-  console.log(nodes, node, data, isLoading, isLoadingData);
+  console.log(
+    nodes,
+    node,
+    data,
+    isLoading,
+    isLoadingData,
+    "checked: ",
+    checked
+  );
 
   const changeNodeAndTable = name => {
     setNode(name);
     setNodeDescription(nodesData[name].description);
     setIsLoadingData(true);
     updateData(undefined);
+    setChecked([]);
   };
 
   const handleNewMeasurementRequest = async () => {
@@ -195,12 +210,67 @@ export default function Measurements() {
     }
   };
 
+  const handleDeleteCheckToggle = value => () => {
+    const currentIndex = checked.indexOf(value);
+    const newChecked = [...checked];
+
+    if (currentIndex === -1) {
+      newChecked.push(value);
+    } else {
+      newChecked.splice(currentIndex, 1);
+    }
+
+    setChecked(newChecked);
+  };
+
+  const handleDeleteToggleAll = items => () => {
+    if (numberOfDeletesChecked(items) === items.length) {
+      setChecked(not(checked, items));
+    } else {
+      setChecked(union(checked, items));
+    }
+  };
+
+  const numberOfDeletesChecked = items => intersection(checked, items).length;
+
+  const handleDeleteMeasurement = async items => {
+    console.log("Deleting items: ", items);
+    setSnackbarData({
+      open: true,
+      severity: "info",
+      message: "Eliminando mediciones seleccionadas"
+    });
+    // TODO Add web api delete
+    await sleep(1000); // TODO Remove when web api integration is done
+    updateData(not(data, checked));
+    setChecked([]);
+    setSnackbarData({
+      open: true,
+      severity: "success",
+      message: "Mediciones eliminadas"
+    });
+  };
   function renderData() {
     return (
       <React.Fragment>
         <Table size="small">
           <TableHead>
             <TableRow>
+              <TableCell>
+                <Checkbox
+                  size="small"
+                  onClick={handleDeleteToggleAll(data)}
+                  checked={
+                    numberOfDeletesChecked(data) === data.length &&
+                    data.length !== 0
+                  }
+                  indeterminate={
+                    numberOfDeletesChecked(data) !== data.length &&
+                    numberOfDeletesChecked(data) !== 0
+                  }
+                  disabled={!isAdmin() || data.length === 0}
+                />
+              </TableCell>
               <TableCell>ID</TableCell>
               <TableCell>Timestamp</TableCell>
               <TableCell>Nivel de agua</TableCell>
@@ -211,6 +281,15 @@ export default function Measurements() {
           <TableBody>
             {data.map(row => (
               <TableRow key={row.readingId}>
+                <TableCell>
+                  <Checkbox
+                    size="small"
+                    className={classes.deleteCheckbox}
+                    onClick={handleDeleteCheckToggle(row)}
+                    checked={checked.indexOf(row) !== -1}
+                    disabled={!isAdmin()}
+                  />
+                </TableCell>
                 <TableCell>{row.readingId}</TableCell>
                 <TableCell>{row.readingTime}</TableCell>
                 <TableCell>{row.waterLevel}</TableCell>
@@ -224,11 +303,26 @@ export default function Measurements() {
             ))}
           </TableBody>
         </Table>
-        <div className={classes.seeMore}>
-          <Link color="primary" href="#" onClick={preventDefault}>
-            Ver más mediciones
-          </Link>
-        </div>
+
+        <Box display="flex">
+          <Box display="inline-flex" justifyContent="flex-start" flexGrow={1}>
+            <Box
+              alignSelf="flex-end"
+              className={classes.deleteMeasurementsButton}
+            >
+              <DeleteButton
+                tooltip="Delete measurements"
+                onClick={() => handleDeleteMeasurement(checked)}
+                disabled={!isAdmin() || checked.length === 0}
+              />
+            </Box>
+          </Box>
+          <Box alignSelf="flex-end" className={classes.seeMore}>
+            <Link color="primary" href="#" onClick={preventDefault}>
+              Ver más mediciones
+            </Link>
+          </Box>
+        </Box>
       </React.Fragment>
     );
   }
