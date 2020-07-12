@@ -7,7 +7,6 @@ import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import NodesClient from "../api/NodesClient";
 import { NODES_API } from "../common/constants";
-import { BottomNavigation } from "@material-ui/core";
 
 const nodesClient = new NodesClient(NODES_API);
 
