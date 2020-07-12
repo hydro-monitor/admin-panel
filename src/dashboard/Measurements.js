@@ -23,6 +23,7 @@ import NodesClient from "../api/NodesClient";
 import { WEB_API, NODES_API } from "../common/constants";
 import { isAdmin } from "../signin/utils";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
+import { DeleteButton } from "../configuration/Buttons";
 
 const nodesClient = new NodesClient(NODES_API);
 
@@ -47,6 +48,9 @@ const useStyles = makeStyles(theme => ({
   },
   newMeasurementButton: {
     marginBottom: theme.spacing(1)
+  },
+  deleteMeasurementsButton: {
+    paddingLeft: "20px"
   }
 }));
 
@@ -223,6 +227,23 @@ export default function Measurements() {
 
   const numberOfDeletesChecked = items => intersection(checked, items).length;
 
+  const handleDeleteMeasurement = async items => {
+    console.log("Deleting items: ", items);
+    setSnackbarData({
+      open: true,
+      severity: "info",
+      message: "Eliminando mediciones seleccionadas"
+    });
+    // TODO Add web api delete
+    await sleep(1000); // TODO Remove when web api integration is done
+    updateData(not(data, checked));
+    setChecked([]);
+    setSnackbarData({
+      open: true,
+      severity: "success",
+      message: "Mediciones eliminadas"
+    });
+  };
   function renderData() {
     return (
       <React.Fragment>
@@ -231,6 +252,7 @@ export default function Measurements() {
             <TableRow>
               <TableCell>
                 <Checkbox
+                  size="small"
                   onClick={handleDeleteToggleAll(data)}
                   checked={
                     numberOfDeletesChecked(data) === data.length &&
@@ -255,6 +277,8 @@ export default function Measurements() {
               <TableRow key={row.readingId}>
                 <TableCell>
                   <Checkbox
+                    size="small"
+                    className={classes.deleteCheckbox}
                     onClick={handleDeleteCheckToggle(row)}
                     checked={checked.indexOf(row) !== -1}
                   />
@@ -272,11 +296,26 @@ export default function Measurements() {
             ))}
           </TableBody>
         </Table>
-        <div className={classes.seeMore}>
-          <Link color="primary" href="#" onClick={preventDefault}>
-            Ver más mediciones
-          </Link>
-        </div>
+
+        <Box display="flex">
+          <Box display="inline-flex" justifyContent="flex-start" flexGrow={1}>
+            <Box
+              alignSelf="flex-end"
+              className={classes.deleteMeasurementsButton}
+            >
+              <DeleteButton
+                tooltip="Delete measurements"
+                onClick={() => handleDeleteMeasurement(checked)}
+                disabled={!isAdmin() || checked.length === 0}
+              />
+            </Box>
+          </Box>
+          <Box alignSelf="flex-end" className={classes.seeMore}>
+            <Link color="primary" href="#" onClick={preventDefault}>
+              Ver más mediciones
+            </Link>
+          </Box>
+        </Box>
       </React.Fragment>
     );
   }
