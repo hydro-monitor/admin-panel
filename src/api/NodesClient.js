@@ -79,4 +79,15 @@ export default class NodesClient {
     console.log(response);
     return response.ok;
   }
+
+  async updateNode(nodeId, nodeInfo) {
+    let myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    const response = await fetch(`${this.url}/${nodeId}`, {
+      method: "put",
+      headers: myHeaders,
+      body: JSON.stringify(nodeInfo)
+    });
+    return response.ok;
+  }
 }

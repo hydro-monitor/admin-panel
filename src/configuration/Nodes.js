@@ -224,9 +224,20 @@ export default function Nodes({
     });
   };
 
-  const handleDescriptionUpdate = () => {
-    // TODO Add PUT to update description
-    console.log("Saving new descrption", nodeDescription);
+  const handleDescriptionUpdate = async () => {
+    if (await nodesClient.updateNode(node, { description: nodeDescription })) {
+      setSnackbarData({
+        open: true,
+        severity: "success",
+        message: "Descripción del nodo actualizada"
+      });
+    } else {
+      setSnackbarData({
+        open: true,
+        severity: "error",
+        message: "Error al intentar actualizar la descripción del nodo"
+      });
+    }
   };
 
   const prepareConfigurationForUpdate = () => {

@@ -178,15 +178,21 @@ export default function Measurements() {
     updateData(undefined);
   };
 
-  const handleNewMeasurementRequest = () => {
+  const handleNewMeasurementRequest = async () => {
     console.log("Request new measurement");
-    // TODO integrar con web-api
-    // open snack with measurement result of request, for example, the success snack would be:
-    setSnackbarData({
-      open: true,
-      severity: "success",
-      message: "Medición manual pedida"
-    });
+    if (await nodesClient.updateNode(node, { manualReading: true })) {
+      setSnackbarData({
+        open: true,
+        severity: "success",
+        message: "Medición manual pedida"
+      });
+    } else {
+      setSnackbarData({
+        open: true,
+        severity: "error",
+        message: "Error al pedir una medición manual"
+      });
+    }
   };
 
   function renderData() {
