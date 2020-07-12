@@ -6,6 +6,7 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
+import Checkbox from "@material-ui/core/Checkbox";
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
@@ -17,7 +18,7 @@ import LinearProgress from "@material-ui/core/LinearProgress";
 import PhotoIcon from "@material-ui/icons/Photo";
 import Alert from "@material-ui/lab/Alert";
 import { handleErrors } from "../common/server";
-import { sleep } from "../common/utils";
+import { sleep, not, union, intersection } from "../common/utils";
 import NodesClient from "../api/NodesClient";
 import { WEB_API, NODES_API } from "../common/constants";
 import { isAdmin } from "../signin/utils";
@@ -118,6 +119,7 @@ export default function Measurements() {
     severity: "",
     message: ""
   });
+  const [checked, setChecked] = useState([]);
 
   useEffect(() => {
     (async () => {
@@ -169,13 +171,22 @@ export default function Measurements() {
     fetchData();
   }, [node, isLoading]); // FIXME review hooks
 
-  console.log(nodes, node, data, isLoading, isLoadingData);
+  console.log(
+    nodes,
+    node,
+    data,
+    isLoading,
+    isLoadingData,
+    "checked: ",
+    checked
+  );
 
   const changeNodeAndTable = name => {
     setNode(name);
     setNodeDescription(nodesData[name].description);
     setIsLoadingData(true);
     updateData(undefined);
+    setChecked([]);
   };
 
   const handleNewMeasurementRequest = () => {
@@ -189,12 +200,49 @@ export default function Measurements() {
     });
   };
 
+  const handleDeleteCheckToggle = value => () => {
+    const currentIndex = checked.indexOf(value);
+    const newChecked = [...checked];
+
+    if (currentIndex === -1) {
+      newChecked.push(value);
+    } else {
+      newChecked.splice(currentIndex, 1);
+    }
+
+    setChecked(newChecked);
+  };
+
+  const handleDeleteToggleAll = items => () => {
+    if (numberOfDeletesChecked(items) === items.length) {
+      setChecked(not(checked, items));
+    } else {
+      setChecked(union(checked, items));
+    }
+  };
+
+  const numberOfDeletesChecked = items => intersection(checked, items).length;
+
   function renderData() {
     return (
       <React.Fragment>
         <Table size="small">
           <TableHead>
             <TableRow>
+              <TableCell>
+                <Checkbox
+                  onClick={handleDeleteToggleAll(data)}
+                  checked={
+                    numberOfDeletesChecked(data) === data.length &&
+                    data.length !== 0
+                  }
+                  indeterminate={
+                    numberOfDeletesChecked(data) !== data.length &&
+                    numberOfDeletesChecked(data) !== 0
+                  }
+                  disabled={data.length === 0}
+                />
+              </TableCell>
               <TableCell>ID</TableCell>
               <TableCell>Timestamp</TableCell>
               <TableCell>Nivel de agua</TableCell>
@@ -205,6 +253,12 @@ export default function Measurements() {
           <TableBody>
             {data.map(row => (
               <TableRow key={row.readingId}>
+                <TableCell>
+                  <Checkbox
+                    onClick={handleDeleteCheckToggle(row)}
+                    checked={checked.indexOf(row) !== -1}
+                  />
+                </TableCell>
                 <TableCell>{row.readingId}</TableCell>
                 <TableCell>{row.readingTime}</TableCell>
                 <TableCell>{row.waterLevel}</TableCell>
