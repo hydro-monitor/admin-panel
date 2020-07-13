@@ -16,12 +16,6 @@ import { NODES_API } from "../common/constants";
 
 const nodesClient = new NodesClient(NODES_API);
 
-const useStyles = makeStyles(theme => ({
-  backdrop: {
-    zIndex: theme.zIndex.drawer + 1
-  }
-}));
-
 const fabStyles = makeStyles(theme => ({
   fab: {
     position: "fixed",
@@ -45,7 +39,6 @@ export default function NodesDashboard(props) {
     message: ""
   });
 
-  const classes = useStyles();
   const fabClasses = fabStyles();
 
   const addNewNodeToState = (name, description) => {
