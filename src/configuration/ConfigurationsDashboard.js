@@ -153,7 +153,7 @@ function NodeCreateConfirmation({
   );
 }
 
-export default function NodesDashboard(props) {
+export default function ConfigurationsDashboard(props) {
   const classes = useStyles();
   const fabClasses = fabStyles();
 

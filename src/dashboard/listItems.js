@@ -28,6 +28,12 @@ export const mainListItems = (
       </ListItemIcon>
       <ListItemText primary="Nodos" />
     </ListItem>
+    <ListItem button component={Link} to="/configurations">
+      <ListItemIcon>
+        <DeveloperBoardIcon />
+      </ListItemIcon>
+      <ListItemText primary="Configuraciones" />
+    </ListItem>
     <ListItem button component={Link} to="/user">
       <ListItemIcon>
         <PersonIcon />
