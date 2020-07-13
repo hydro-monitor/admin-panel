@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Title from "../dashboard/Title";
+import TextField from "@material-ui/core/TextField";
+import Grow from "@material-ui/core/Grow";
 import NodesSelect from "../dashboard/NodesSelect";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Grid from "@material-ui/core/Grid";
@@ -9,17 +11,14 @@ import Alert from "@material-ui/lab/Alert";
 import { sleep } from "../common/utils";
 import {
   RestoreConfigurationButton,
-  UpdateConfigurationButton,
-  DeleteButton
+  UpdateConfigurationButton
 } from "./Buttons";
-import EditableTextField from "../components/EditableTextField";
-import NodeDeleteConfirmation from "./NodeDeleteConfirmation";
 import NodesClient from "../api/NodesClient";
-import { useMountEffect } from "../common/UseMountEffect";
-import { NODES_API } from "../common/constants";
 import { isNumeric } from "../common/utils";
 import ConfigurationForm from "./ConfigurationForm";
 import { isAdmin } from "../signin/utils";
+import { useMountEffect } from "../common/UseMountEffect";
+import { NODES_API } from "../common/constants";
 
 const nodesClient = new NodesClient(NODES_API);
 
@@ -41,9 +40,6 @@ const useStyles = makeStyles(theme => ({
   description: {
     paddingTop: "10px",
     paddingBottom: "10px"
-  },
-  deleteButton: {
-    marginBottom: theme.spacing(1)
   }
 }));
 
@@ -52,7 +48,6 @@ export default function Nodes({
   setNode,
   nodes,
   setNodes,
-  nodesData,
   setNodesData,
   nodeDescription,
   setNodeDescription,
@@ -60,8 +55,6 @@ export default function Nodes({
   updateConfig,
   isLoadingConfig,
   setIsLoadingConfig,
-  deleteNodeDisabled,
-  setDeleteNodeDisabled,
   changeNodeAndTable,
   setSnackbarData,
   configGetError,
@@ -71,7 +64,6 @@ export default function Nodes({
 
   const [originalConfig, updateOriginalConfig] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [configChangesNotSaved, updateConfigChangesNotSaved] = useState("");
   const [nodesGetError, setNodesGetError] = useState(false);
   const [nodesEmpty, setNodesEmpty] = useState(false);
@@ -100,7 +92,7 @@ export default function Nodes({
         setIsLoading(false);
       }
     })();
-  }, [nodes]);
+  });
 
   useEffect(() => {
     (async () => {
@@ -128,7 +120,6 @@ export default function Nodes({
           }
         } finally {
           clearConfigChangesNotSaved();
-          setDeleteNodeDisabled(!isAdmin());
           setIsLoadingConfig(false);
         }
       }
@@ -142,16 +133,6 @@ export default function Nodes({
       let stateName = stateNames[i];
       configuration[stateName].stateName = stateName;
     }
-  };
-
-  const deleteOldNode = name => {
-    console.log("deleting old node", name);
-    var nodesUpdated = nodes.slice();
-    nodesUpdated.splice(nodesUpdated.indexOf(name), 1);
-    setNodes(nodesUpdated);
-    // Delete old description
-    let { [name]: omit, ...nodesDataUpdated } = nodesData;
-    setNodesData(nodesDataUpdated);
   };
 
   const clearConfigChangesNotSaved = () => {
@@ -210,10 +191,6 @@ export default function Nodes({
     setConfigChangesNotSaved();
   };
 
-  const handleDeleteConfirmOpen = () => setDeleteConfirmOpen(true);
-
-  const handleDeleteConfirmClose = () => setDeleteConfirmOpen(false);
-
   const handleConfigurationRestore = () => {
     updateConfig(originalConfig);
     clearConfigChangesNotSaved();
@@ -222,22 +199,6 @@ export default function Nodes({
       severity: "info",
       message: "Configuración de nodo restaurada"
     });
-  };
-
-  const handleDescriptionUpdate = async () => {
-    if (await nodesClient.updateNode(node, { description: nodeDescription })) {
-      setSnackbarData({
-        open: true,
-        severity: "success",
-        message: "Descripción del nodo actualizada"
-      });
-    } else {
-      setSnackbarData({
-        open: true,
-        severity: "error",
-        message: "Error al intentar actualizar la descripción del nodo"
-      });
-    }
   };
 
   const prepareConfigurationForUpdate = () => {
@@ -306,14 +267,6 @@ export default function Nodes({
     }
   }
 
-  function nextNode() {
-    let i = nodes.indexOf(node);
-    if (i === nodes.length - 1) {
-      return nodes[0];
-    }
-    return nodes[i + 1];
-  }
-
   function renderNodesGetError() {
     return (
       <Alert severity="error">No se pudo consultar la lista de nodos</Alert>
@@ -337,51 +290,30 @@ export default function Nodes({
       <React.Fragment>
         <Grid container>
           <Grid item xs={12} md={12} lg={12}>
-            <Box display="flex">
-              <Box
-                display="inline-flex"
-                justifyContent="flex-start"
-                flexGrow={1}
-              >
-                <Box alignSelf="flex-end">
-                  <Title>Configuración de nodo</Title>
-                </Box>
-                <Box>
-                  <div>
-                    <NodesSelect
-                      node={node}
-                      setNode={setNode}
-                      nodes={nodes}
-                      setParentNode={changeNodeAndTable}
-                    />
-                  </div>
-                </Box>
-              </Box>
+            <Box display="inline-flex" justifyContent="flex-start" flexGrow={1}>
               <Box alignSelf="flex-end">
-                <DeleteButton
-                  onClick={handleDeleteConfirmOpen}
-                  disabled={deleteNodeDisabled}
-                  classes={classes.deleteButton}
-                />
-                <NodeDeleteConfirmation
-                  open={deleteConfirmOpen}
-                  node={node}
-                  nextNode={nextNode()}
-                  handleDeleteDialogClose={handleDeleteConfirmClose}
-                  setParentNode={changeNodeAndTable}
-                  deleteOldNode={deleteOldNode}
-                  setSnackbarData={setSnackbarData}
-                />
+                <Title>Configuración de nodo</Title>
+              </Box>
+              <Box>
+                <div>
+                  <NodesSelect
+                    node={node}
+                    setNode={setNode}
+                    nodes={nodes}
+                    setParentNode={changeNodeAndTable}
+                  />
+                </div>
               </Box>
             </Box>
           </Grid>
           <Grid item xs={12} md={12} lg={12} className={classes.description}>
-            <EditableTextField
+            <TextField
               label="Descripción"
               value={nodeDescription}
-              setValue={setNodeDescription}
-              onSave={handleDescriptionUpdate}
-              disabled={!isAdmin()}
+              variant="outlined"
+              fullWidth
+              multiline
+              disabled
             />
           </Grid>
         </Grid>
