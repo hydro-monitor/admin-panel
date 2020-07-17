@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import clsx from "clsx";
 import { withStyles } from "@material-ui/core/styles";
-import Link from "@material-ui/core/Link";
+import Typography from "@material-ui/core/Typography";
 import Title from "../dashboard/Title";
 import Paper from "@material-ui/core/Paper";
 import Box from "@material-ui/core/Box";
@@ -16,11 +16,11 @@ import { useStyles } from "../dashboard/dashboardStyles";
 
 const nodesClient = new NodesClient(NODES_API);
 
-function preventDefault(event) {
-  event.preventDefault();
-}
-
-const styles = theme => ({});
+const styles = theme => ({
+  depositContext: {
+    flex: 1
+  }
+});
 
 function Node(props) {
   const {
@@ -31,7 +31,7 @@ function Node(props) {
   } = props;
 
   const classes = useStyles();
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+  const paperStyle = clsx(classes.paper);
 
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const handleDeleteConfirmOpen = () => setDeleteConfirmOpen(true);
@@ -57,14 +57,14 @@ function Node(props) {
 
   return (
     <Grow in={true}>
-      <Paper className={fixedHeightPaper}>
+      <Paper className={paperStyle}>
         <Box display="flex">
           <Box display="inline-flex" justifyContent="flex-start" flexGrow={1}>
             <Box alignSelf="flex-end">
               <Title>{node}</Title>
             </Box>
           </Box>
-          <Box alignSelf="flex-end">
+          <Box alignSelf="flex-start">
             <DeleteButton
               onClick={handleDeleteConfirmOpen}
               disabled={!isAdmin()}
@@ -79,6 +79,14 @@ function Node(props) {
           </Box>
         </Box>
 
+        <Typography
+          color="textSecondary"
+          variant="body2"
+          className={classes.depositContext}
+        >
+          Descripción
+        </Typography>
+
         <EditableTextField
           label="Descripción"
           value={description}
@@ -86,11 +94,6 @@ function Node(props) {
           onSave={() => handleDescriptionUpdate(node, description)}
           disabled={!isAdmin()}
         />
-        <div>
-          <Link color="primary" href="#" onClick={preventDefault}>
-            Ver configuración
-          </Link>
-        </div>
       </Paper>
     </Grow>
   );

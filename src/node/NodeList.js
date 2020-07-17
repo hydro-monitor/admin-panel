@@ -11,7 +11,7 @@ function NodeList(props) {
   const nodesNames = Object.keys(nodesInfo);
   nodesNames.forEach(id =>
     nodes.push(
-      <Grid item xs={12} md={4} lg={3} key={id}>
+      <Grid item xs={12} key={id}>
         <Node
           node={id}
           nodeDescription={nodesInfo[id].description}
