@@ -55,7 +55,7 @@ function Node(props) {
   };
 
   return (
-    <Grow in={true}>
+    <Grow in>
       <Paper className={paperStyle}>
         <Box display="flex">
           <Box display="inline-flex" justifyContent="flex-start" flexGrow={1}>

@@ -2,9 +2,8 @@ import React, { useState, useEffect } from "react";
 import clsx from "clsx";
 import Dashboard from "./Dashboard";
 import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import Backdrop from "@material-ui/core/Backdrop";
+import { sleep } from "../common/utils";
 import EmptyMeasurement from "./EmptyMeasurement";
 import Measurement from "./Measurement";
 import { useStyles } from "./dashboardStyles";
@@ -20,21 +19,17 @@ function MeasurementList({ nodes }) {
     if (nodes[id]) {
       measurements.push(
         <Grid item xs={12} md={4} lg={3} key={id}>
-          <Paper className={fixedHeightPaper}>
-            <Measurement
-              node={id}
-              measurement={nodes[id].waterLevel}
-              timestamp={nodes[id].readingTime}
-            />
-          </Paper>
+          <Measurement
+            node={id}
+            measurement={nodes[id].waterLevel}
+            timestamp={nodes[id].readingTime}
+          />
         </Grid>
       );
     } else {
       measurements.push(
         <Grid item xs={12} md={4} lg={3} key={id}>
-          <Paper className={fixedHeightPaper}>
-            <EmptyMeasurement node={id} />
-          </Paper>
+          <EmptyMeasurement node={id} />
         </Grid>
       );
     }
@@ -49,6 +44,7 @@ export default function InitialDashboard(props) {
   useEffect(() => {
     const fetchNodes = async () => {
       setIsLoading(true);
+      await sleep(1000); // TODO Remove when testing is done
       await fetch(nodesURL)
         .then(handleErrors)
         .then(async response => {
@@ -83,9 +79,11 @@ export default function InitialDashboard(props) {
 
   function renderLoading() {
     return (
-      <Backdrop className={classes.backdrop} open={isLoading}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <Dashboard {...props} title="Inicio">
+        <Grid container justify="center">
+          <CircularProgress />
+        </Grid>
+      </Dashboard>
     );
   }
 

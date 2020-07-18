@@ -78,5 +78,8 @@ export const useStyles = makeStyles(theme => ({
   },
   fixedHeight: {
     height: 240
+  },
+  depositContext: {
+    flex: 1
   }
 }));

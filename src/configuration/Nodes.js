@@ -221,34 +221,40 @@ export default function Nodes({
   function renderTable() {
     return (
       <React.Fragment>
-        <ConfigurationForm
-          config={config}
-          handleConfigurationUpdate={handleConfigurationUpdate}
-          handleCustomStateAddition={handleCustomStateAddition}
-          handleCustomStateDeletion={handleCustomStateDeletion}
-          disabled={!isAdmin()}
-        />
-
-        <div className={classes.configButtons}>
-          <div className={classes.configChangesNotSaved}>
-            {configChangesNotSaved}
-          </div>
-          <div className={classes.restoreButton}>
-            <RestoreConfigurationButton
-              handleConfigurationRestore={handleConfigurationRestore}
-              disabled={!isAdmin()}
-            />
-          </div>
+        <Grow in>
           <div>
-            <UpdateConfigurationButton
-              node={node}
-              getUpdatedConfiguration={prepareConfigurationForUpdate}
-              clearConfigChangesNotSaved={clearConfigChangesNotSaved}
-              setSnackbarData={setSnackbarData}
+            <ConfigurationForm
+              config={config}
+              handleConfigurationUpdate={handleConfigurationUpdate}
+              handleCustomStateAddition={handleCustomStateAddition}
+              handleCustomStateDeletion={handleCustomStateDeletion}
               disabled={!isAdmin()}
             />
           </div>
-        </div>
+        </Grow>
+
+        <Grow in>
+          <div className={classes.configButtons}>
+            <div className={classes.configChangesNotSaved}>
+              {configChangesNotSaved}
+            </div>
+            <div className={classes.restoreButton}>
+              <RestoreConfigurationButton
+                handleConfigurationRestore={handleConfigurationRestore}
+                disabled={!isAdmin()}
+              />
+            </div>
+            <div>
+              <UpdateConfigurationButton
+                node={node}
+                getUpdatedConfiguration={prepareConfigurationForUpdate}
+                clearConfigChangesNotSaved={clearConfigChangesNotSaved}
+                setSnackbarData={setSnackbarData}
+                disabled={!isAdmin()}
+              />
+            </div>
+          </div>
+        </Grow>
       </React.Fragment>
     );
   }
@@ -288,35 +294,41 @@ export default function Nodes({
   function renderConfig() {
     return (
       <React.Fragment>
-        <Grid container>
-          <Grid item xs={12} md={12} lg={12}>
-            <Box display="inline-flex" justifyContent="flex-start" flexGrow={1}>
-              <Box alignSelf="flex-end">
-                <Title>Configuración de nodo</Title>
+        <Grow in>
+          <Grid container>
+            <Grid item xs={12} md={12} lg={12}>
+              <Box
+                display="inline-flex"
+                justifyContent="flex-start"
+                flexGrow={1}
+              >
+                <Box alignSelf="flex-end">
+                  <Title>Configuración de nodo</Title>
+                </Box>
+                <Box>
+                  <div>
+                    <NodesSelect
+                      node={node}
+                      setNode={setNode}
+                      nodes={nodes}
+                      setParentNode={changeNodeAndTable}
+                    />
+                  </div>
+                </Box>
               </Box>
-              <Box>
-                <div>
-                  <NodesSelect
-                    node={node}
-                    setNode={setNode}
-                    nodes={nodes}
-                    setParentNode={changeNodeAndTable}
-                  />
-                </div>
-              </Box>
-            </Box>
+            </Grid>
+            <Grid item xs={12} md={12} lg={12} className={classes.description}>
+              <TextField
+                label="Descripción"
+                value={nodeDescription}
+                variant="outlined"
+                fullWidth
+                multiline
+                disabled
+              />
+            </Grid>
           </Grid>
-          <Grid item xs={12} md={12} lg={12} className={classes.description}>
-            <TextField
-              label="Descripción"
-              value={nodeDescription}
-              variant="outlined"
-              fullWidth
-              multiline
-              disabled
-            />
-          </Grid>
-        </Grid>
+        </Grow>
         {renderConfigContent()}
       </React.Fragment>
     );
