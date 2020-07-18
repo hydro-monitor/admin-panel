@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import clsx from "clsx";
 import { withStyles } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
 import Title from "../dashboard/Title";
 import Paper from "@material-ui/core/Paper";
 import Box from "@material-ui/core/Box";
@@ -78,14 +77,6 @@ function Node(props) {
             />
           </Box>
         </Box>
-
-        <Typography
-          color="textSecondary"
-          variant="body2"
-          className={classes.depositContext}
-        >
-          Descripción
-        </Typography>
 
         <EditableTextField
           label="Descripción"
