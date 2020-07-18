@@ -101,7 +101,7 @@ function NodeCreatePanel({
       onClose={handleCreateConfirmClose}
       aria-labelledby="form-dialog-title"
     >
-      <DialogTitle id="form-dialog-title">Crear nodo</DialogTitle>
+      <DialogTitle id="form-dialog-title">Crear nuevo nodo</DialogTitle>
       <DialogContent>
         <TextField
           autoFocus

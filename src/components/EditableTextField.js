@@ -61,7 +61,7 @@ function EditableTextField(props) {
     <TextField
       multiline
       value={value}
-      label={label}
+      //label={label}
       onChange={handleChange}
       disabled={!state.onEdit}
       variant="outlined"
