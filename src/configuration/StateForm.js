@@ -3,7 +3,7 @@ import { withStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Box from "@material-ui/core/Box";
-import { DeleteButton } from "./Buttons";
+import DeleteButton from "../components/DeleteButton";
 import { isNumeric } from "../common/utils";
 
 const styles = theme => ({

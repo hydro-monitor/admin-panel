@@ -23,7 +23,7 @@ import NodesClient from "../api/NodesClient";
 import { WEB_API, NODES_API } from "../common/constants";
 import { isAdmin } from "../signin/utils";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
-import { DeleteButton } from "../configuration/Buttons";
+import DeleteButton from "../components/DeleteButton";
 
 const nodesClient = new NodesClient(NODES_API);
 

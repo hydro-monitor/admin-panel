@@ -8,7 +8,7 @@ import Grow from "@material-ui/core/Grow";
 import { isAdmin } from "../signin/utils";
 import EditableTextField from "../components/EditableTextField";
 import NodeDeletePanel from "./NodeDeletePanel";
-import { DeleteButton } from "../configuration/Buttons";
+import DeleteButton from "../components/DeleteButton";
 import NodesClient from "../api/NodesClient";
 import { NODES_API } from "../common/constants";
 import { useStyles } from "../dashboard/dashboardStyles";
