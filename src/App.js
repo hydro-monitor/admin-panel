@@ -2,7 +2,8 @@ import React from "react";
 import "./App.css";
 import InitialDashboard from "./dashboard/InitialDashboard";
 import MeasurementsDashboard from "./dashboard/MeasurementsDashboard";
-import NodesDashboard from "./configuration/NodesDashboard";
+import ConfigurationsDashboard from "./configuration/ConfigurationsDashboard";
+import NodesDashboard from "./node/NodesDashboard";
 import UserDashboard from "./user/UserDashboard";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import SignIn from "./signin/SignIn";
@@ -37,6 +38,17 @@ function App() {
           exact
           render={() => (
             <MeasurementsDashboard
+              open={open}
+              handleDrawerOpen={handleDrawerOpen}
+              handleDrawerClose={handleDrawerClose}
+            />
+          )}
+        />
+        <Route
+          path="/configurations"
+          exact
+          render={() => (
+            <ConfigurationsDashboard
               open={open}
               handleDrawerOpen={handleDrawerOpen}
               handleDrawerClose={handleDrawerClose}

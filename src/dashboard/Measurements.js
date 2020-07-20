@@ -8,6 +8,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Checkbox from "@material-ui/core/Checkbox";
 import TextField from "@material-ui/core/TextField";
+import Grow from "@material-ui/core/Grow";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
 import IconButton from "@material-ui/core/IconButton";
@@ -23,7 +24,7 @@ import NodesClient from "../api/NodesClient";
 import { WEB_API, NODES_API } from "../common/constants";
 import { isAdmin } from "../signin/utils";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
-import { DeleteButton } from "../configuration/Buttons";
+import DeleteButton from "../components/DeleteButton";
 
 const nodesClient = new NodesClient(NODES_API);
 
@@ -253,76 +254,80 @@ export default function Measurements() {
   function renderData() {
     return (
       <React.Fragment>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell>
-                <Checkbox
-                  size="small"
-                  onClick={handleDeleteToggleAll(data)}
-                  checked={
-                    numberOfDeletesChecked(data) === data.length &&
-                    data.length !== 0
-                  }
-                  indeterminate={
-                    numberOfDeletesChecked(data) !== data.length &&
-                    numberOfDeletesChecked(data) !== 0
-                  }
-                  disabled={!isAdmin() || data.length === 0}
-                />
-              </TableCell>
-              <TableCell>ID</TableCell>
-              <TableCell>Timestamp</TableCell>
-              <TableCell>Nivel de agua</TableCell>
-              <TableCell>Medición Manual</TableCell>
-              <TableCell align="right">Foto</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {data.map(row => (
-              <TableRow key={row.readingId}>
+        <Grow in>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
                 <TableCell>
                   <Checkbox
                     size="small"
-                    className={classes.deleteCheckbox}
-                    onClick={handleDeleteCheckToggle(row)}
-                    checked={checked.indexOf(row) !== -1}
-                    disabled={!isAdmin()}
+                    onClick={handleDeleteToggleAll(data)}
+                    checked={
+                      numberOfDeletesChecked(data) === data.length &&
+                      data.length !== 0
+                    }
+                    indeterminate={
+                      numberOfDeletesChecked(data) !== data.length &&
+                      numberOfDeletesChecked(data) !== 0
+                    }
+                    disabled={!isAdmin() || data.length === 0}
                   />
                 </TableCell>
-                <TableCell>{row.readingId}</TableCell>
-                <TableCell>{row.readingTime}</TableCell>
-                <TableCell>{row.waterLevel}</TableCell>
-                <TableCell>
-                  {manualReadingBoolToString(row.manualReading)}
-                </TableCell>
-                <TableCell align="right">
-                  <PhotoLink node={node} readingId={row.readingId} />
-                </TableCell>
+                <TableCell>ID</TableCell>
+                <TableCell>Timestamp</TableCell>
+                <TableCell>Nivel de agua</TableCell>
+                <TableCell>Medición Manual</TableCell>
+                <TableCell align="right">Foto</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHead>
+            <TableBody>
+              {data.map(row => (
+                <TableRow key={row.readingId}>
+                  <TableCell>
+                    <Checkbox
+                      size="small"
+                      className={classes.deleteCheckbox}
+                      onClick={handleDeleteCheckToggle(row)}
+                      checked={checked.indexOf(row) !== -1}
+                      disabled={!isAdmin()}
+                    />
+                  </TableCell>
+                  <TableCell>{row.readingId}</TableCell>
+                  <TableCell>{row.readingTime}</TableCell>
+                  <TableCell>{row.waterLevel}</TableCell>
+                  <TableCell>
+                    {manualReadingBoolToString(row.manualReading)}
+                  </TableCell>
+                  <TableCell align="right">
+                    <PhotoLink node={node} readingId={row.readingId} />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Grow>
 
-        <Box display="flex">
-          <Box display="inline-flex" justifyContent="flex-start" flexGrow={1}>
-            <Box
-              alignSelf="flex-end"
-              className={classes.deleteMeasurementsButton}
-            >
-              <DeleteButton
-                tooltip="Delete measurements"
-                onClick={() => handleDeleteMeasurement(checked)}
-                disabled={!isAdmin() || checked.length === 0}
-              />
+        <Grow in>
+          <Box display="flex">
+            <Box display="inline-flex" justifyContent="flex-start" flexGrow={1}>
+              <Box
+                alignSelf="flex-end"
+                className={classes.deleteMeasurementsButton}
+              >
+                <DeleteButton
+                  tooltip="Delete measurements"
+                  onClick={() => handleDeleteMeasurement(checked)}
+                  disabled={!isAdmin() || checked.length === 0}
+                />
+              </Box>
+            </Box>
+            <Box alignSelf="flex-end" className={classes.seeMore}>
+              <Link color="primary" href="#" onClick={preventDefault}>
+                Ver más mediciones
+              </Link>
             </Box>
           </Box>
-          <Box alignSelf="flex-end" className={classes.seeMore}>
-            <Link color="primary" href="#" onClick={preventDefault}>
-              Ver más mediciones
-            </Link>
-          </Box>
-        </Box>
+        </Grow>
       </React.Fragment>
     );
   }
@@ -378,50 +383,50 @@ export default function Measurements() {
   function renderTable() {
     return (
       <React.Fragment>
-        <Grid container>
-          {}
-          <Grid item xs={12} md={12} lg={12}>
-            <Box display="flex">
-              <Box
-                display="inline-flex"
-                justifyContent="flex-start"
-                flexGrow={1}
-              >
+        <Grow in>
+          <Grid container>
+            <Grid item xs={12} md={12} lg={12}>
+              <Box display="flex">
+                <Box
+                  display="inline-flex"
+                  justifyContent="flex-start"
+                  flexGrow={1}
+                >
+                  <Box alignSelf="flex-end">
+                    <Title>Mediciones de nodo</Title>
+                  </Box>
+                  <Box>
+                    <div>
+                      <NodesSelect
+                        node={node}
+                        setNode={setNode}
+                        nodes={nodes}
+                        setParentNode={changeNodeAndTable}
+                      />
+                    </div>
+                  </Box>
+                </Box>
                 <Box alignSelf="flex-end">
-                  <Title>Mediciones de nodo</Title>
-                </Box>
-                <Box>
-                  <div>
-                    <NodesSelect
-                      node={node}
-                      setNode={setNode}
-                      nodes={nodes}
-                      setParentNode={changeNodeAndTable}
-                    />
-                  </div>
+                  <ManualMeasurementButton
+                    onClick={handleNewMeasurementRequest}
+                    disabled={!isAdmin()}
+                    classes={classes.newMeasurementButton}
+                  />
                 </Box>
               </Box>
-              <Box alignSelf="flex-end">
-                <ManualMeasurementButton
-                  onClick={handleNewMeasurementRequest}
-                  disabled={!isAdmin()}
-                  classes={classes.newMeasurementButton}
-                />
-              </Box>
-            </Box>
+            </Grid>
+            <Grid item xs={12} md={12} lg={12} className={classes.description}>
+              <TextField
+                label="Descripción"
+                value={nodeDescription}
+                variant="outlined"
+                fullWidth
+                multiline
+                disabled
+              />
+            </Grid>
           </Grid>
-          {}
-          <Grid item xs={12} md={12} lg={12} className={classes.description}>
-            <TextField
-              label="Descripción"
-              value={nodeDescription}
-              variant="outlined"
-              fullWidth
-              multiline
-              disabled
-            />
-          </Grid>
-        </Grid>
+        </Grow>
         {renderTableContent()}
         <CustomizedSnackbar
           props={snackbarData}

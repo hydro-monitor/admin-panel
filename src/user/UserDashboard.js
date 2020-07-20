@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import store from "store";
 import Dashboard from "../dashboard/Dashboard";
 import Grid from "@material-ui/core/Grid";
+import Alert from "@material-ui/lab/Alert";
 import Paper from "@material-ui/core/Paper";
 import { useStyles } from "../dashboard/dashboardStyles";
 import Avatar from "@material-ui/core/Avatar";
@@ -17,6 +18,7 @@ import CustomizedSnackbar, {
 import UsersClient from "../api/UsersClient";
 import SessionClient from "../api/SessionClient";
 import { USERS_API, SESSION_API } from "../common/constants";
+import { isAdmin } from "../signin/utils";
 
 const usersClient = new UsersClient(USERS_API);
 const sessionClient = new SessionClient(SESSION_API);
@@ -200,6 +202,13 @@ function UserInfo() {
                 autoComplete="email"
                 value={email}
               />
+            </Grid>
+            <Grid item xs={12}>
+              <Alert severity={isAdmin() ? "info" : "error"}>
+                {isAdmin()
+                  ? "Este usuario tiene permisos de administrador"
+                  : "Este usuario no tiene permisos de administrador"}
+              </Alert>
             </Grid>
           </Grid>
         </form>

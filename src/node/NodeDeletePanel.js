@@ -12,13 +12,11 @@ import { NODES_API } from "../common/constants";
 
 const nodesClient = new NodesClient(NODES_API);
 
-export default function NodeDeleteConfirmation({
+export default function NodeDeletePanel({
   open,
   node,
-  nextNode,
   handleDeleteDialogClose,
-  setParentNode,
-  deleteOldNode,
+  deleteOldNodeFromState,
   setSnackbarData
 }) {
   const [nodeToDelete, setNodeToDelete] = useState("");
@@ -50,9 +48,7 @@ export default function NodeDeleteConfirmation({
       if (ok) {
         handleNodeToDeleteValidation();
         handleDeleteConfirmClose();
-        console.log("nextNode", nextNode);
-        setParentNode(nextNode);
-        deleteOldNode(nodeToDelete);
+        deleteOldNodeFromState(nodeToDelete);
         setSnackbarData({
           open: true,
           message: "Nodo borrado satisfactoriamente",

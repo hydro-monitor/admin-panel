@@ -64,7 +64,6 @@ function EditableTextField(props) {
       label={label}
       onChange={handleChange}
       disabled={!state.onEdit}
-      variant="outlined"
       className={classes.textField}
       InputProps={{
         endAdornment: (

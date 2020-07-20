@@ -5,6 +5,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import TableChartIcon from "@material-ui/icons/TableChart";
 import PersonIcon from "@material-ui/icons/Person";
 import DeveloperBoardIcon from "@material-ui/icons/DeveloperBoard";
+import SettingsIcon from "@material-ui/icons/Settings";
 import HomeIcon from "@material-ui/icons/Home";
 import { Link } from "react-router-dom";
 
@@ -27,6 +28,12 @@ export const mainListItems = (
         <DeveloperBoardIcon />
       </ListItemIcon>
       <ListItemText primary="Nodos" />
+    </ListItem>
+    <ListItem button component={Link} to="/configurations">
+      <ListItemIcon>
+        <SettingsIcon />
+      </ListItemIcon>
+      <ListItemText primary="Configuraciones" />
     </ListItem>
     <ListItem button component={Link} to="/user">
       <ListItemIcon>
