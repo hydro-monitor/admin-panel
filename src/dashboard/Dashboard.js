@@ -34,6 +34,8 @@ export default function Dashboard(props) {
     store.remove("loggedIn");
     store.remove("user");
     store.remove("admin");
+    store.remove("token");
+
     history.push("/signin");
   };
 
