@@ -144,18 +144,18 @@ export default function Nodes({
   };
 
   const handleConfigurationUpdate = (stateName, propName, value) => {
+    if (propName !== "stateName" && isNumeric(value)) {
+      value = parseInt(value);
+    }
     let configUpdated = {};
     if (!(stateName in config)) {
       configUpdated = {
-        [stateName]: { [propName]: value },
+        [stateName]: { stateName: stateName, [propName]: value },
         ...config
       };
     } else {
       let { [stateName]: oldState, ...configWithoutUpdatedState } = config;
       let { [propName]: omit, ...stateWithoutUpdatedProp } = oldState;
-      if (propName !== "stateName" && isNumeric(value)) {
-        value = parseInt(value);
-      }
       configUpdated = {
         [stateName]: { [propName]: value, ...stateWithoutUpdatedProp },
         ...configWithoutUpdatedState
