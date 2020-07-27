@@ -17,7 +17,7 @@ image-panel:
 	docker build -t $(IMAGE_NAME):$(IMAGE_VERSION) -f deploy/Dockerfile .
 
 run-image-panel: image-panel
-	docker run -p 3000:3000 -d $(IMAGE_NAME):$(IMAGE_VERSION)
+	docker-compose -f deploy/docker-compose.yml up
 
 push-image-panel: image-panel
 	docker push $(IMAGE_NAME):$(IMAGE_VERSION)
