@@ -1,8 +1,7 @@
 import React from "react";
 import clsx from "clsx";
-import store from "store";
 import { Redirect, useHistory } from "react-router-dom";
-import { isLoggedIn } from "../signin/utils";
+import { isLoggedIn, handleLogout } from "../signin/utils";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Drawer from "@material-ui/core/Drawer";
 import Box from "@material-ui/core/Box";
@@ -24,20 +23,10 @@ import { useStyles } from "./dashboardStyles";
 
 export default function Dashboard(props) {
   const classes = useStyles();
+  const history = useHistory();
   const open = props.open;
   const handleDrawerOpen = props.handleDrawerOpen;
   const handleDrawerClose = props.handleDrawerClose;
-
-  const history = useHistory();
-
-  const handleLogout = () => {
-    store.remove("loggedIn");
-    store.remove("user");
-    store.remove("admin");
-    store.remove("token");
-
-    history.push("/signin");
-  };
 
   function renderDashboard() {
     return (
@@ -69,7 +58,7 @@ export default function Dashboard(props) {
             >
               {props.title}
             </Typography>
-            <IconButton color="inherit" onClick={handleLogout}>
+            <IconButton color="inherit" onClick={() => handleLogout(history)}>
               <Badge color="secondary">
                 <ExitToAppIcon />
               </Badge>

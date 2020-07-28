@@ -37,4 +37,14 @@ export default class UsersClient {
     });
     return response.ok;
   }
+
+  async deleteUserInfo(user) {
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    const response = await fetch(`${this.baseUrl}/${user}`, {
+      method: "delete",
+      headers: headers
+    });
+    return response.ok;
+  }
 }
