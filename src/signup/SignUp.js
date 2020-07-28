@@ -60,7 +60,7 @@ export default function SignUp() {
   const [passwordError, setPasswordError] = useState(false);
   const [snackbarData, setSnackbarData] = useState({
     open: false,
-    severity: "",
+    severity: "info",
     message: ""
   });
   const [registerAsAdminChecked, setRegisterAsAdminChecked] = useState(false);
@@ -115,14 +115,20 @@ export default function SignUp() {
       email,
       password
     };
-    if (registerAsAdminChecked && (await parentAdminCredentialsAreValid())) {
-      user = { admin: true, ...user };
-    } else {
-      setAdminEmailError(true);
-      setAdminPasswordError(true);
-      return;
+
+    console.log(registerAsAdminChecked);
+
+    if (registerAsAdminChecked) {
+      if (await parentAdminCredentialsAreValid()) {
+        user = { admin: true, ...user };
+      } else {
+        setAdminEmailError(true);
+        setAdminPasswordError(true);
+        return;
+      }
     }
 
+    console.log(user);
     if (await usersClient.createUser(user)) {
       showSignUpSuccessSnack();
       await sleep(2000); // Time for user to read success snackbar

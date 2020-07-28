@@ -51,5 +51,6 @@
     "hooks": {
       "pre-commit": "lint-staged"
     }
-  }
+  },
+  "proxy": "http://panel-api-proxy"
 }
