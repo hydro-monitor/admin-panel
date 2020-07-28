@@ -11,8 +11,6 @@ services:
 
   panel-api-proxy: # HA Proxy service
     image: haproxy:2.0.16 # Official HAProxy image
-    ports:
-      - 3001:3001
     container_name: "hydromon-panel-haproxy"
     volumes: # HAProxy configuration volume mount
       - ".:/usr/local/etc/haproxy/haproxy.cfg:ro"
