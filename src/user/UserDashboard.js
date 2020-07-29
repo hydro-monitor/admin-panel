@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import store from "store";
+import { useHistory } from "react-router-dom";
 import Dashboard from "../dashboard/Dashboard";
 import Grid from "@material-ui/core/Grid";
 import Alert from "@material-ui/lab/Alert";
@@ -9,6 +10,7 @@ import Avatar from "@material-ui/core/Avatar";
 import TextField from "@material-ui/core/TextField";
 import PersonIcon from "@material-ui/icons/Person";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
+import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
@@ -18,7 +20,7 @@ import CustomizedSnackbar, {
 import UsersClient from "../api/UsersClient";
 import SessionClient from "../api/SessionClient";
 import { USERS_API, SESSION_API } from "../common/constants";
-import { isAdmin } from "../signin/utils";
+import { isAdmin, handleLogout } from "../signin/utils";
 
 const usersClient = new UsersClient(USERS_API);
 const sessionClient = new SessionClient(SESSION_API);
@@ -47,6 +49,7 @@ const useFormStyles = makeStyles(theme => ({
 }));
 
 function UserInfo() {
+  const history = useHistory();
   const classes = useFormStyles();
 
   const [firstName, setFirstName] = useState("");
@@ -68,6 +71,17 @@ function UserInfo() {
     severity: "",
     message: ""
   });
+  const [typedDeleteAccountPassword, setTypedDeleteAccountPassword] = useState(
+    ""
+  );
+  const [
+    typedDeleteAccountPasswordError,
+    setTypedDeleteAccountPasswordError
+  ] = useState(false);
+  const [
+    typedDeleteAccountPasswordHelper,
+    setTypedDeleteAccountPasswordHelper
+  ] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -151,6 +165,68 @@ function UserInfo() {
     } else {
       setTypedPasswordError(true);
       setTypedPasswordHelper(
+        "La contraseña ingresada no coincide con la contraseña actual"
+      );
+    }
+  };
+
+  const handleDeleteAccountPasswordChange = e => {
+    clearDeleteAccountPasswordHelper();
+    setTypedDeleteAccountPassword(e.target.value);
+  };
+  const clearDeleteAccountPasswordHelper = () => {
+    setTypedDeleteAccountPasswordError(false);
+    setTypedDeleteAccountPasswordHelper("");
+  };
+  const clearDeleteAccountPasswordFields = () => {
+    setTypedDeleteAccountPassword("");
+  };
+  const showDeleteAccountSuccessSnack = () => {
+    setSnackbarData({
+      open: true,
+      severity: "success",
+      message: "Cuenta eliminada correctamente"
+    });
+  };
+  const showDeleteAccountErrorSnack = () => {
+    setSnackbarData({
+      open: true,
+      severity: "error",
+      message: "Error al eliminar la cuenta"
+    });
+  };
+  const deleteAccount = async e => {
+    e.preventDefault();
+    closeSnack(setSnackbarData);
+
+    if (typedDeleteAccountPassword === "") {
+      setTypedDeleteAccountPasswordError(true);
+      setTypedDeleteAccountPasswordHelper("Ingrese su contraseña");
+      return;
+    }
+
+    const user = store.get("user");
+    const token = await sessionClient.signIn(
+      store.get("user"),
+      typedDeleteAccountPassword
+    );
+    if (token !== null) {
+      store.set("token", token);
+      if (await usersClient.deleteUserInfo(user)) {
+        console.log(typedDeleteAccountPassword);
+        console.log("you've deleted your account. yay!");
+        showDeleteAccountSuccessSnack();
+        clearDeleteAccountPasswordFields();
+        handleLogout(history);
+        return;
+      } else {
+        showDeleteAccountErrorSnack();
+        clearDeleteAccountPasswordFields();
+        return;
+      }
+    } else {
+      setTypedDeleteAccountPasswordError(true);
+      setTypedDeleteAccountPasswordHelper(
         "La contraseña ingresada no coincide con la contraseña actual"
       );
     }
@@ -275,6 +351,42 @@ function UserInfo() {
             onClick={changePassword}
           >
             Cambiar contraseña
+          </Button>
+        </form>
+        <Avatar className={classes.lockAvatar}>
+          <HighlightOffIcon />
+        </Avatar>
+        <Typography component="h1" variant="h5">
+          Eliminar cuenta
+        </Typography>
+        <form className={classes.form} noValidate>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                name="password"
+                label="Contraseña"
+                type="password"
+                id="delete-account-password"
+                autoComplete="current-password"
+                onChange={handleDeleteAccountPasswordChange}
+                value={typedDeleteAccountPassword}
+                error={typedDeleteAccountPasswordError}
+                helperText={typedDeleteAccountPasswordHelper}
+              />
+            </Grid>
+          </Grid>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="secondary"
+            className={classes.submit}
+            onClick={deleteAccount}
+          >
+            Eliminar cuenta
           </Button>
         </form>
       </div>
