@@ -78,8 +78,20 @@ function NodeCreatePanel({
     handleNodeToCreateValidation();
   };
 
-  const handleNodeCreationResult = (response, nodeName, description) => {
+  const handleNodeCreationResult = async (response, nodeName, description) => {
     if (response.ok) {
+      try {
+        const updatedConfiguration = await nodesClient.updateNodeConfiguration(
+          nodeName,
+          { default: { interval: 21600, picturesNum: 1 } }
+        );
+        console.log(
+          "default config created successfully",
+          updatedConfiguration
+        );
+      } catch (e) {
+        console.log("error creating default config", e);
+      }
       setSnackbarData({
         open: true,
         severity: "success",
