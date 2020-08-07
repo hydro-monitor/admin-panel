@@ -11,6 +11,7 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
+import jwtDecode from "jwt-decode";
 import Copyright from "../components/Copyright";
 import SignInFields from "./SignInFields";
 import CustomizedSnackbar, {
@@ -57,10 +58,12 @@ export default function SignIn() {
     closeSnack(setSnackbarData);
     const token = await sessionClient.signIn(email, password);
     if (token !== null) {
+      const userInfo = jwtDecode(token);
       console.log("you're logged in. yay!");
       store.set("loggedIn", true);
-      store.set("user", email);
-      store.set("admin", true); // TODO set to true if server says user is admin, otherwise false
+      store.set("user", userInfo.username);
+      console.log(userInfo.admin);
+      store.set("admin", userInfo.admin);
       store.set("token", token);
       history.push("/");
     } else {
