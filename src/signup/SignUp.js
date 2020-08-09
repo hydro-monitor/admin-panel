@@ -60,7 +60,7 @@ export default function SignUp() {
   const [passwordError, setPasswordError] = useState(false);
   const [snackbarData, setSnackbarData] = useState({
     open: false,
-    severity: "",
+    severity: "info",
     message: ""
   });
   const [registerAsAdminChecked, setRegisterAsAdminChecked] = useState(false);
