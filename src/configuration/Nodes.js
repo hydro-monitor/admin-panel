@@ -176,7 +176,7 @@ export default function Nodes({
       [randomStateName]: {
         stateName: "",
         interval: "",
-        picturesNum: "",
+        picturesNum: 1,
         upperLimit: "",
         lowerLimit: ""
       }
@@ -208,7 +208,7 @@ export default function Nodes({
     for (let i = 0; i < statesNum; i++) {
       let state = config[stateNames[i]];
       let newStateName = state.stateName;
-      var clonedState = Object.assign({}, state);
+      var clonedState = Object.assign({ picturesNum: 1 }, state);
       delete clonedState.stateName;
       updatedConfig[newStateName] = clonedState;
     }

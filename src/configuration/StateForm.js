@@ -101,7 +101,7 @@ function StateForm(props) {
     >
       <Grid container spacing={2}>
         {renderNameField()}
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={12}>
           <TextField
             variant="outlined"
             required
@@ -114,6 +114,7 @@ function StateForm(props) {
             disabled={disabled}
           />
         </Grid>
+        {/*
         <Grid item xs={12} sm={6}>
           <TextField
             variant="outlined"
@@ -127,6 +128,7 @@ function StateForm(props) {
             disabled={disabled}
           />
         </Grid>
+        */}
         {renderExtraFields()}
       </Grid>
     </Box>
