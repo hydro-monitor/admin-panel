@@ -18,6 +18,10 @@ import NodesSelect from "./NodesSelect";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import PhotoIcon from "@material-ui/icons/Photo";
 import Alert from "@material-ui/lab/Alert";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import Button from "@material-ui/core/Button";
 import { handleErrors } from "../common/server";
 import { sleep, not, union, intersection } from "../common/utils";
 import NodesClient from "../api/NodesClient";
@@ -55,6 +59,13 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const pictureStyles = makeStyles(theme => ({
+  img: {
+    maxHeight: "100%",
+    maxWidth: "100%"
+  }
+}));
+
 function ManualMeasurementButton({ classes, onClick, disabled }) {
   return (
     <IconButton
@@ -70,13 +81,15 @@ function ManualMeasurementButton({ classes, onClick, disabled }) {
 }
 
 function PhotoLink({ node, readingId }) {
+  const classes = pictureStyles();
   const [photoNotFound, setPhotoNotFound] = useState(false);
+  const [open, setOpen] = useState(false);
 
   async function fetchConfig(url) {
     await fetch(url)
       .then(handleErrors)
       .then(async response => {
-        console.log(response);
+        console.log("picture response is: ", response);
         setPhotoNotFound(false);
       })
       .catch(error => {
@@ -96,14 +109,35 @@ function PhotoLink({ node, readingId }) {
   useFetch(getReadingPhotoURL);
 
   return (
-    <IconButton
-      aria-label="photo"
-      size="small"
-      disabled={photoNotFound}
-      href={getReadingPhotoURL}
-    >
-      <PhotoIcon />
-    </IconButton>
+    <React.Fragment>
+      <IconButton
+        aria-label="photo"
+        size="small"
+        disabled={photoNotFound}
+        onClick={() => setOpen(true)}
+      >
+        <PhotoIcon />
+      </IconButton>
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        fullWidth
+        maxWidth="lg"
+      >
+        <DialogContent>
+          <Grid container>
+            <Grid item xs={12}>
+              <img className={classes.img} src={getReadingPhotoURL} />
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpen(false)} color="primary" autoFocus>
+            Cerrar
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </React.Fragment>
   );
 }
 
