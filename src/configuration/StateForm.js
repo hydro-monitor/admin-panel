@@ -67,7 +67,7 @@ function StateForm(props) {
               required
               fullWidth
               name="lowerLimit"
-              label="Límite inferior"
+              label="Límite inferior (cm)"
               value={lowerLimitValue}
               error={!lowerLimitValue || !isNumeric(lowerLimitValue)}
               onChange={handleChange}
@@ -80,7 +80,7 @@ function StateForm(props) {
               required
               fullWidth
               name="upperLimit"
-              label="Límite superior"
+              label="Límite superior (cm)"
               value={upperLimitValue}
               error={!upperLimitValue || !isNumeric(upperLimitValue)}
               onChange={handleChange}
@@ -107,7 +107,7 @@ function StateForm(props) {
             required
             fullWidth
             name="interval"
-            label="Intervalo entre fotos"
+            label="Intervalo entre fotos (s)"
             value={intervalValue}
             error={!intervalValue || !isNumeric(intervalValue)}
             onChange={handleChange}

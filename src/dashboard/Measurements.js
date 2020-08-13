@@ -309,7 +309,7 @@ export default function Measurements() {
                 </TableCell>
                 <TableCell>ID</TableCell>
                 <TableCell>Timestamp</TableCell>
-                <TableCell>Nivel de agua</TableCell>
+                <TableCell>Nivel de agua (cm)</TableCell>
                 <TableCell>Medición Manual</TableCell>
                 <TableCell align="right">Foto</TableCell>
               </TableRow>
