@@ -67,7 +67,7 @@ function StateForm(props) {
               required
               fullWidth
               name="lowerLimit"
-              label="Límite inferior"
+              label="Límite inferior (cm)"
               value={lowerLimitValue}
               error={!lowerLimitValue || !isNumeric(lowerLimitValue)}
               onChange={handleChange}
@@ -80,7 +80,7 @@ function StateForm(props) {
               required
               fullWidth
               name="upperLimit"
-              label="Límite superior"
+              label="Límite superior (cm)"
               value={upperLimitValue}
               error={!upperLimitValue || !isNumeric(upperLimitValue)}
               onChange={handleChange}
@@ -101,19 +101,20 @@ function StateForm(props) {
     >
       <Grid container spacing={2}>
         {renderNameField()}
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={12}>
           <TextField
             variant="outlined"
             required
             fullWidth
             name="interval"
-            label="Intervalo entre fotos"
+            label="Intervalo entre fotos (s)"
             value={intervalValue}
             error={!intervalValue || !isNumeric(intervalValue)}
             onChange={handleChange}
             disabled={disabled}
           />
         </Grid>
+        {/*
         <Grid item xs={12} sm={6}>
           <TextField
             variant="outlined"
@@ -127,6 +128,7 @@ function StateForm(props) {
             disabled={disabled}
           />
         </Grid>
+        */}
         {renderExtraFields()}
       </Grid>
     </Box>

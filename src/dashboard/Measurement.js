@@ -21,7 +21,7 @@ export default function Measurement({ node, measurement, timestamp }) {
       <Paper className={fixedHeightPaper}>
         <Title>{node}</Title>
         <Typography component="p" variant="h4">
-          {measurement} metros
+          {measurement} cm
         </Typography>
         <Typography
           color="textSecondary"
