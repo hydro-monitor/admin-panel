@@ -34,9 +34,9 @@ const nodesClient = new NodesClient(NODES_API);
 
 function manualReadingBoolToString(wasManual) {
   if (wasManual) {
-    return "Sí";
+    return "Manual";
   }
-  return "No";
+  return "Programada";
 }
 
 function preventDefault(event) {
@@ -310,7 +310,7 @@ export default function Measurements() {
                 <TableCell>ID</TableCell>
                 <TableCell>Timestamp</TableCell>
                 <TableCell>Nivel de agua (cm)</TableCell>
-                <TableCell>Medición Manual</TableCell>
+                <TableCell>Tipo de medición</TableCell>
                 <TableCell align="right">Foto</TableCell>
               </TableRow>
             </TableHead>
@@ -327,7 +327,9 @@ export default function Measurements() {
                     />
                   </TableCell>
                   <TableCell>{row.readingId}</TableCell>
-                  <TableCell>{row.readingTime}</TableCell>
+                  <TableCell>
+                    {new Date(row.readingTime).toUTCString()}
+                  </TableCell>
                   <TableCell>{row.waterLevel}</TableCell>
                   <TableCell>
                     {manualReadingBoolToString(row.manualReading)}
