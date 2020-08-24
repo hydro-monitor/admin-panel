@@ -17,7 +17,11 @@ import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import { mainListItems } from "./listItems";
+import {
+  mainListItems,
+  secondaryListItems,
+  tertiaryListItems
+} from "./listItems";
 import Copyright from "../components/Copyright";
 import { useStyles } from "./dashboardStyles";
 
@@ -79,6 +83,10 @@ export default function Dashboard(props) {
           </div>
           <Divider />
           <List>{mainListItems}</List>
+          <Divider />
+          <List>{secondaryListItems}</List>
+          <Divider />
+          <List>{tertiaryListItems}</List>
         </Drawer>
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
