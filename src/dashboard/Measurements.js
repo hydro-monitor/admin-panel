@@ -289,7 +289,7 @@ export default function Measurements() {
   function renderData() {
     return (
       <React.Fragment>
-        <Chart data={data || []} />
+        <Chart data={Array.isArray(data) ? data : []} />
         <Grow in>
           <Table size="small">
             <TableHead>
