@@ -289,7 +289,7 @@ export default function Measurements() {
   function renderData() {
     return (
       <React.Fragment>
-        <Chart />
+        <Chart data={data || []} />
         <Grow in>
           <Table size="small">
             <TableHead>
@@ -329,9 +329,7 @@ export default function Measurements() {
                     />
                   </TableCell>
                   <TableCell>{row.readingId}</TableCell>
-                  <TableCell>
-                    {new Date(row.readingTime).toUTCString()}
-                  </TableCell>
+                  <TableCell>{new Date(row.readingTime).toString()}</TableCell>
                   <TableCell>{row.waterLevel}</TableCell>
                   <TableCell>
                     {manualReadingBoolToString(row.manualReading)}

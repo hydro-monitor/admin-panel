@@ -15,7 +15,7 @@ export default function Measurement({ node, measurement, timestamp }) {
   const classes = useStyles();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
-  const parsedDate = new Date(timestamp).toUTCString();
+  const parsedDate = new Date(timestamp).toString();
   return (
     <Grow in>
       <Paper className={fixedHeightPaper}>

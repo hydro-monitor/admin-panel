@@ -9,14 +9,28 @@ import {
 } from "victory";
 
 export default class Chart extends React.Component {
-  constructor() {
+  constructor(data) {
     super();
+    let today = new Date();
+    let tenDaysAgo = new Date(new Date().setDate(new Date().getDate() - 10));
     this.state = {
-      zoomDomain: { x: [new Date(1990, 1, 1), new Date(2009, 1, 1)] }
+      data: data,
+      zoomDomain: { x: [tenDaysAgo, today] }
     };
   }
 
   handleZoom(domain) {
+    console.log(
+      Array.isArray(this.state.data.data)
+        ? this.state.data.data.map(row => {
+            return {
+              time: new Date(row.readingTime),
+              level: row.waterLevel,
+              id: row.readingId
+            };
+          })
+        : []
+    );
     this.setState({ zoomDomain: domain });
   }
 
@@ -37,18 +51,19 @@ export default class Chart extends React.Component {
           }
         >
           <VictoryLine
-            data={[
-              { a: new Date(1982, 1, 1), b: 125 },
-              { a: new Date(1987, 1, 1), b: 257 },
-              { a: new Date(1993, 1, 1), b: 345 },
-              { a: new Date(1997, 1, 1), b: 515 },
-              { a: new Date(2001, 1, 1), b: 132 },
-              { a: new Date(2005, 1, 1), b: 305 },
-              { a: new Date(2011, 1, 1), b: 270 },
-              { a: new Date(2015, 1, 1), b: 470 }
-            ]}
-            x="a"
-            y="b"
+            data={
+              Array.isArray(this.state.data.data)
+                ? this.state.data.data.map(row => {
+                    return {
+                      time: new Date(row.readingTime),
+                      level: row.waterLevel,
+                      id: row.readingId
+                    };
+                  })
+                : []
+            }
+            x="time"
+            y="level"
           />
         </VictoryChart>
         <VictoryChart
@@ -65,20 +80,21 @@ export default class Chart extends React.Component {
             />
           }
         >
-          <VictoryAxis tickFormat={x => new Date(x).getFullYear()} />
+          <VictoryAxis />
           <VictoryLine
-            data={[
-              { key: new Date(1982, 1, 1), b: 125 },
-              { key: new Date(1987, 1, 1), b: 257 },
-              { key: new Date(1993, 1, 1), b: 345 },
-              { key: new Date(1997, 1, 1), b: 515 },
-              { key: new Date(2001, 1, 1), b: 132 },
-              { key: new Date(2005, 1, 1), b: 305 },
-              { key: new Date(2011, 1, 1), b: 270 },
-              { key: new Date(2015, 1, 1), b: 470 }
-            ]}
-            x="key"
-            y="b"
+            data={
+              Array.isArray(this.state.data.data)
+                ? this.state.data.data.map(row => {
+                    return {
+                      time: new Date(row.readingTime),
+                      level: row.waterLevel,
+                      id: row.readingId
+                    };
+                  })
+                : []
+            }
+            x="time"
+            y="level"
           />
         </VictoryChart>
       </div>
