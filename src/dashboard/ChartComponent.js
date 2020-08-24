@@ -22,7 +22,7 @@ export default class Chart extends React.Component {
     this.state = {
       data: { data: procData },
       zoomDomain: {
-        x: [procData[10].time, procData[0].time] // fix por si hay menos de una medicion
+        x: [procData[10].time, procData[0].time] // FIXME fix por si hay menos de una medicion
       }
     };
   }
