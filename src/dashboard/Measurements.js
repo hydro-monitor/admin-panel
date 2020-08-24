@@ -29,6 +29,7 @@ import { WEB_API, NODES_API } from "../common/constants";
 import { isAdmin } from "../signin/utils";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import DeleteButton from "../components/DeleteButton";
+import Chart from "./ChartComponent";
 
 const nodesClient = new NodesClient(NODES_API);
 
@@ -288,6 +289,7 @@ export default function Measurements() {
   function renderData() {
     return (
       <React.Fragment>
+        <Chart />
         <Grow in>
           <Table size="small">
             <TableHead>
