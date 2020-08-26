@@ -1,5 +1,4 @@
-import React from "react";
-import { useTheme } from "@material-ui/core/styles";
+import React, { useState, useCallback } from "react";
 import {
   LineChart,
   Line,
@@ -8,59 +7,80 @@ import {
   Label,
   ResponsiveContainer
 } from "recharts";
-import Title from "./Title";
+import {
+  VictoryChart,
+  VictoryZoomContainer,
+  VictoryLine,
+  VictoryBrushContainer,
+  VictoryAxis
+} from "victory";
 
-// Generate Sales Data
-function createData(time, amount) {
-  return { time, amount };
-}
+export default function Chart({ nodeName }) {
+  const [zoomDomain, setZoomDomain] = useState({
+    x: [new Date(1990, 1, 1), new Date(2009, 1, 1)]
+  });
 
-const data = [
-  createData("00:00", 0),
-  createData("03:00", 300),
-  createData("06:00", 600),
-  createData("09:00", 800),
-  createData("12:00", 1500),
-  createData("15:00", 2000),
-  createData("18:00", 2400),
-  createData("21:00", 2400),
-  createData("24:00", undefined)
-];
+  const handleZoom = useCallback(() => {
+    setZoomDomain(zoomDomain);
+  }, [zoomDomain]);
 
-export default function Chart() {
-  const theme = useTheme();
+  const mockData = [
+    { key: new Date(1982, 1, 1), b: 125 },
+    { key: new Date(1987, 1, 1), b: 257 },
+    { key: new Date(1993, 1, 1), b: 345 },
+    { key: new Date(1997, 1, 1), b: 515 },
+    { key: new Date(2001, 1, 1), b: 132 },
+    { key: new Date(2005, 1, 1), b: 305 },
+    { key: new Date(2011, 1, 1), b: 270 },
+    { key: new Date(2015, 1, 1), b: 470 }
+  ];
 
   return (
-    <React.Fragment>
-      <Title>Today</Title>
-      <ResponsiveContainer>
-        <LineChart
-          data={data}
-          margin={{
-            top: 16,
-            right: 16,
-            bottom: 0,
-            left: 24
-          }}
-        >
-          <XAxis dataKey="time" stroke={theme.palette.text.secondary} />
-          <YAxis stroke={theme.palette.text.secondary}>
-            <Label
-              angle={270}
-              position="left"
-              style={{ textAnchor: "middle", fill: theme.palette.text.primary }}
-            >
-              Sales ($)
-            </Label>
-          </YAxis>
-          <Line
-            type="monotone"
-            dataKey="amount"
-            stroke={theme.palette.primary.main}
-            dot={false}
+    <div>
+      <VictoryChart
+        width={600}
+        height={470}
+        scale={{ x: "time" }}
+        containerComponent={
+          <VictoryZoomContainer
+            zoomDimension="x"
+            zoomDomain={zoomDomain}
+            onZoomDomainChange={handleZoom}
           />
-        </LineChart>
-      </ResponsiveContainer>
-    </React.Fragment>
+        }
+      >
+        <VictoryLine
+          style={{
+            data: { stroke: "tomato" }
+          }}
+          data={mockData}
+          x="a"
+          y="b"
+        />
+      </VictoryChart>
+      <VictoryChart
+        padding={{ top: 0, left: 50, right: 50, bottom: 30 }}
+        width={600}
+        height={100}
+        scale={{ x: "time" }}
+        containerComponent={
+          <VictoryBrushContainer
+            brushDimension="x"
+            brushDomain={zoomDomain}
+            onBrushDomainChange={handleZoom}
+          />
+        }
+      >
+        <VictoryAxis tickFormat={x => new Date(x).getFullYear()} />
+        <VictoryLine
+          style={{
+            data: { stroke: "tomato" }
+          }}
+          data={mockData}
+          x="key"
+          y="b"
+        />
+      </VictoryChart>
+    </div>
   );
 }

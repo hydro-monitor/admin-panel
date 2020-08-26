@@ -29,6 +29,7 @@ import { WEB_API, NODES_API } from "../common/constants";
 import { isAdmin } from "../signin/utils";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import DeleteButton from "../components/DeleteButton";
+import Chart from "./ChartComponent";
 
 const nodesClient = new NodesClient(NODES_API);
 
@@ -288,6 +289,7 @@ export default function Measurements() {
   function renderData() {
     return (
       <React.Fragment>
+        <Chart data={Array.isArray(data) ? data : []} />
         <Grow in>
           <Table size="small">
             <TableHead>
@@ -327,9 +329,7 @@ export default function Measurements() {
                     />
                   </TableCell>
                   <TableCell>{row.readingId}</TableCell>
-                  <TableCell>
-                    {new Date(row.readingTime).toUTCString()}
-                  </TableCell>
+                  <TableCell>{new Date(row.readingTime).toString()}</TableCell>
                   <TableCell>{row.waterLevel}</TableCell>
                   <TableCell>
                     {manualReadingBoolToString(row.manualReading)}

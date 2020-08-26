@@ -4,6 +4,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
 import Alert from "@material-ui/lab/Alert";
+import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
 import NodesClient from "../api/NodesClient";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
@@ -13,6 +14,7 @@ import Dashboard from "../dashboard/Dashboard";
 import NodeList from "./NodeList";
 import NodeCreatePanel from "./NodeCreatePanel";
 import { NODES_API } from "../common/constants";
+import { useStyles } from "../dashboard/dashboardStyles";
 
 const nodesClient = new NodesClient(NODES_API);
 
@@ -28,6 +30,8 @@ const fabStyles = makeStyles(theme => ({
 }));
 
 export default function NodesDashboard(props) {
+  const classes = useStyles();
+
   const [isLoading, setIsLoading] = useState(true);
   const [nodesData, setNodesData] = useState({});
   const [createConfirmOpen, setCreateConfirmOpen] = useState(false);
@@ -95,12 +99,22 @@ export default function NodesDashboard(props) {
 
   function renderNodesGetError() {
     return (
-      <Alert severity="error">No se pudo consultar la lista de nodos</Alert>
+      <Grid item xs={12}>
+        <Paper className={classes.paper}>
+          <Alert severity="error">No se pudo consultar la lista de nodos</Alert>
+        </Paper>
+      </Grid>
     );
   }
 
   function renderNodesEmpty() {
-    return <Alert severity="info">No hay nodos registrados</Alert>;
+    return (
+      <Grid item xs={12}>
+        <Paper className={classes.paper}>
+          <Alert severity="info">No hay nodos registrados</Alert>
+        </Paper>
+      </Grid>
+    );
   }
 
   function renderNodes() {
