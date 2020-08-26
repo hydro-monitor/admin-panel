@@ -2,6 +2,7 @@ import React from "react";
 import clsx from "clsx";
 import Paper from "@material-ui/core/Paper";
 import Link from "@material-ui/core/Link";
+import { Link as RouterLink } from "react-router-dom";
 import Typography from "@material-ui/core/Typography";
 import Title from "./Title";
 import { useStyles } from "./dashboardStyles";
@@ -31,7 +32,7 @@ export default function Measurement({ node, measurement, timestamp }) {
           {parsedDate}
         </Typography>
         <div>
-          <Link color="primary" href="#" onClick={preventDefault}>
+          <Link color="primary" component={RouterLink} to="/measurements">
             Ver mediciones
           </Link>
         </div>
