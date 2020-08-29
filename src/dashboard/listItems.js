@@ -46,14 +46,18 @@ export const secondaryListItems = (
   </div>
 );
 
-export const tertiaryListItems = (
-  <div>
-    <ListSubheader inset>Información</ListSubheader>
-    <ListItem button component={Link} to="/user">
-      <ListItemIcon>
-        <PersonIcon />
-      </ListItemIcon>
-      <ListItemText primary="Usuario" secondary={() => getUser()} />
-    </ListItem>
-  </div>
-);
+export function tertiaryListItems() {
+  const email = getUser();
+
+  return (
+    <div>
+      <ListSubheader inset>Información</ListSubheader>
+      <ListItem button component={Link} to="/user">
+        <ListItemIcon>
+          <PersonIcon />
+        </ListItemIcon>
+        <ListItemText primary="Usuario" secondary={email} />
+      </ListItem>
+    </div>
+  );
+}

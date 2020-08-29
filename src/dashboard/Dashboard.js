@@ -86,7 +86,7 @@ export default function Dashboard(props) {
           <Divider />
           <List>{secondaryListItems}</List>
           <Divider />
-          <List>{tertiaryListItems}</List>
+          <List>{tertiaryListItems()}</List>
         </Drawer>
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
