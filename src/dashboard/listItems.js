@@ -53,7 +53,7 @@ export const tertiaryListItems = (
       <ListItemIcon>
         <PersonIcon />
       </ListItemIcon>
-      <ListItemText primary="Usuario" secondary={getUser()} />
+      <ListItemText primary="Usuario" secondary={() => getUser()} />
     </ListItem>
   </div>
 );
