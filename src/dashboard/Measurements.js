@@ -25,6 +25,7 @@ import Button from "@material-ui/core/Button";
 import { handleErrors } from "../common/server";
 import { sleep, not, union, intersection } from "../common/utils";
 import NodesClient from "../api/NodesClient";
+import ReadingsClient from "../api/ReadingsClient";
 import { WEB_API, NODES_API } from "../common/constants";
 import { isAdmin } from "../signin/utils";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
@@ -32,6 +33,7 @@ import DeleteButton from "../components/DeleteButton";
 import Chart from "./ChartComponent";
 
 const nodesClient = new NodesClient(NODES_API);
+const readingsClient = new ReadingsClient(NODES_API);
 
 function manualReadingBoolToString(wasManual) {
   if (wasManual) {
@@ -276,16 +278,28 @@ export default function Measurements() {
       severity: "info",
       message: "Eliminando mediciones seleccionadas"
     });
-    // TODO Add web api delete
+
+    const result = readingsClient.deleteReadings(node, items);
     await sleep(1000); // TODO Remove when web api integration is done
+
     updateData(not(data, checked));
     setChecked([]);
-    setSnackbarData({
-      open: true,
-      severity: "success",
-      message: "Mediciones eliminadas"
-    });
+
+    if (result) {
+      setSnackbarData({
+        open: true,
+        severity: "success",
+        message: "Mediciones eliminadas"
+      });
+    } else {
+      setSnackbarData({
+        open: true,
+        severity: "error",
+        message: "Una o más mediciones no pudieron ser borradas"
+      });
+    }
   };
+
   function renderData() {
     return (
       <React.Fragment>
