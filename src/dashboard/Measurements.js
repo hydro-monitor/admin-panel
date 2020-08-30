@@ -98,7 +98,7 @@ function PhotoLink({ node, readingId }) {
         setPhotoNotFound(false);
       })
       .catch(error => {
-        console.log("THIS IS THE ERROR: ", error);
+        console.log(error);
         setPhotoNotFound(true);
       });
   }
