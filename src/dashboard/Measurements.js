@@ -87,6 +87,8 @@ function PhotoLink({ node, readingId }) {
   const classes = pictureStyles();
   const [photoNotFound, setPhotoNotFound] = useState(false);
   const [open, setOpen] = useState(false);
+  const getReadingPhotoURL =
+    WEB_API + "/api/nodes/" + node + "/readings/" + readingId + "/photos";
 
   async function fetchConfig(url) {
     await fetch(url)
@@ -96,28 +98,20 @@ function PhotoLink({ node, readingId }) {
         setPhotoNotFound(false);
       })
       .catch(error => {
-        console.log(error);
+        console.log("THIS IS THE ERROR: ", error);
         setPhotoNotFound(true);
       });
   }
-  function useFetch(url) {
-    // empty array as second argument equivalent to componentDidMount
-    useEffect(() => {
-      fetchConfig(url);
-    }, [url]);
-  }
-
-  const getReadingPhotoURL =
-    WEB_API + "/api/nodes/" + node + "/readings/" + readingId + "/photos";
-  useFetch(getReadingPhotoURL);
 
   return (
     <React.Fragment>
       <IconButton
         aria-label="photo"
         size="small"
-        disabled={photoNotFound}
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          fetchConfig(getReadingPhotoURL);
+          setOpen(true);
+        }}
       >
         <PhotoIcon />
       </IconButton>
@@ -130,7 +124,13 @@ function PhotoLink({ node, readingId }) {
         <DialogContent>
           <Grid container>
             <Grid item xs={12}>
-              <img className={classes.img} src={getReadingPhotoURL} />
+              {photoNotFound ? (
+                <Alert severity="warning">
+                  No existe ninguna foto asociada a esta medición.
+                </Alert>
+              ) : (
+                <img className={classes.img} src={getReadingPhotoURL} />
+              )}
             </Grid>
           </Grid>
         </DialogContent>
