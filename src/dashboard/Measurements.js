@@ -205,7 +205,6 @@ export default function Measurements() {
             readingsPageState
           );
           updateData(json);
-          console.log("Page state: ", newReadingsPageState);
           setReadingsPageState(newReadingsPageState);
           if (!theresMoreReadings) {
             setTheresMoreReadings(false);
@@ -323,9 +322,7 @@ export default function Measurements() {
           readingsPageSize,
           readingsPageState
         );
-        console.log("JSON ", json);
         if (Array.isArray(json)) {
-          console.log("json is array");
           updateData(data.concat(json));
         }
         setReadingsPageState(newReadingsPageState);

@@ -31,16 +31,16 @@ export default class ReadingsClient {
       throw Error(response.statusText);
     }
     let newReadingsPageState = response.headers.get("Page-State");
-    console.log("PAGE STATE IS ", newReadingsPageState);
     if (
       newReadingsPageState === null ||
       newReadingsPageState === undefined ||
       newReadingsPageState === ""
     ) {
-      console.log("PAGE STATE IS NULL/UNDEFINED ", newReadingsPageState);
       newReadingsPageState = "";
       theresMoreReadings = false;
     } else {
+      // If theres a page state, check if the next page state is nil
+      // (This means there is no more readings to get)
       const eofCheck = await fetch(
         `${
           this.url
@@ -58,9 +58,6 @@ export default class ReadingsClient {
       }
     }
     const json = await response.json();
-    console.log("PAGE STATE IS ", newReadingsPageState);
-    const ret = { json, newReadingsPageState, theresMoreReadings };
-    console.log("RET IS ", ret);
-    return ret;
+    return { json, newReadingsPageState, theresMoreReadings };
   }
 }
