@@ -42,10 +42,6 @@ function manualReadingBoolToString(wasManual) {
   return "Programada";
 }
 
-function preventDefault(event) {
-  event.preventDefault();
-}
-
 const useStyles = makeStyles(theme => ({
   seeMore: {
     marginTop: theme.spacing(3)
@@ -162,6 +158,9 @@ export default function Measurements() {
     message: ""
   });
   const [checked, setChecked] = useState([]);
+  const [readingsPageState, setReadingsPageState] = useState("");
+  const [theresMoreReadings, setTheresMoreReadings] = useState(true);
+  const readingsPageSize = 15;
 
   useEffect(() => {
     (async () => {
@@ -195,19 +194,28 @@ export default function Measurements() {
       setIsLoadingData(true);
       if (!isLoading && !nodesEmpty) {
         await sleep(1000); // TODO Remove when testing is done
-        await fetch(WEB_API + "/api/nodes/" + node + "/readings")
-          .then(handleErrors)
-          .then(async response => {
-            console.log(response);
-            const json = await response.json();
-            updateData(json);
-            setIsLoadingData(false);
-          })
-          .catch(error => {
-            console.log(error);
-            updateData(null);
-            setIsLoadingData(false);
-          });
+        try {
+          const {
+            json,
+            newReadingsPageState,
+            theresMoreReadings
+          } = await readingsClient.getReadings(
+            node,
+            readingsPageSize,
+            readingsPageState
+          );
+          updateData(json);
+          console.log("Page state: ", newReadingsPageState);
+          setReadingsPageState(newReadingsPageState);
+          if (!theresMoreReadings) {
+            setTheresMoreReadings(false);
+          }
+          setIsLoadingData(false);
+        } catch (error) {
+          console.log(error);
+          updateData(null);
+          setIsLoadingData(false);
+        }
       }
     };
     fetchData();
@@ -229,6 +237,8 @@ export default function Measurements() {
     setIsLoadingData(true);
     updateData(undefined);
     setChecked([]);
+    setReadingsPageState("");
+    setTheresMoreReadings(true);
   };
 
   const handleNewMeasurementRequest = async () => {
@@ -297,6 +307,35 @@ export default function Measurements() {
         severity: "error",
         message: "Una o más mediciones no pudieron ser borradas"
       });
+    }
+  };
+
+  const handleLoadMoreReadings = async event => {
+    event.preventDefault();
+    if (theresMoreReadings) {
+      try {
+        const {
+          json,
+          newReadingsPageState,
+          theresMoreReadings
+        } = await readingsClient.getReadings(
+          node,
+          readingsPageSize,
+          readingsPageState
+        );
+        console.log("JSON ", json);
+        if (Array.isArray(json)) {
+          console.log("json is array");
+          updateData(data.concat(json));
+        }
+        setReadingsPageState(newReadingsPageState);
+        if (!theresMoreReadings) {
+          setTheresMoreReadings(false);
+        }
+      } catch (error) {
+        console.log(error);
+        // snack showing error
+      }
     }
   };
 
@@ -372,8 +411,15 @@ export default function Measurements() {
               </Box>
             </Box>
             <Box alignSelf="flex-end" className={classes.seeMore}>
-              <Link color="primary" href="#" onClick={preventDefault}>
-                Ver más mediciones
+              <Link
+                color="primary"
+                color={theresMoreReadings ? "primary" : "textPrimary"}
+                underline={theresMoreReadings ? "hover" : "none"}
+                onClick={handleLoadMoreReadings}
+              >
+                {theresMoreReadings
+                  ? "Ver más mediciones"
+                  : "No hay más mediciones"}
               </Link>
             </Box>
           </Box>
