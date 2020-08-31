@@ -1,5 +1,4 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -47,19 +46,7 @@ export const secondaryListItems = (
   </div>
 );
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    width: "100%",
-    maxWidth: 360,
-    backgroundColor: theme.palette.background.paper
-  },
-  font: {
-    fontSize: "0.75rem"
-  }
-}));
-
 export function tertiaryListItems() {
-  //const classes = useStyles();
   const email = getUser();
 
   return (
@@ -72,14 +59,14 @@ export function tertiaryListItems() {
         <ListItemText
           primary="Usuario"
           secondary={
-            <p
+            <span
               style={{
-                fontSize: "0.65rem",
+                fontSize: "0.7rem",
                 margin: 0
               }}
             >
               {email}
-            </p>
+            </span>
           }
         />
       </ListItem>
