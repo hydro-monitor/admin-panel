@@ -1,14 +1,19 @@
+import store from "store";
+
 export default class ReadingsClient {
   constructor(url) {
     this.url = url;
   }
 
   async deleteReadings(nodeId, readings) {
+    let myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${store.get("token")}`);
     const responses = readings.map(async reading => {
       const response = await fetch(
         `${this.url}/${nodeId}/readings/${reading.readingId}`,
         {
-          method: "delete"
+          method: "delete",
+          headers: myHeaders
         }
       );
       return response.ok;
@@ -19,13 +24,16 @@ export default class ReadingsClient {
   }
 
   async getReadings(nodeId, pageSize, pageState) {
+    let myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${store.get("token")}`);
     let theresMoreReadings = true;
     const response = await fetch(
       `${
         this.url
       }/${nodeId}/readings?page_size=${pageSize}&page_state=${encodeURIComponent(
         pageState
-      )}`
+      )}`,
+      { headers: myHeaders }
     );
     if (!response.ok) {
       throw Error(response.statusText);
@@ -46,7 +54,8 @@ export default class ReadingsClient {
           this.url
         }/${nodeId}/readings?page_size=${1}&page_state=${encodeURIComponent(
           newReadingsPageState
-        )}`
+        )}`,
+        { headers: myHeaders }
       );
       const nextNewReadingsPageState = eofCheck.headers.get("Page-State");
       if (
