@@ -82,7 +82,7 @@ function ManualMeasurementButton({ classes, onClick, disabled }) {
 
 function PhotoLink({ node, readingId }) {
   const classes = pictureStyles();
-  const [photo, setPhoto] = useState(null);
+  const [photo, setPhoto] = useState("");
   const [photoNotFound, setPhotoNotFound] = useState(false);
   const [open, setOpen] = useState(false);
   const getReadingPhotoURL =
@@ -95,8 +95,13 @@ function PhotoLink({ node, readingId }) {
       .then(handleErrors)
       .then(async response => {
         const blob = await response.blob();
-        const file = new File([blob], "dot.png", blob);
-        setPhoto(file);
+        const reader = new FileReader();
+        reader.readAsBinaryString(blob);
+        console.log(blob);
+        const newPhoto = btoa(reader.result);
+        console.log(newPhoto);
+        setPhoto(`data:image/jpeg;base64,${newPhoto}`);
+        console.log(photo);
         console.log("picture response is: ", response);
         setPhotoNotFound(false);
       })
