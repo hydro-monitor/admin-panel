@@ -82,6 +82,7 @@ function ManualMeasurementButton({ classes, onClick, disabled }) {
 
 function PhotoLink({ node, readingId }) {
   const classes = pictureStyles();
+  const [photo, setPhoto] = useState(null);
   const [photoNotFound, setPhotoNotFound] = useState(false);
   const [open, setOpen] = useState(false);
   const getReadingPhotoURL =
@@ -93,6 +94,9 @@ function PhotoLink({ node, readingId }) {
     await fetch(url, { headers: myHeaders })
       .then(handleErrors)
       .then(async response => {
+        const blob = await response.blob();
+        const file = new File([blob], "dot.png", blob);
+        setPhoto(file);
         console.log("picture response is: ", response);
         setPhotoNotFound(false);
       })
@@ -128,7 +132,11 @@ function PhotoLink({ node, readingId }) {
                   No existe ninguna foto asociada a esta medición.
                 </Alert>
               ) : (
-                <img className={classes.img} src={getReadingPhotoURL} />
+                <img
+                  className={classes.img}
+                  src={photo}
+                  alt={"Una tremenda foto, te mando un beso"}
+                />
               )}
             </Grid>
           </Grid>
