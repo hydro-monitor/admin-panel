@@ -31,6 +31,7 @@ import { isAdmin } from "../signin/utils";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import DeleteButton from "../components/DeleteButton";
 import Chart from "./ChartComponent";
+import store from "store";
 
 const nodesClient = new NodesClient(NODES_API);
 const readingsClient = new ReadingsClient(NODES_API);
@@ -87,7 +88,9 @@ function PhotoLink({ node, readingId }) {
     WEB_API + "/api/nodes/" + node + "/readings/" + readingId + "/photos";
 
   async function fetchConfig(url) {
-    await fetch(url)
+    let myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${store.get("token")}`);
+    await fetch(url, { headers: myHeaders })
       .then(handleErrors)
       .then(async response => {
         console.log("picture response is: ", response);
