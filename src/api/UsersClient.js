@@ -1,4 +1,4 @@
-import store from "store";
+import { getToken } from "../signin/utils";
 
 export default class UsersClient {
   constructor(baseUrl) {
@@ -19,7 +19,7 @@ export default class UsersClient {
   async getUserInfo(userName) {
     let headers = new Headers();
     headers.append("Accept", "application/json");
-    headers.append("Authorization", `Bearer ${store.get("token")}`);
+    headers.append("Authorization", `Bearer ${getToken()}`);
     const response = await fetch(`${this.baseUrl}/${userName}`, {
       method: "get",
       headers: headers
@@ -33,7 +33,7 @@ export default class UsersClient {
   async updateUserInfo(user, userInfo) {
     let headers = new Headers();
     headers.append("Content-Type", "application/json");
-    headers.append("Authorization", `Bearer ${store.get("token")}`);
+    headers.append("Authorization", `Bearer ${getToken()}`);
     const response = await fetch(`${this.baseUrl}/${user}`, {
       method: "put",
       headers: headers,
@@ -45,7 +45,7 @@ export default class UsersClient {
   async deleteUserInfo(user) {
     let headers = new Headers();
     headers.append("Content-Type", "application/json");
-    headers.append("Authorization", `Bearer ${store.get("token")}`);
+    headers.append("Authorization", `Bearer ${getToken()}`);
     const response = await fetch(`${this.baseUrl}/${user}`, {
       method: "delete",
       headers: headers
