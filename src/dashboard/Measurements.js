@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
 import Link from "@material-ui/core/Link";
 import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
@@ -28,7 +27,7 @@ import { sleep, not, union, intersection } from "../common/utils";
 import NodesClient from "../api/NodesClient";
 import ReadingsClient from "../api/ReadingsClient";
 import { WEB_API, NODES_API } from "../common/constants";
-import { isAdmin, tokenIsExpired, handleLogout } from "../signin/utils";
+import { isAdmin } from "../signin/utils";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import DeleteButton from "../components/DeleteButton";
 import Chart from "./ChartComponent";
