@@ -1,7 +1,7 @@
 import React from "react";
 import clsx from "clsx";
 import { Redirect, useHistory } from "react-router-dom";
-import { isLoggedIn, handleLogout } from "../signin/utils";
+import { isLoggedIn, tokenIsExpired, handleLogout } from "../signin/utils";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Drawer from "@material-ui/core/Drawer";
 import Box from "@material-ui/core/Box";
@@ -105,6 +105,9 @@ export default function Dashboard(props) {
 
   function renderContent() {
     if (!isLoggedIn()) {
+      return <Redirect to="/signin" />;
+    } else if (tokenIsExpired()) {
+      handleLogout(history);
       return <Redirect to="/signin" />;
     }
     return renderDashboard();

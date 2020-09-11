@@ -27,11 +27,10 @@ import { sleep, not, union, intersection } from "../common/utils";
 import NodesClient from "../api/NodesClient";
 import ReadingsClient from "../api/ReadingsClient";
 import { WEB_API, NODES_API } from "../common/constants";
-import { isAdmin } from "../signin/utils";
+import { isAdmin, getToken } from "../signin/utils";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import DeleteButton from "../components/DeleteButton";
 import Chart from "./ChartComponent";
-import store from "store";
 
 const nodesClient = new NodesClient(NODES_API);
 const readingsClient = new ReadingsClient(NODES_API);
@@ -90,7 +89,7 @@ function PhotoLink({ node, readingId }) {
 
   async function fetchConfig(url) {
     let myHeaders = new Headers();
-    myHeaders.append("Authorization", `Bearer ${store.get("token")}`);
+    myHeaders.append("Authorization", `Bearer ${getToken()}`);
     await fetch(url, { headers: myHeaders })
       .then(handleErrors)
       .then(async response => {

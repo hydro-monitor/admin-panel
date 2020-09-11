@@ -1,4 +1,4 @@
-import store from "store";
+import { getToken } from "../signin/utils";
 
 export default class ReadingsClient {
   constructor(url) {
@@ -7,7 +7,7 @@ export default class ReadingsClient {
 
   async deleteReadings(nodeId, readings) {
     let myHeaders = new Headers();
-    myHeaders.append("Authorization", `Bearer ${store.get("token")}`);
+    myHeaders.append("Authorization", `Bearer ${getToken()}`);
     const responses = readings.map(async reading => {
       const response = await fetch(
         `${this.url}/${nodeId}/readings/${reading.readingId}`,
@@ -25,7 +25,7 @@ export default class ReadingsClient {
 
   async getReadings(nodeId, pageSize, pageState) {
     let myHeaders = new Headers();
-    myHeaders.append("Authorization", `Bearer ${store.get("token")}`);
+    myHeaders.append("Authorization", `Bearer ${getToken()}`);
     let theresMoreReadings = true;
     const response = await fetch(
       `${
