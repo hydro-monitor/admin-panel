@@ -7,7 +7,7 @@ import EmptyMeasurement from "./EmptyMeasurement";
 import Measurement from "./Measurement";
 import { handleErrors } from "../common/server";
 import { WEB_API } from "../common/constants";
-import store from "store";
+import { getToken } from "../signin/utils";
 
 function MeasurementList({ nodes }) {
   let measurements = [];
@@ -42,7 +42,7 @@ export default function InitialDashboard(props) {
       setIsLoading(true);
       await sleep(1000); // TODO Remove when testing is done
       await fetch(nodesURL, {
-        headers: { Authorization: `Bearer ${store.get("token")}` }
+        headers: { Authorization: `Bearer ${getToken()}` }
       })
         .then(handleErrors)
         .then(async response => {

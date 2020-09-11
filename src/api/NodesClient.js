@@ -1,4 +1,4 @@
-import store from "store";
+import { getToken } from "../signin/utils";
 
 export default class NodesClient {
   constructor(url) {
@@ -23,7 +23,7 @@ export default class NodesClient {
 
   async getNodes() {
     let myHeaders = new Headers();
-    myHeaders.append("Authorization", `Bearer ${store.get("token")}`);
+    myHeaders.append("Authorization", `Bearer ${getToken()}`);
     const response = this.handleErrors(
       await fetch(this.url, { headers: myHeaders })
     );
@@ -36,7 +36,7 @@ export default class NodesClient {
 
   async getNodeConfiguration(nodeId) {
     let myHeaders = new Headers();
-    myHeaders.append("Authorization", `Bearer ${store.get("token")}`);
+    myHeaders.append("Authorization", `Bearer ${getToken()}`);
     const response = this.handleErrors(
       await fetch(`${this.url}/${nodeId}/configuration`, { headers: myHeaders })
     );
@@ -55,7 +55,7 @@ export default class NodesClient {
         method: "post",
         body: configurationString,
         headers: {
-          Authorization: `Bearer ${store.get("token")}`,
+          Authorization: `Bearer ${getToken()}`,
           Accept: "application/json",
           "Content-Type": "application/json"
         }
@@ -71,7 +71,7 @@ export default class NodesClient {
   async createNode(nodeId, description) {
     let myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
-    myHeaders.append("Authorization", `Bearer ${store.get("token")}`);
+    myHeaders.append("Authorization", `Bearer ${getToken()}`);
     return fetch(this.url, {
       method: "post",
       headers: myHeaders,
@@ -81,7 +81,7 @@ export default class NodesClient {
 
   async deleteNode(nodeId) {
     let myHeaders = new Headers();
-    myHeaders.append("Authorization", `Bearer ${store.get("token")}`);
+    myHeaders.append("Authorization", `Bearer ${getToken()}`);
     const response = await fetch(`${this.url}/${nodeId}`, {
       method: "delete",
       headers: myHeaders
@@ -93,7 +93,7 @@ export default class NodesClient {
   async updateNode(nodeId, nodeInfo) {
     let myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
-    myHeaders.append("Authorization", `Bearer ${store.get("token")}`);
+    myHeaders.append("Authorization", `Bearer ${getToken()}`);
     const response = await fetch(`${this.url}/${nodeId}`, {
       method: "put",
       headers: myHeaders,
