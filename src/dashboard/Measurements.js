@@ -94,14 +94,7 @@ function PhotoLink({ node, readingId }) {
       .then(handleErrors)
       .then(async response => {
         const blob = await response.blob();
-        const reader = new FileReader();
-        reader.readAsBinaryString(blob);
-        console.log(blob);
-        const newPhoto = btoa(reader.result);
-        console.log(newPhoto);
-        setPhoto(`data:image/jpeg;base64,${newPhoto}`);
-        console.log(photo);
-        console.log("picture response is: ", response);
+        setPhoto(URL.createObjectURL(blob));
         setPhotoNotFound(false);
       })
       .catch(error => {
