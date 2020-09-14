@@ -17,3 +17,10 @@ export const intersection = (a, b) => {
 export const union = (a, b) => {
   return [...a, ...not(b, a)];
 };
+
+export const manualReadingBoolToString = wasManual => {
+  if (wasManual) {
+    return "Manual";
+  }
+  return "Programada";
+};

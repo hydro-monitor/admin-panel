@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   VictoryChart,
   VictoryTheme,
@@ -6,15 +6,27 @@ import {
   VictoryZoomContainer,
   VictoryLine,
   VictoryBrushContainer,
-  VictoryAxis
+  VictoryAxis,
+  VictoryTooltip
 } from "victory";
+import { manualReadingBoolToString } from "../common/utils";
 
-const initializeChartState = data => {
-  const procData = data.map(row => ({
+const processData = data => {
+  return data.map(row => ({
     time: new Date(row.readingTime),
     level: row.waterLevel,
-    id: row.readingId
+    id: row.readingId,
+    label: [
+      `ID: ${row.readingId}`,
+      `Timestamp: ${new Date(row.readingTime).toString()}`,
+      `Nivel de agua: ${row.waterLevel}`,
+      `Tipo: ${manualReadingBoolToString(row.manualReading)}`
+    ]
   }));
+};
+
+const initializeChartState = data => {
+  const procData = processData(data);
   const leftZoom = procData.length > 10 ? 10 : procData.length - 1;
   return {
     data: { data: procData },
@@ -32,6 +44,13 @@ const Chart = props => {
     domain => setChartState({ ...chartState, zoomDomain: domain }),
     [chartState]
   );
+
+  useEffect(() => {
+    console.log("Processing data...", data);
+    setChartState(prevChartState => {
+      return { ...prevChartState, data: { data: processData(data) } };
+    });
+  }, [data]);
 
   return (
     <div>
@@ -68,6 +87,7 @@ const Chart = props => {
         <VictoryLine
           theme={VictoryTheme.material}
           data={chartState.data.data}
+          labelComponent={<VictoryTooltip active={false} />}
           x="time"
           y="level"
           style={{
@@ -76,6 +96,7 @@ const Chart = props => {
         />
         <VictoryScatter
           data={chartState.data.data}
+          labelComponent={<VictoryTooltip />}
           x="time"
           y="level"
           size={2}
@@ -107,6 +128,7 @@ const Chart = props => {
         <VictoryLine
           theme={VictoryTheme.material}
           data={chartState.data.data}
+          labelComponent={<VictoryTooltip active={false} />}
           x="time"
           y="level"
           style={{
