@@ -11,7 +11,7 @@ import Alert from "@material-ui/lab/Alert";
 import { sleep } from "../common/utils";
 import {
   RestoreConfigurationButton,
-  UpdateConfigurationButton
+  UpdateConfigurationButton,
 } from "./Buttons";
 import NodesClient from "../api/NodesClient";
 import { isNumeric } from "../common/utils";
@@ -22,28 +22,28 @@ import { NODES_API } from "../common/constants";
 
 const nodesClient = new NodesClient(NODES_API);
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   configButtons: {
     display: "inline-flex",
-    justifyContent: "flex-end"
+    justifyContent: "flex-end",
   },
   restoreButton: {
     alignSelf: "flex-end",
     marginRight: "10px",
-    marginBottom: "2px"
+    marginBottom: "2px",
   },
   configChangesNotSaved: {
     alignSelf: "flex-end",
     marginRight: "10px",
-    marginBottom: "8px"
+    marginBottom: "8px",
   },
   description: {
     paddingTop: "10px",
-    paddingBottom: "10px"
-  }
+    paddingBottom: "10px",
+  },
 }));
 
-export default function Nodes({
+export default function NodeConfiguration({
   node,
   setNode,
   nodes,
@@ -58,7 +58,7 @@ export default function Nodes({
   changeNodeAndTable,
   setSnackbarData,
   configGetError,
-  setConfigGetError
+  setConfigGetError,
 }) {
   const classes = useStyles();
 
@@ -112,7 +112,7 @@ export default function Nodes({
             setSnackbarData({
               open: true,
               severity: "error",
-              message: "El nodo no posee una configuración activa"
+              message: "El nodo no posee una configuración activa",
             });
           } else {
             // If the error is not found, allow to send a config, if not, set config get error
@@ -126,7 +126,7 @@ export default function Nodes({
     })();
   }, [node, isLoading, setSnackbarData]);
 
-  const addStateNamePropertyToConfiguration = configuration => {
+  const addStateNamePropertyToConfiguration = (configuration) => {
     let stateNames = Object.keys(configuration);
     let statesNum = stateNames.length;
     for (let i = 0; i < statesNum; i++) {
@@ -151,14 +151,14 @@ export default function Nodes({
     if (!(stateName in config)) {
       configUpdated = {
         [stateName]: { stateName: stateName, [propName]: value },
-        ...config
+        ...config,
       };
     } else {
       let { [stateName]: oldState, ...configWithoutUpdatedState } = config;
       let { [propName]: omit, ...stateWithoutUpdatedProp } = oldState;
       configUpdated = {
         [stateName]: { [propName]: value, ...stateWithoutUpdatedProp },
-        ...configWithoutUpdatedState
+        ...configWithoutUpdatedState,
       };
     }
     updateConfig(configUpdated);
@@ -178,14 +178,14 @@ export default function Nodes({
         interval: "",
         picturesNum: 1,
         upperLimit: "",
-        lowerLimit: ""
-      }
+        lowerLimit: "",
+      },
     };
     updateConfig(configUpdated);
     setConfigChangesNotSaved();
   };
 
-  const handleCustomStateDeletion = deletedStateName => {
+  const handleCustomStateDeletion = (deletedStateName) => {
     let { [deletedStateName]: omit, ...configUpdated } = config;
     updateConfig(configUpdated);
     setConfigChangesNotSaved();
@@ -197,7 +197,7 @@ export default function Nodes({
     setSnackbarData({
       open: true,
       severity: "info",
-      message: "Configuración de nodo restaurada"
+      message: "Configuración de nodo restaurada",
     });
   };
 

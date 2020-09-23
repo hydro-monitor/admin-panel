@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Dashboard from "../dashboard/Dashboard";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
-import Nodes from "./Nodes";
+import NodeConfiguration from "./NodeConfiguration";
 import { useStyles } from "../dashboard/dashboardStyles";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
 
@@ -19,10 +19,10 @@ export default function ConfigurationsDashboard(props) {
   const [snackbarData, setSnackbarData] = useState({
     open: false,
     severity: "",
-    message: ""
+    message: "",
   });
 
-  const changeNodeAndTable = name => {
+  const changeNodeAndTable = (name) => {
     console.log("changing node and table to ", name);
     setNode(name);
     setNodeDescription(nodesData[name].description);
@@ -35,7 +35,7 @@ export default function ConfigurationsDashboard(props) {
     <Dashboard {...props} title="Configuraciones">
       <Grid item xs={12}>
         <Paper className={classes.paper}>
-          <Nodes
+          <NodeConfiguration
             node={node}
             setNode={setNode}
             nodes={nodes}
