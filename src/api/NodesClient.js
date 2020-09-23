@@ -1,3 +1,5 @@
+import { getToken } from "../signin/utils";
+
 export default class NodesClient {
   constructor(url) {
     this.url = url;
@@ -20,7 +22,11 @@ export default class NodesClient {
   }
 
   async getNodes() {
-    const response = this.handleErrors(await fetch(this.url));
+    let myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${getToken()}`);
+    const response = this.handleErrors(
+      await fetch(this.url, { headers: myHeaders })
+    );
     const json = await response.json();
     if (json == null) {
       return {};
@@ -29,27 +35,27 @@ export default class NodesClient {
   }
 
   async getNodeConfiguration(nodeId) {
+    let myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${getToken()}`);
     const response = this.handleErrors(
-      await fetch(`${this.url}/${nodeId}/configuration`)
+      await fetch(`${this.url}/${nodeId}/configuration`, { headers: myHeaders })
     );
     const json = await response.json();
     if (json == null) {
-      console.log("Error turning config to json");
+      console.error("Error turning config to json");
       return "";
     }
     return json;
   }
 
   async updateNodeConfiguration(nodeId, configuration) {
-    console.log("Updating configuration...");
-    console.log(configuration);
     const configurationString = JSON.stringify(configuration, null, 2);
-    console.log(configurationString);
     const response = this.handleErrors(
       await fetch(`${this.url}/${nodeId}/configuration`, {
         method: "post",
         body: configurationString,
         headers: {
+          Authorization: `Bearer ${getToken()}`,
           Accept: "application/json",
           "Content-Type": "application/json"
         }
@@ -63,10 +69,9 @@ export default class NodesClient {
   }
 
   async createNode(nodeId, description) {
-    console.log(nodeId);
-    console.log(description);
     let myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
+    myHeaders.append("Authorization", `Bearer ${getToken()}`);
     return fetch(this.url, {
       method: "post",
       headers: myHeaders,
@@ -75,7 +80,12 @@ export default class NodesClient {
   }
 
   async deleteNode(nodeId) {
-    const response = await fetch(`${this.url}/${nodeId}`, { method: "delete" });
+    let myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${getToken()}`);
+    const response = await fetch(`${this.url}/${nodeId}`, {
+      method: "delete",
+      headers: myHeaders
+    });
     console.log(response);
     return response.ok;
   }
@@ -83,6 +93,7 @@ export default class NodesClient {
   async updateNode(nodeId, nodeInfo) {
     let myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
+    myHeaders.append("Authorization", `Bearer ${getToken()}`);
     const response = await fetch(`${this.url}/${nodeId}`, {
       method: "put",
       headers: myHeaders,

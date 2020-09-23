@@ -5,9 +5,17 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import TextField from "@material-ui/core/TextField";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
+import LinearProgress from "@material-ui/core/LinearProgress";
+import Alert from "@material-ui/lab/Alert";
+import Stepper from "@material-ui/core/Stepper";
+import Step from "@material-ui/core/Step";
+import StepLabel from "@material-ui/core/StepLabel";
 import NodesClient from "../api/NodesClient";
 import { NODES_API } from "../common/constants";
+import { sleep } from "../common/utils";
 
 const nodesClient = new NodesClient(NODES_API);
 
@@ -27,6 +35,46 @@ function NodeCreatePanel({
   const [nodeToCreate, setNodeToCreate] = useState("");
   const [nodeToCreateError, setNodeToCreateError] = useState(false);
   const [nodeToCreateErrorMessage, setNodeToCreateErrorMessage] = useState("");
+  const [nodePassword, setNodePassword] = useState("");
+
+  const [nodeCreateStep, setNodeCreateStep] = useState(0);
+  const nodeCreateStepStart = "Crear nodo";
+  const nodeCreateStepWaiting = "Esperar creación";
+  const nodeCreateStepDone = "Obtener contraseña";
+  const getSteps = () => {
+    return [nodeCreateStepStart, nodeCreateStepWaiting, nodeCreateStepDone];
+  };
+  const steps = getSteps();
+  const handleResetStep = () => {
+    setNodeCreateStep(0);
+  };
+  const prepareForNextStep = step => {
+    switch (step) {
+      case 0:
+        return handleCreateConfirmation();
+      case 1:
+        return;
+      case 2:
+        return handleCreateConfirmClose();
+      default:
+        return "Unknown step";
+    }
+  };
+  const handleNextStep = () => {
+    setNodeCreateStep(prevActiveStep => prevActiveStep + 1);
+  };
+  const getStepContent = step => {
+    switch (step) {
+      case 0:
+        return newNodeDialog();
+      case 1:
+        return waitingNewNode();
+      case 2:
+        return newNodeSuccess();
+      default:
+        return "Unknown step";
+    }
+  };
 
   const handleNodeToCreate = event => {
     setNodeToCreate(event.target.value);
@@ -56,25 +104,28 @@ function NodeCreatePanel({
     if (nodeToCreate.localeCompare("") === 0) {
       handleNodeToCreateError();
     } else {
+      handleNextStep(); // Go to waiting step
       (async () => {
         const response = await nodesClient.createNode(
           nodeToCreate,
           descriptionOfNodeToCreate
         );
+        await sleep(1000); // TODO Remove when testing is done
         handleNodeCreationResult(
           response,
           nodeToCreate,
           descriptionOfNodeToCreate
         );
-        handleCreateConfirmClose();
       })();
     }
   };
 
   const handleCreateConfirmClose = () => {
+    handleCreateDialogClose();
+    handleResetStep();
     setNodeToCreate("");
     setDescriptionOfNodeToCreate("");
-    handleCreateDialogClose();
+    setNodePassword("");
     handleNodeToCreateValidation();
   };
 
@@ -82,6 +133,7 @@ function NodeCreatePanel({
     if (response.ok) {
       try {
         const updatedConfiguration = await nodesClient.updateNodeConfiguration(
+          // TODO conviene ponerlo en el server, es probable que caiga en un cassandra que no conoce del nuevo nodo y falle la carga de su config
           nodeName,
           { default: { interval: 21600, picturesNum: 1 } }
         );
@@ -92,13 +144,13 @@ function NodeCreatePanel({
       } catch (e) {
         console.log("error creating default config", e);
       }
-      setSnackbarData({
-        open: true,
-        severity: "success",
-        message: "Nodo creado con éxito"
-      });
+      const json = await response.json();
+      console.log("JSON response was: ", json);
+      setNodePassword(json.password); // TODO change to password
       addNewNodeToState(nodeName, description);
+      handleNextStep(); // Go to show password step
     } else {
+      handleCreateConfirmClose();
       setSnackbarData({
         open: true,
         severity: "error",
@@ -107,41 +159,103 @@ function NodeCreatePanel({
     }
   };
 
+  function newNodeDialog() {
+    return (
+      <React.Fragment>
+        <DialogTitle id="form-dialog-title">Crear nuevo nodo</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            id="name"
+            label="Nombre"
+            onChange={handleNodeToCreate}
+            required={true}
+            error={nodeToCreateError}
+            helperText={nodeToCreateErrorMessage}
+            className={classes.nameForm}
+            fullWidth
+          />
+          <TextField
+            id="description"
+            label="Descripción"
+            value={descriptionOfNodeToCreate}
+            onChange={handleDescriptionOfNodeToCreate}
+            multiline
+            rows="4"
+            fullWidth
+          />
+        </DialogContent>
+      </React.Fragment>
+    );
+  }
+
+  function waitingNewNode() {
+    return (
+      <React.Fragment>
+        <DialogTitle id="form-dialog-title">
+          Creando nodo {nodeToCreate}
+        </DialogTitle>
+        <DialogContent>
+          <LinearProgress />
+        </DialogContent>
+      </React.Fragment>
+    );
+  }
+
+  function newNodeSuccess() {
+    return (
+      <React.Fragment>
+        <DialogTitle id="form-dialog-title">
+          Nodo {nodeToCreate} creado
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText component={"div"}>
+            <Typography gutterBottom>
+              El nodo {nodeToCreate} fue creado satisfactoriamente. Para
+              utilizarlo, debe configurarlo con la siguiente contraseña:
+            </Typography>
+            <TextField
+              autoFocus
+              id="node-password"
+              label="Contraseña de nodo"
+              value={nodePassword}
+              disabled
+              fullWidth
+            />
+          </DialogContentText>
+          <Alert severity="warning">
+            Sin esta contraseña el nodo no podrá cargar mediciones. De perderla,
+            se deberá recrear el nodo para obtener una nueva.
+          </Alert>
+        </DialogContent>
+      </React.Fragment>
+    );
+  }
+
   return (
     <Dialog
       open={open}
       onClose={handleCreateConfirmClose}
       aria-labelledby="form-dialog-title"
     >
-      <DialogTitle id="form-dialog-title">Crear nuevo nodo</DialogTitle>
-      <DialogContent>
-        <TextField
-          autoFocus
-          id="name"
-          label="Nombre"
-          onChange={handleNodeToCreate}
-          required={true}
-          error={nodeToCreateError}
-          helperText={nodeToCreateErrorMessage}
-          className={classes.nameForm}
-          fullWidth
-        />
-        <TextField
-          id="description"
-          label="Descripción"
-          value={descriptionOfNodeToCreate}
-          onChange={handleDescriptionOfNodeToCreate}
-          multiline
-          rows="4"
-          fullWidth
-        />
-      </DialogContent>
+      {getStepContent(nodeCreateStep)}
+      <Stepper activeStep={nodeCreateStep}>
+        {steps.map(label => {
+          return (
+            <Step key={label}>
+              <StepLabel>{label}</StepLabel>
+            </Step>
+          );
+        })}
+      </Stepper>
+
       <DialogActions>
-        <Button onClick={handleCreateConfirmClose} color="primary">
-          Cancelar
-        </Button>
-        <Button onClick={handleCreateConfirmation} color="primary">
-          Crear
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => prepareForNextStep(nodeCreateStep)}
+        >
+          {nodeCreateStep === steps.length - 1 ? "Cerrar" : "Siguiente"}
         </Button>
       </DialogActions>
     </Dialog>

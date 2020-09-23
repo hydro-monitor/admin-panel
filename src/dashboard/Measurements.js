@@ -27,7 +27,7 @@ import { sleep, not, union, intersection } from "../common/utils";
 import NodesClient from "../api/NodesClient";
 import ReadingsClient from "../api/ReadingsClient";
 import { WEB_API, NODES_API } from "../common/constants";
-import { isAdmin } from "../signin/utils";
+import { isAdmin, getToken } from "../signin/utils";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import DeleteButton from "../components/DeleteButton";
 import Chart from "./ChartComponent";
@@ -81,16 +81,20 @@ function ManualMeasurementButton({ classes, onClick, disabled }) {
 
 function PhotoLink({ node, readingId }) {
   const classes = pictureStyles();
+  const [photo, setPhoto] = useState("");
   const [photoNotFound, setPhotoNotFound] = useState(false);
   const [open, setOpen] = useState(false);
   const getReadingPhotoURL =
     WEB_API + "/api/nodes/" + node + "/readings/" + readingId + "/photos";
 
   async function fetchConfig(url) {
-    await fetch(url)
+    let myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${getToken()}`);
+    await fetch(url, { headers: myHeaders })
       .then(handleErrors)
       .then(async response => {
-        console.log("picture response is: ", response);
+        const blob = await response.blob();
+        setPhoto(URL.createObjectURL(blob));
         setPhotoNotFound(false);
       })
       .catch(error => {
@@ -125,7 +129,11 @@ function PhotoLink({ node, readingId }) {
                   No existe ninguna foto asociada a esta medición.
                 </Alert>
               ) : (
-                <img className={classes.img} src={getReadingPhotoURL} />
+                <img
+                  className={classes.img}
+                  src={photo}
+                  alt={"Una tremenda foto, te mando un beso"}
+                />
               )}
             </Grid>
           </Grid>
