@@ -5,16 +5,15 @@ import Grid from "@material-ui/core/Grid";
 import StateForm from "./StateForm";
 import Typography from "@material-ui/core/Typography";
 
-const styles = theme => ({});
+const styles = (theme) => ({});
 
 function ConfigurationForm(props) {
   const {
-    classes,
     config,
     disabled,
     handleConfigurationUpdate,
     handleCustomStateAddition,
-    handleCustomStateDeletion
+    handleCustomStateDeletion,
   } = props;
 
   const renderCustomStateForms = () => {

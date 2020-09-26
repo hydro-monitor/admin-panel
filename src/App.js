@@ -1,7 +1,7 @@
 import React from "react";
 import "./App.css";
-import InitialDashboard from "./dashboard/InitialDashboard";
-import MeasurementsDashboard from "./dashboard/MeasurementsDashboard";
+import InitialDashboard from "./initial/InitialDashboard";
+import MeasurementsDashboard from "./measurements/MeasurementsDashboard";
 import ConfigurationsDashboard from "./configuration/ConfigurationsDashboard";
 import NodesDashboard from "./node/NodesDashboard";
 import UserDashboard from "./user/UserDashboard";
