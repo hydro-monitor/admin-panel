@@ -19,4 +19,8 @@ COPY . .
 EXPOSE 3000
  
 # Finally runs the application
+ENV HTTPS true
+ENV SSL_CRT_FILE cert.pem
+ENV SSL_KEY_FILE key.pem
+
 CMD ["npm", "start"]
