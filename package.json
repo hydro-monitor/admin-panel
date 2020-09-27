@@ -55,6 +55,5 @@
       "pre-commit": "lint-staged"
     }
   },
-  "proxy": "http://panel-api-proxy",
-  "homepage": "https://azure-3.hydromon-1.software:80"
+  "proxy": "http://panel-api-proxy"
 }
