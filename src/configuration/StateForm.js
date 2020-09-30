@@ -6,10 +6,10 @@ import Box from "@material-ui/core/Box";
 import DeleteButton from "../components/DeleteButton";
 import { isNumeric } from "../common/utils";
 
-const styles = theme => ({
+const styles = (theme) => ({
   outline: {
-    padding: "10px"
-  }
+    padding: "10px",
+  },
 });
 
 function StateForm(props) {
@@ -17,16 +17,16 @@ function StateForm(props) {
     classes,
     stateNameValue,
     intervalValue,
-    picturesNumValue,
+    //picturesNumValue,
     lowerLimitValue,
     upperLimitValue,
     onChange,
     isDefault,
     onDeleteStateClick,
-    disabled
+    disabled,
   } = props;
 
-  const handleChange = event => {
+  const handleChange = (event) => {
     onChange(event.target.name, event.target.value);
   };
 

@@ -3,8 +3,8 @@ import clsx from "clsx";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import Grow from "@material-ui/core/Grow";
-import Title from "./Title";
-import { useStyles } from "./dashboardStyles";
+import Title from "../dashboard/Title";
+import { useStyles } from "../dashboard/dashboardStyles";
 
 export default function EmptyMeasurement({ node }) {
   const classes = useStyles();

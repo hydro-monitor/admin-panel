@@ -1,9 +1,9 @@
 import React from "react";
-import Dashboard from "./Dashboard";
+import Dashboard from "../dashboard/Dashboard";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import Measurements from "./Measurements";
-import { useStyles } from "./dashboardStyles";
+import { useStyles } from "../dashboard/dashboardStyles";
 
 export default function MeasurementsDashboard(props) {
   const classes = useStyles();

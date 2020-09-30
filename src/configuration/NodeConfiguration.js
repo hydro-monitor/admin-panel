@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Title from "../dashboard/Title";
 import TextField from "@material-ui/core/TextField";
 import Grow from "@material-ui/core/Grow";
-import NodesSelect from "../dashboard/NodesSelect";
+import NodesSelect from "../components/NodesSelect";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";

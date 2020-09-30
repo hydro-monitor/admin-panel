@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Dashboard from "./Dashboard";
+import Dashboard from "../dashboard/Dashboard";
 import Grid from "@material-ui/core/Grid";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { sleep } from "../common/utils";
@@ -11,7 +11,7 @@ import { getToken } from "../signin/utils";
 
 function MeasurementList({ nodes }) {
   let measurements = [];
-  Object.keys(nodes).forEach(id => {
+  Object.keys(nodes).forEach((id) => {
     if (nodes[id]) {
       measurements.push(
         <Grid item xs={12} md={4} lg={3} key={id}>
@@ -42,15 +42,15 @@ export default function InitialDashboard(props) {
       setIsLoading(true);
       await sleep(1000); // TODO Remove when testing is done
       await fetch(nodesURL, {
-        headers: { Authorization: `Bearer ${getToken()}` }
+        headers: { Authorization: `Bearer ${getToken()}` },
       })
         .then(handleErrors)
-        .then(async response => {
+        .then(async (response) => {
           const json = await response.json();
           setNodes(json);
           setIsLoading(false);
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
           setNodes([]);
           // Render error

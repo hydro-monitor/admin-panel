@@ -13,8 +13,8 @@ import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
 import IconButton from "@material-ui/core/IconButton";
 import AddIcon from "@material-ui/icons/Add";
-import Title from "./Title";
-import NodesSelect from "./NodesSelect";
+import Title from "../dashboard/Title";
+import NodesSelect from "../components/NodesSelect";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import PhotoIcon from "@material-ui/icons/Photo";
 import Alert from "@material-ui/lab/Alert";
@@ -23,46 +23,45 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import Button from "@material-ui/core/Button";
 import { handleErrors } from "../common/server";
-import { sleep, not, union, intersection } from "../common/utils";
+import {
+  sleep,
+  not,
+  union,
+  intersection,
+  manualReadingBoolToString,
+} from "../common/utils";
 import NodesClient from "../api/NodesClient";
 import ReadingsClient from "../api/ReadingsClient";
 import { WEB_API, NODES_API } from "../common/constants";
 import { isAdmin, getToken } from "../signin/utils";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import DeleteButton from "../components/DeleteButton";
-import Chart from "./ChartComponent";
+import Chart from "../components/Chart";
 
 const nodesClient = new NodesClient(NODES_API);
 const readingsClient = new ReadingsClient(NODES_API);
 
-function manualReadingBoolToString(wasManual) {
-  if (wasManual) {
-    return "Manual";
-  }
-  return "Programada";
-}
-
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   seeMore: {
-    marginTop: theme.spacing(3)
+    marginTop: theme.spacing(3),
   },
   description: {
     paddingTop: "10px",
-    paddingBottom: "10px"
+    paddingBottom: "10px",
   },
   newMeasurementButton: {
-    marginBottom: theme.spacing(1)
+    marginBottom: theme.spacing(1),
   },
   deleteMeasurementsButton: {
-    paddingLeft: "20px"
-  }
+    paddingLeft: "20px",
+  },
 }));
 
-const pictureStyles = makeStyles(theme => ({
+const pictureStyles = makeStyles((theme) => ({
   img: {
     maxHeight: "100%",
-    maxWidth: "100%"
-  }
+    maxWidth: "100%",
+  },
 }));
 
 function ManualMeasurementButton({ classes, onClick, disabled }) {
@@ -92,12 +91,12 @@ function PhotoLink({ node, readingId }) {
     myHeaders.append("Authorization", `Bearer ${getToken()}`);
     await fetch(url, { headers: myHeaders })
       .then(handleErrors)
-      .then(async response => {
+      .then(async (response) => {
         const blob = await response.blob();
         setPhoto(URL.createObjectURL(blob));
         setPhotoNotFound(false);
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
         setPhotoNotFound(true);
       });
@@ -132,7 +131,7 @@ function PhotoLink({ node, readingId }) {
                 <img
                   className={classes.img}
                   src={photo}
-                  alt={"Una tremenda foto, te mando un beso"}
+                  alt={"Foto de medición"}
                 />
               )}
             </Grid>
@@ -163,7 +162,7 @@ export default function Measurements() {
   const [snackbarData, setSnackbarData] = useState({
     open: false,
     severity: "",
-    message: ""
+    message: "",
   });
   const [checked, setChecked] = useState([]);
   const [readingsPageState, setReadingsPageState] = useState("");
@@ -206,7 +205,7 @@ export default function Measurements() {
           const {
             json,
             newReadingsPageState,
-            theresMoreReadings
+            theresMoreReadings,
           } = await readingsClient.getReadings(
             node,
             readingsPageSize,
@@ -238,7 +237,7 @@ export default function Measurements() {
     checked
   );
 
-  const changeNodeAndTable = name => {
+  const changeNodeAndTable = (name) => {
     setNode(name);
     setNodeDescription(nodesData[name].description);
     setIsLoadingData(true);
@@ -254,18 +253,18 @@ export default function Measurements() {
       setSnackbarData({
         open: true,
         severity: "success",
-        message: "Medición manual pedida"
+        message: "Medición manual pedida",
       });
     } else {
       setSnackbarData({
         open: true,
         severity: "error",
-        message: "Error al pedir una medición manual"
+        message: "Error al pedir una medición manual",
       });
     }
   };
 
-  const handleDeleteCheckToggle = value => () => {
+  const handleDeleteCheckToggle = (value) => () => {
     const currentIndex = checked.indexOf(value);
     const newChecked = [...checked];
 
@@ -278,7 +277,7 @@ export default function Measurements() {
     setChecked(newChecked);
   };
 
-  const handleDeleteToggleAll = items => () => {
+  const handleDeleteToggleAll = (items) => () => {
     if (numberOfDeletesChecked(items) === items.length) {
       setChecked(not(checked, items));
     } else {
@@ -286,14 +285,14 @@ export default function Measurements() {
     }
   };
 
-  const numberOfDeletesChecked = items => intersection(checked, items).length;
+  const numberOfDeletesChecked = (items) => intersection(checked, items).length;
 
-  const handleDeleteMeasurement = async items => {
+  const handleDeleteMeasurement = async (items) => {
     console.log("Deleting items: ", items);
     setSnackbarData({
       open: true,
       severity: "info",
-      message: "Eliminando mediciones seleccionadas"
+      message: "Eliminando mediciones seleccionadas",
     });
 
     const result = readingsClient.deleteReadings(node, items);
@@ -306,25 +305,25 @@ export default function Measurements() {
       setSnackbarData({
         open: true,
         severity: "success",
-        message: "Mediciones eliminadas"
+        message: "Mediciones eliminadas",
       });
     } else {
       setSnackbarData({
         open: true,
         severity: "error",
-        message: "Una o más mediciones no pudieron ser borradas"
+        message: "Una o más mediciones no pudieron ser borradas",
       });
     }
   };
 
-  const handleLoadMoreReadings = async event => {
+  const handleLoadMoreReadings = async (event) => {
     event.preventDefault();
     if (theresMoreReadings) {
       try {
         const {
           json,
           newReadingsPageState,
-          theresMoreReadings
+          theresMoreReadings,
         } = await readingsClient.getReadings(
           node,
           readingsPageSize,
@@ -347,7 +346,13 @@ export default function Measurements() {
   function renderData() {
     return (
       <React.Fragment>
-        <Chart data={Array.isArray(data) ? data : []} />
+        {data.length >= 2 ? (
+          <Chart data={Array.isArray(data) ? data : []} />
+        ) : (
+          <Alert severity="info">
+            No hay suficientes mediciones para graficar
+          </Alert>
+        )}
         <Grow in>
           <Table size="small">
             <TableHead>
@@ -375,7 +380,7 @@ export default function Measurements() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {data.map(row => (
+              {data.map((row) => (
                 <TableRow key={row.readingId}>
                   <TableCell>
                     <Checkbox
@@ -417,7 +422,6 @@ export default function Measurements() {
             </Box>
             <Box alignSelf="flex-end" className={classes.seeMore}>
               <Link
-                color="primary"
                 color={theresMoreReadings ? "primary" : "textPrimary"}
                 underline={theresMoreReadings ? "hover" : "none"}
                 onClick={handleLoadMoreReadings}
