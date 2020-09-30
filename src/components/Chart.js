@@ -43,7 +43,7 @@ const initializeChartState = (data) => {
   return {
     data: { data: procData },
     zoomDomain: {
-      x: [procData[leftZoom].time, procData[0].time], // fixme dos valores iguales cuando hay una sola medicion
+      x: [procData[leftZoom].time, procData[0].time], // dos valores iguales cuando hay una sola medicion
     },
   };
 };
@@ -51,8 +51,6 @@ const initializeChartState = (data) => {
 const Chart = (props) => {
   const { data } = props;
   const [chartState, setChartState] = useState(initializeChartState(data));
-
-  console.log("DEBUG: ", chartState); // todo remove me
 
   const handleZoom = useCallback(
     (domain) => setChartState({ ...chartState, zoomDomain: domain }),
