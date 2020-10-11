@@ -21,7 +21,8 @@ function CopiableTextField(props) {
 
   const handleClick = () => {
     console.log("Copying to clipboard", value);
-    document.execCommand(value);
+    await navigator.clipboard.writeText(value);
+    console.log("Copied");
   };
 
   return (
