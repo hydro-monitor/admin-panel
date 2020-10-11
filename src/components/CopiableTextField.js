@@ -20,6 +20,7 @@ function CopiableTextField(props) {
   const { classes, value, label } = props;
 
   const handleClick = () => {
+    console.log("Copying to clipboard", value);
     document.execCommand(value);
   };
 
