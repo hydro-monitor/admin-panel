@@ -72,6 +72,7 @@ const Chart = (props) => {
         height={300}
         padding={{ top: 50, bottom: 50, left: 80, right: 50 }}
         scale={{ x: "time" }}
+	domain={{y: [ Math.min.apply(Math, chartState.data.data.map(function(o) { return o.level; })) - 1, Math.max.apply(Math, chartState.data.data.map(function(o) { return o.level; })) + 1]}}
         containerComponent={
           <VictoryZoomContainer
             zoomDimension="x"
@@ -115,7 +116,7 @@ const Chart = (props) => {
           labelComponent={<VictoryTooltip />}
           x="time"
           y="level"
-          size={2}
+          size={3}
           style={{ data: { fill: "#3f51b5" } }}
         />
       </VictoryChart>
