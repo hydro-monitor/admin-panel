@@ -52,7 +52,7 @@ const initializeChartState = (data) => {
     return {
       data: { data: procData },
       zoomDomain: {
-        y: getYAxisDomain(data),
+        y: getYAxisDomain(procData),
         x: [yesterday, today],
       },
     };
@@ -61,7 +61,7 @@ const initializeChartState = (data) => {
   return {
     data: { data: procData },
     zoomDomain: {
-      y: getYAxisDomain(data),
+      y: getYAxisDomain(procData),
       x: [procData[leftZoom].time, procData[0].time], // dos valores iguales cuando hay una sola medicion
     },
   };
