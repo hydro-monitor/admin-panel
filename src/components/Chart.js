@@ -57,6 +57,23 @@ const Chart = (props) => {
     [chartState]
   );
 
+  const getYAxisDomain = () => {
+    return [
+      Math.min.apply(
+        Math,
+        chartState.data.data.map(function(o) {
+          return o.level;
+        })
+      ) - 1,
+      Math.max.apply(
+        Math,
+        chartState.data.data.map(function(o) {
+          return o.level;
+        })
+      ) + 1,
+    ];
+  };
+
   useEffect(() => {
     console.log("Processing data...", data);
     setChartState((prevChartState) => {
@@ -72,11 +89,11 @@ const Chart = (props) => {
         height={300}
         padding={{ top: 50, bottom: 50, left: 80, right: 50 }}
         scale={{ x: "time" }}
-	domain={{y: [ Math.min.apply(Math, chartState.data.data.map(function(o) { return o.level; })) - 1, Math.max.apply(Math, chartState.data.data.map(function(o) { return o.level; })) + 1]}}
+        domain={{ y: getYAxisDomain() }}
         containerComponent={
           <VictoryZoomContainer
             zoomDimension="x"
-            zoomDomain={chartState.zoomDomain}
+            zoomDomain={{ ...chartState.zoomDomain, y: getYAxisDomain() }}
             onZoomDomainChange={handleZoom}
           />
         }
