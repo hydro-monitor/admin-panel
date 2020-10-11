@@ -26,6 +26,23 @@ const processData = (data) => {
   }));
 };
 
+const getYAxisDomain = (data) => {
+  return [
+    Math.min.apply(
+      Math,
+      data.map(function(o) {
+        return o.level;
+      })
+    ) - 1,
+    Math.max.apply(
+      Math,
+      data.map(function(o) {
+        return o.level;
+      })
+    ) + 1,
+  ];
+};
+
 const initializeChartState = (data) => {
   const procData = processData(data);
   if (procData.length < 2) {
@@ -35,6 +52,7 @@ const initializeChartState = (data) => {
     return {
       data: { data: procData },
       zoomDomain: {
+        y: getYAxisDomain(data),
         x: [yesterday, today],
       },
     };
@@ -43,6 +61,7 @@ const initializeChartState = (data) => {
   return {
     data: { data: procData },
     zoomDomain: {
+      y: getYAxisDomain(data),
       x: [procData[leftZoom].time, procData[0].time], // dos valores iguales cuando hay una sola medicion
     },
   };
@@ -56,23 +75,6 @@ const Chart = (props) => {
     (domain) => setChartState({ ...chartState, zoomDomain: domain }),
     [chartState]
   );
-
-  const getYAxisDomain = () => {
-    return [
-      Math.min.apply(
-        Math,
-        chartState.data.data.map(function(o) {
-          return o.level;
-        })
-      ) - 1,
-      Math.max.apply(
-        Math,
-        chartState.data.data.map(function(o) {
-          return o.level;
-        })
-      ) + 1,
-    ];
-  };
 
   useEffect(() => {
     console.log("Processing data...", data);
@@ -89,11 +91,11 @@ const Chart = (props) => {
         height={300}
         padding={{ top: 50, bottom: 50, left: 80, right: 50 }}
         scale={{ x: "time" }}
-        domain={{ y: getYAxisDomain() }}
+        //domain={{ y: getYAxisDomain() }}
         containerComponent={
           <VictoryZoomContainer
             zoomDimension="x"
-            zoomDomain={{ ...chartState.zoomDomain, y: getYAxisDomain() }}
+            zoomDomain={chartState.zoomDomain}
             onZoomDomainChange={handleZoom}
           />
         }
