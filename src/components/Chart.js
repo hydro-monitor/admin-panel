@@ -81,7 +81,12 @@ const Chart = (props) => {
   useEffect(() => {
     console.log("Processing data...", data);
     setChartState((prevChartState) => {
-      return { ...prevChartState, data: { data: processData(data) } };
+      let procData = processData(data);
+      let zoom = {
+        x: prevChartState.zoomDomain.x,
+        y: getYAxisDomain(procData),
+      };
+      return { zoomDomain: zoom, data: { data: procData } };
     });
   }, [data]);
 
