@@ -19,7 +19,7 @@ const styles = (theme) => ({
 function CopiableTextField(props) {
   const { classes, value, label } = props;
 
-  const handleClick = () => {
+  const handleClick = async () => {
     console.log("Copying to clipboard", value);
     await navigator.clipboard.writeText(value);
     console.log("Copied");
