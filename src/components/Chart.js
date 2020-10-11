@@ -147,6 +147,7 @@ const Chart = (props) => {
         width={920}
         height={80}
         scale={{ x: "time" }}
+        domain={{ y: chartState.zoomDomain.y }}
         containerComponent={
           <VictoryBrushContainer
             theme={VictoryTheme.material}
