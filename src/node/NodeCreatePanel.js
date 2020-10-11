@@ -16,13 +16,14 @@ import StepLabel from "@material-ui/core/StepLabel";
 import NodesClient from "../api/NodesClient";
 import { NODES_API } from "../common/constants";
 import { sleep } from "../common/utils";
+import CopiableTextField from "../components/CopiableTextField";
 
 const nodesClient = new NodesClient(NODES_API);
 
-const styles = theme => ({
+const styles = (theme) => ({
   updateButton: {
-    marginTop: theme.spacing(1)
-  }
+    marginTop: theme.spacing(1),
+  },
 });
 
 function NodeCreatePanel({
@@ -30,7 +31,7 @@ function NodeCreatePanel({
   open,
   handleCreateDialogClose,
   addNewNodeToState,
-  setSnackbarData
+  setSnackbarData,
 }) {
   const [nodeToCreate, setNodeToCreate] = useState("");
   const [nodeToCreateError, setNodeToCreateError] = useState(false);
@@ -48,7 +49,7 @@ function NodeCreatePanel({
   const handleResetStep = () => {
     setNodeCreateStep(0);
   };
-  const prepareForNextStep = step => {
+  const prepareForNextStep = (step) => {
     switch (step) {
       case 0:
         return handleCreateConfirmation();
@@ -61,9 +62,9 @@ function NodeCreatePanel({
     }
   };
   const handleNextStep = () => {
-    setNodeCreateStep(prevActiveStep => prevActiveStep + 1);
+    setNodeCreateStep((prevActiveStep) => prevActiveStep + 1);
   };
-  const getStepContent = step => {
+  const getStepContent = (step) => {
     switch (step) {
       case 0:
         return newNodeDialog();
@@ -76,7 +77,7 @@ function NodeCreatePanel({
     }
   };
 
-  const handleNodeToCreate = event => {
+  const handleNodeToCreate = (event) => {
     setNodeToCreate(event.target.value);
   };
 
@@ -84,7 +85,7 @@ function NodeCreatePanel({
     ""
   );
 
-  const handleDescriptionOfNodeToCreate = event => {
+  const handleDescriptionOfNodeToCreate = (event) => {
     setDescriptionOfNodeToCreate(event.target.value);
   };
 
@@ -154,7 +155,7 @@ function NodeCreatePanel({
       setSnackbarData({
         open: true,
         severity: "error",
-        message: `Error al crear nodo: ${response.body}`
+        message: `Error al crear nodo: ${response.body}`,
       });
     }
   };
@@ -214,13 +215,9 @@ function NodeCreatePanel({
               El nodo {nodeToCreate} fue creado satisfactoriamente. Para
               utilizarlo, debe configurarlo con la siguiente contraseña:
             </Typography>
-            <TextField
-              autoFocus
-              id="node-password"
+            <CopiableTextField
               label="Contraseña de nodo"
               value={nodePassword}
-              disabled
-              fullWidth
             />
           </DialogContentText>
           <Alert severity="warning">
@@ -240,7 +237,7 @@ function NodeCreatePanel({
     >
       {getStepContent(nodeCreateStep)}
       <Stepper activeStep={nodeCreateStep}>
-        {steps.map(label => {
+        {steps.map((label) => {
           return (
             <Step key={label}>
               <StepLabel>{label}</StepLabel>
