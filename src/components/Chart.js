@@ -76,6 +76,8 @@ const Chart = (props) => {
     [chartState]
   );
 
+  console.log("DEBUG ZOOMDOMAIN", chartState.zoomDomain);
+
   useEffect(() => {
     console.log("Processing data...", data);
     setChartState((prevChartState) => {
