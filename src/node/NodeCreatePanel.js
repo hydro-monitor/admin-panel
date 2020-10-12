@@ -278,7 +278,7 @@ function NodeCreatePanel({
           color="primary"
           onClick={() => prepareForNextStep(nodeCreateStep)}
         >
-          {() => getStepButtonText(nodeCreateStep)}
+          {getStepButtonText(nodeCreateStep)}
         </Button>
       </DialogActions>
     </Dialog>
