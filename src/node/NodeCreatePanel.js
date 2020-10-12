@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { withStyles } from "@material-ui/core/styles";
-import { makeStyles } from "@material-ui/core/styles";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -20,11 +19,11 @@ import CopiableTextField from "../components/CopiableTextField";
 
 const nodesClient = new NodesClient(NODES_API);
 
-const useStyles = makeStyles((theme) => ({
+const styles = (theme) => ({
   nextStepButton: {
     marginLeft: theme.spacing(1),
   },
-}));
+});
 
 function NodeCreatePanel({
   classes,
@@ -33,7 +32,6 @@ function NodeCreatePanel({
   addNewNodeToState,
   setSnackbarData,
 }) {
-  const innerClasses = useStyles();
   const [nodeToCreate, setNodeToCreate] = useState("");
   const [nodeToCreateError, setNodeToCreateError] = useState(false);
   const [nodeToCreateErrorMessage, setNodeToCreateErrorMessage] = useState("");
@@ -278,7 +276,7 @@ function NodeCreatePanel({
         <Button
           variant="contained"
           color="primary"
-          className={myClasses.nextStepButton}
+          className={classes.nextStepButton}
           onClick={() => prepareForNextStep(nodeCreateStep)}
         >
           {getStepButtonText(nodeCreateStep)}
