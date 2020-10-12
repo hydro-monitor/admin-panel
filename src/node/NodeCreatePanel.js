@@ -15,14 +15,13 @@ import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
 import NodesClient from "../api/NodesClient";
 import { NODES_API } from "../common/constants";
-import { sleep } from "../common/utils";
 import CopiableTextField from "../components/CopiableTextField";
 
 const nodesClient = new NodesClient(NODES_API);
 
 const styles = (theme) => ({
-  updateButton: {
-    marginTop: theme.spacing(1),
+  nextStepButton: {
+    marginLeft: theme.spacing(1),
   },
 });
 
@@ -41,9 +40,15 @@ function NodeCreatePanel({
   const [nodeCreateStep, setNodeCreateStep] = useState(0);
   const nodeCreateStepStart = "Crear nodo";
   const nodeCreateStepWaiting = "Esperar creación";
-  const nodeCreateStepDone = "Obtener contraseña";
+  const nodeCreateStepShowPassword = "Guardar contraseña";
+  const nodeCreateStepDone = "Terminar creación";
   const getSteps = () => {
-    return [nodeCreateStepStart, nodeCreateStepWaiting, nodeCreateStepDone];
+    return [
+      nodeCreateStepStart,
+      nodeCreateStepWaiting,
+      nodeCreateStepShowPassword,
+      nodeCreateStepDone,
+    ];
   };
   const steps = getSteps();
   const handleResetStep = () => {
@@ -56,6 +61,9 @@ function NodeCreatePanel({
       case 1:
         return;
       case 2:
+        handleNextStep(); // Go to confirm close step
+        return;
+      case 3:
         return handleCreateConfirmClose();
       default:
         return "Unknown step";
@@ -72,8 +80,24 @@ function NodeCreatePanel({
         return waitingNewNode();
       case 2:
         return newNodeSuccess();
+      case 3:
+        return newNodeSuccess();
       default:
         return "Unknown step";
+    }
+  };
+  const getStepButtonText = (step) => {
+    switch (step) {
+      case 0:
+        return "Siguiente";
+      case 1:
+        return "Siguiente";
+      case 2:
+        return "Cerrar";
+      case 3:
+        return "Sí, cerrar";
+      default:
+        return "Unknown";
     }
   };
 
@@ -111,7 +135,6 @@ function NodeCreatePanel({
           nodeToCreate,
           descriptionOfNodeToCreate
         );
-        await sleep(1000); // TODO Remove when testing is done
         handleNodeCreationResult(
           response,
           nodeToCreate,
@@ -247,12 +270,16 @@ function NodeCreatePanel({
       </Stepper>
 
       <DialogActions>
+        {nodeCreateStep === steps.length - 1
+          ? "¿Guardó la contraseña del nodo?"
+          : ""}
         <Button
           variant="contained"
           color="primary"
+          className={classes.nextStepButton}
           onClick={() => prepareForNextStep(nodeCreateStep)}
         >
-          {nodeCreateStep === steps.length - 1 ? "Cerrar" : "Siguiente"}
+          {getStepButtonText(nodeCreateStep)}
         </Button>
       </DialogActions>
     </Dialog>
