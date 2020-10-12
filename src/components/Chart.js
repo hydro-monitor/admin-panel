@@ -154,9 +154,9 @@ const Chart = (props) => {
           <IconButton
             aria-label="load-more-readings"
             style={{
-                marginRight: "5px",
-              }}
-	    onClick={handleLoadMoreReadings}
+              marginRight: "5px",
+            }}
+            onClick={handleLoadMoreReadings}
             disabled={noMoreReadings}
           >
             <ArrowBackIcon fontSize="small" />
@@ -165,7 +165,7 @@ const Chart = (props) => {
         <Box flexGrow={1}>
           <VictoryChart
             theme={VictoryTheme.material}
-            padding={{ top: 0, left: 0, right: 0, bottom: 40 }} // TODO play with left padding
+            padding={{ top: 0, left: 0, right: 0, bottom: 40 }}
             width={920}
             height={80}
             scale={{ x: "time" }}
