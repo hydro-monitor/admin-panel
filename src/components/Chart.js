@@ -99,7 +99,7 @@ const Chart = (props) => {
         theme={VictoryTheme.material}
         width={920}
         height={300}
-        padding={{ top: 50, bottom: 50, left: 80, right: 50 }}
+        padding={{ top: 50, bottom: 50, left: 80, right: 0 }}
         scale={{ x: "time" }}
         //domain={{ y: getYAxisDomain() }}
         containerComponent={
@@ -149,20 +149,23 @@ const Chart = (props) => {
           style={{ data: { fill: "#3f51b5" } }}
         />
       </VictoryChart>
-      <Box display="inline" flexGrow={1}>
-        <Box>
+      <Box display="flex">
+        <Box alignSelf="center">
           <IconButton
             aria-label="load-more-readings"
-            onClick={handleLoadMoreReadings}
+            style={{
+                marginRight: "5px",
+              }}
+	    onClick={handleLoadMoreReadings}
             disabled={noMoreReadings}
           >
             <ArrowBackIcon fontSize="small" />
           </IconButton>
         </Box>
-        <Box>
+        <Box flexGrow={1}>
           <VictoryChart
             theme={VictoryTheme.material}
-            padding={{ top: 0, left: 40, right: 50, bottom: 40 }} // TODO play with left padding
+            padding={{ top: 0, left: 0, right: 0, bottom: 40 }} // TODO play with left padding
             width={920}
             height={80}
             scale={{ x: "time" }}
