@@ -10,6 +10,7 @@ import {
   VictoryTooltip,
   VictoryLabel,
 } from "victory";
+import Box from "@material-ui/core/Box";
 import IconButton from "@material-ui/core/IconButton";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import { manualReadingBoolToString } from "../common/utils";
@@ -148,47 +149,53 @@ const Chart = (props) => {
           style={{ data: { fill: "#3f51b5" } }}
         />
       </VictoryChart>
-      <IconButton
-        aria-label="load-more-readings"
-        onClick={handleLoadMoreReadings}
-        disabled={noMoreReadings}
-      >
-        <ArrowBackIcon fontSize="small" />
-      </IconButton>
-      <VictoryChart
-        theme={VictoryTheme.material}
-        padding={{ top: 0, left: 40, right: 50, bottom: 40 }} // TODO play with left padding
-        width={920}
-        height={80}
-        scale={{ x: "time" }}
-        domain={{ y: chartState.zoomDomain.y }}
-        containerComponent={
-          <VictoryBrushContainer
+      <Box display="inline" flexGrow={1}>
+        <Box>
+          <IconButton
+            aria-label="load-more-readings"
+            onClick={handleLoadMoreReadings}
+            disabled={noMoreReadings}
+          >
+            <ArrowBackIcon fontSize="small" />
+          </IconButton>
+        </Box>
+        <Box>
+          <VictoryChart
             theme={VictoryTheme.material}
-            brushDimension="x"
-            brushDomain={chartState.zoomDomain}
-            onBrushDomainChange={handleZoom}
-          />
-        }
-      >
-        <VictoryAxis
-          style={{
-            ticks: { stroke: "black" },
-            axis: { stroke: "black", strokeWidth: 1 },
-            tickLabels: { fill: "black" },
-          }}
-        />
-        <VictoryLine
-          theme={VictoryTheme.material}
-          data={chartState.data.data}
-          labelComponent={<VictoryTooltip active={false} />}
-          x="time"
-          y="level"
-          style={{
-            data: { stroke: "#3f51b5", strokeWidth: 1 },
-          }}
-        />
-      </VictoryChart>
+            padding={{ top: 0, left: 40, right: 50, bottom: 40 }} // TODO play with left padding
+            width={920}
+            height={80}
+            scale={{ x: "time" }}
+            domain={{ y: chartState.zoomDomain.y }}
+            containerComponent={
+              <VictoryBrushContainer
+                theme={VictoryTheme.material}
+                brushDimension="x"
+                brushDomain={chartState.zoomDomain}
+                onBrushDomainChange={handleZoom}
+              />
+            }
+          >
+            <VictoryAxis
+              style={{
+                ticks: { stroke: "black" },
+                axis: { stroke: "black", strokeWidth: 1 },
+                tickLabels: { fill: "black" },
+              }}
+            />
+            <VictoryLine
+              theme={VictoryTheme.material}
+              data={chartState.data.data}
+              labelComponent={<VictoryTooltip active={false} />}
+              x="time"
+              y="level"
+              style={{
+                data: { stroke: "#3f51b5", strokeWidth: 1 },
+              }}
+            />
+          </VictoryChart>
+        </Box>
+      </Box>
     </div>
   );
 };
