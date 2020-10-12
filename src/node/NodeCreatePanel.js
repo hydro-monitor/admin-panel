@@ -271,7 +271,7 @@ function NodeCreatePanel({
 
       <DialogActions>
         {nodeCreateStep === steps.length - 1
-          ? "¿Ya guardó la contraseña del nodo?"
+          ? "¿Guardó la contraseña del nodo?"
           : ""}
         <Button
           variant="contained"
