@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { withStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -19,11 +20,11 @@ import CopiableTextField from "../components/CopiableTextField";
 
 const nodesClient = new NodesClient(NODES_API);
 
-const styles = (theme) => ({
-  updateButton: {
-    marginTop: theme.spacing(1),
+const useStyles = makeStyles((theme) => ({
+  nextStepButton: {
+    marginLeft: theme.spacing(1),
   },
-});
+}));
 
 function NodeCreatePanel({
   classes,
@@ -32,6 +33,7 @@ function NodeCreatePanel({
   addNewNodeToState,
   setSnackbarData,
 }) {
+  const innerClasses = useStyles();
   const [nodeToCreate, setNodeToCreate] = useState("");
   const [nodeToCreateError, setNodeToCreateError] = useState(false);
   const [nodeToCreateErrorMessage, setNodeToCreateErrorMessage] = useState("");
@@ -40,8 +42,8 @@ function NodeCreatePanel({
   const [nodeCreateStep, setNodeCreateStep] = useState(0);
   const nodeCreateStepStart = "Crear nodo";
   const nodeCreateStepWaiting = "Esperar creación";
-  const nodeCreateStepShowPassword = "Obtener contraseña";
-  const nodeCreateStepDone = "Obtener contraseña";
+  const nodeCreateStepShowPassword = "Guardar contraseña";
+  const nodeCreateStepDone = "Terminar creación";
   const getSteps = () => {
     return [
       nodeCreateStepStart,
@@ -270,12 +272,13 @@ function NodeCreatePanel({
       </Stepper>
 
       <DialogActions>
-        {nodeCreateStep === steps.length - 2
+        {nodeCreateStep === steps.length - 1
           ? "¿Ya guardó la contraseña del nodo?"
           : ""}
         <Button
           variant="contained"
           color="primary"
+          className={myClasses.nextStepButton}
           onClick={() => prepareForNextStep(nodeCreateStep)}
         >
           {getStepButtonText(nodeCreateStep)}
