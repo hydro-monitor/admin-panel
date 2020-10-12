@@ -10,6 +10,8 @@ import {
   VictoryTooltip,
   VictoryLabel,
 } from "victory";
+import IconButton from "@material-ui/core/IconButton";
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import { manualReadingBoolToString } from "../common/utils";
 
 const processData = (data) => {
@@ -68,7 +70,7 @@ const initializeChartState = (data) => {
 };
 
 const Chart = (props) => {
-  const { data } = props;
+  const { data, handleLoadMoreReadings, noMoreReadings } = props;
   const [chartState, setChartState] = useState(initializeChartState(data));
 
   const handleZoom = useCallback(
@@ -146,9 +148,16 @@ const Chart = (props) => {
           style={{ data: { fill: "#3f51b5" } }}
         />
       </VictoryChart>
+      <IconButton
+        aria-label="load-more-readings"
+        onClick={handleLoadMoreReadings}
+        disabled={noMoreReadings}
+      >
+        <ArrowBackIcon fontSize="small" />
+      </IconButton>
       <VictoryChart
         theme={VictoryTheme.material}
-        padding={{ top: 0, left: 80, right: 50, bottom: 40 }}
+        padding={{ top: 0, left: 40, right: 50, bottom: 40 }} // TODO play with left padding
         width={920}
         height={80}
         scale={{ x: "time" }}

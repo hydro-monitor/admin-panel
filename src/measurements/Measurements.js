@@ -347,7 +347,11 @@ export default function Measurements() {
     return (
       <React.Fragment>
         {data.length >= 2 ? (
-          <Chart data={Array.isArray(data) ? data : []} />
+          <Chart
+            data={Array.isArray(data) ? data : []}
+            handleLoadMoreReadings={handleLoadMoreReadings}
+            noMoreReadings={!theresMoreReadings}
+          />
         ) : (
           <Alert severity="info">
             No hay suficientes mediciones para graficar
