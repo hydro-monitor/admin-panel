@@ -71,7 +71,9 @@ function StateForm(props) {
               label="Límite inferior (cm)"
               value={lowerLimitValue}
               error={
-                !lowerLimitValue || !isNumeric(lowerLimitValue) || limitsOverlap
+                lowerLimitValue === "" ||
+                !isNumeric(lowerLimitValue) ||
+                limitsOverlap
               }
               onChange={handleChange}
               disabled={disabled}
@@ -86,7 +88,9 @@ function StateForm(props) {
               label="Límite superior (cm)"
               value={upperLimitValue}
               error={
-                !upperLimitValue || !isNumeric(upperLimitValue) || limitsOverlap
+                upperLimitValue === "" ||
+                !isNumeric(upperLimitValue) ||
+                limitsOverlap
               }
               onChange={handleChange}
               disabled={disabled}
