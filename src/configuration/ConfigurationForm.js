@@ -60,6 +60,9 @@ function ConfigurationForm(props) {
         return;
       }
     }
+
+    console.log("No overlapping intervals");
+    setLimitsOverlap(false);
   }, [config]);
 
   const renderCustomStateForms = () => {
