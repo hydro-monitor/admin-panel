@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
@@ -15,6 +15,52 @@ function ConfigurationForm(props) {
     handleCustomStateAddition,
     handleCustomStateDeletion,
   } = props;
+
+  const [limitsOverlap, setLimitsOverlap] = useState(false);
+
+  useEffect(() => {
+    console.log("Validating state limits", config);
+    let intervals = [];
+
+    for (let [key, value] of Object.entries(config)) {
+      console.log(key, value);
+      if (key === "default") {
+        console.log("Skipping default state");
+        continue;
+      }
+      if (
+        !value.hasOwnProperty("lowerLimit") ||
+        !value.hasOwnProperty("upperLimit")
+      ) {
+        console.log("Value has a missing limit property", value);
+        continue;
+      }
+      console.log("Pushing interval: ", [value.lowerLimit, value.upperLimit]);
+      intervals.push([value.lowerLimit, value.upperLimit]);
+    }
+
+    function intervalComparator(a, b) {
+      if (a[0] < b[0]) return -1;
+      if (a[0] > b[0]) return 1;
+      return 0;
+    }
+
+    intervals = intervals.sort(intervalComparator);
+    console.log("Sorted intervals: ", intervals);
+
+    for (let i = 1; i < intervals.length; i++) {
+      if (intervals[i - 1][1] > intervals[i][0]) {
+        // OVERLAPPING!!
+        console.log(
+          "OVERLAPPING!! Intervals overlap: ",
+          intervals[i - 1],
+          intervals[i]
+        );
+        setLimitsOverlap(true);
+        return;
+      }
+    }
+  }, [config]);
 
   const renderCustomStateForms = () => {
     let stateNames = Object.keys(config).sort(); // Sort to that state forms are always rendered in the same order
@@ -37,6 +83,7 @@ function ConfigurationForm(props) {
             }
             onDeleteStateClick={() => handleCustomStateDeletion(stateNames[i])}
             disabled={disabled}
+            limitsOverlap={limitsOverlap}
           />
         </Grid>
       );
