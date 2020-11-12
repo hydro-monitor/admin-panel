@@ -15,30 +15,30 @@ import jwtDecode from "jwt-decode";
 import Copyright from "../components/Copyright";
 import SignInFields from "./SignInFields";
 import CustomizedSnackbar, {
-  closeSnack
+  closeSnack,
 } from "../components/CustomizedSnackbar";
 import { SESSION_API } from "../common/constants";
 import SessionClient from "../api/SessionClient";
 
 const sessionClient = new SessionClient(SESSION_API);
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
-    alignItems: "center"
+    alignItems: "center",
   },
   avatar: {
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main
+    backgroundColor: theme.palette.secondary.main,
   },
   form: {
     width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(1)
+    marginTop: theme.spacing(1),
   },
   submit: {
-    margin: theme.spacing(3, 0, 2)
-  }
+    margin: theme.spacing(3, 0, 2),
+  },
 }));
 
 export default function SignIn() {
@@ -47,13 +47,13 @@ export default function SignIn() {
   const [snackbarData, setSnackbarData] = useState({
     open: false,
     severity: "",
-    message: ""
+    message: "",
   });
 
   const classes = useStyles();
   const history = useHistory();
 
-  const signIn = async e => {
+  const signIn = async (e) => {
     e.preventDefault();
     closeSnack(setSnackbarData);
     const token = await sessionClient.signIn(email, password);
@@ -75,7 +75,7 @@ export default function SignIn() {
     setSnackbarData({
       open: true,
       severity: "error",
-      message: "Las credenciales ingresadas son incorrectas"
+      message: "Las credenciales ingresadas son incorrectas",
     });
   };
 
@@ -107,11 +107,13 @@ export default function SignIn() {
             Iniciar sesión
           </Button>
           <Grid container>
+            {/*
             <Grid item xs>
               <Link href="#" variant="body2">
                 Recuperar contraseña
               </Link>
             </Grid>
+            */}
             <Grid item>
               <Link href="/signup" variant="body2">
                 {"Crear nueva cuenta"}
