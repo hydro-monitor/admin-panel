@@ -26,6 +26,7 @@ const processData = (data) => {
       `Nivel de agua: ${row.waterLevel}`,
       `Tipo: ${manualReadingBoolToString(row.manualReading)}`,
     ],
+    symbol: row.manualReading ? "diamond" : "circle",
   }));
 };
 
