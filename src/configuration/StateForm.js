@@ -116,7 +116,7 @@ function StateForm(props) {
             required
             fullWidth
             name="interval"
-            label="Intervalo entre fotos (s)"
+            label="Intervalo entre mediciones (s)"
             value={intervalValue}
             error={!intervalValue || !isNumeric(intervalValue)}
             onChange={handleChange}
