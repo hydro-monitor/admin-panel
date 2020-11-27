@@ -24,6 +24,7 @@ function StateForm(props) {
     isDefault,
     onDeleteStateClick,
     disabled,
+    limitsOverlap,
   } = props;
 
   const handleChange = (event) => {
@@ -69,7 +70,11 @@ function StateForm(props) {
               name="lowerLimit"
               label="Límite inferior (cm)"
               value={lowerLimitValue}
-              error={!lowerLimitValue || !isNumeric(lowerLimitValue)}
+              error={
+                lowerLimitValue === "" ||
+                !isNumeric(lowerLimitValue) ||
+                limitsOverlap
+              }
               onChange={handleChange}
               disabled={disabled}
             />
@@ -82,7 +87,11 @@ function StateForm(props) {
               name="upperLimit"
               label="Límite superior (cm)"
               value={upperLimitValue}
-              error={!upperLimitValue || !isNumeric(upperLimitValue)}
+              error={
+                upperLimitValue === "" ||
+                !isNumeric(upperLimitValue) ||
+                limitsOverlap
+              }
               onChange={handleChange}
               disabled={disabled}
             />
@@ -107,7 +116,7 @@ function StateForm(props) {
             required
             fullWidth
             name="interval"
-            label="Intervalo entre fotos (s)"
+            label="Intervalo entre mediciones (s)"
             value={intervalValue}
             error={!intervalValue || !isNumeric(intervalValue)}
             onChange={handleChange}

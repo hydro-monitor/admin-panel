@@ -418,7 +418,7 @@ export default function Measurements() {
                 className={classes.deleteMeasurementsButton}
               >
                 <DeleteButton
-                  tooltip="Delete measurements"
+                  tooltip="Borrar mediciones"
                   onClick={() => handleDeleteMeasurement(checked)}
                   disabled={!isAdmin() || checked.length === 0}
                 />

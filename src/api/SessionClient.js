@@ -4,14 +4,13 @@ export default class SessionClient {
   }
 
   async signIn(username, password) {
-    const encodedUsername = encodeURIComponent(username);
-    const encodedPassword = encodeURIComponent(password);
-    const response = await fetch(
-      `${this.baseUrl}?username=${encodedUsername}&password=${encodedPassword}`,
-      {
-        method: "post"
-      }
-    );
+    const formData = new FormData();
+    formData.append("username", username);
+    formData.append("password", password);
+    const response = await fetch(this.baseUrl, {
+      method: "post",
+      body: formData
+    });
     if (response.ok) {
       const body = await response.json();
       return body.token;
