@@ -172,7 +172,7 @@ export default function Measurements() {
   useEffect(() => {
     (async () => {
       setIsLoading(true);
-      await sleep(1000); // TODO Remove when testing is done
+      await sleep(500); // TODO Remove when testing is done
       try {
         const nodesAndDescriptions = await nodesClient.getNodes();
         setNodesData(nodesAndDescriptions);
@@ -200,7 +200,7 @@ export default function Measurements() {
       console.log("FETCH DATA HOOK");
       setIsLoadingData(true);
       if (!isLoading && !nodesEmpty) {
-        await sleep(1000); // TODO Remove when testing is done
+        await sleep(500); // TODO Remove when testing is done
         try {
           const {
             json,
@@ -296,7 +296,7 @@ export default function Measurements() {
     });
 
     const result = readingsClient.deleteReadings(node, items);
-    await sleep(1000); // TODO Remove when web api integration is done
+    await sleep(500); // TODO Remove when web api integration is done
 
     updateData(not(data, checked));
     setChecked([]);

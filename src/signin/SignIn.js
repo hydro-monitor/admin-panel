@@ -56,6 +56,18 @@ export default function SignIn() {
   const signIn = async (e) => {
     e.preventDefault();
     closeSnack(setSnackbarData);
+
+    // TODO Remove after demo
+    if (email !== "mporto@fi.uba.ar" && email !== "aibarbetta@fi.uba.ar") {
+      setSnackbarData({
+        open: true,
+        severity: "error",
+        message: "Usuario no autorizado para acceder al panel actualmente",
+      });
+      return;
+    }
+    // END TODO Remove after demo
+
     const token = await sessionClient.signIn(email, password);
     if (token !== null) {
       const userInfo = jwtDecode(token);

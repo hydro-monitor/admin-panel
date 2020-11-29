@@ -71,7 +71,7 @@ export default function NodeConfiguration({
   useMountEffect(() => {
     (async () => {
       setIsLoading(true);
-      await sleep(1000); // TODO Remove when testing is done
+      await sleep(500); // TODO Remove when testing is done
       try {
         const nodesAndDescriptions = await nodesClient.getNodes();
         setNodesData(nodesAndDescriptions);
@@ -99,7 +99,7 @@ export default function NodeConfiguration({
       setIsLoadingConfig(true);
       if (!isLoading && !nodesEmpty) {
         try {
-          await sleep(1000); // TODO Remove when testing is done
+          await sleep(500); // TODO Remove when testing is done
           const configuration = await nodesClient.getNodeConfiguration(node);
           addStateNamePropertyToConfiguration(configuration);
           updateConfig(configuration);

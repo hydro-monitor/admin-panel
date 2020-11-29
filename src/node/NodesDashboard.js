@@ -18,15 +18,15 @@ import { useStyles } from "../dashboard/dashboardStyles";
 
 const nodesClient = new NodesClient(NODES_API);
 
-const fabStyles = makeStyles(theme => ({
+const fabStyles = makeStyles((theme) => ({
   fab: {
     position: "fixed",
     bottom: "20px",
-    right: "20px"
+    right: "20px",
   },
   nameForm: {
-    marginBottom: theme.spacing(1)
-  }
+    marginBottom: theme.spacing(1),
+  },
 }));
 
 export default function NodesDashboard(props) {
@@ -40,7 +40,7 @@ export default function NodesDashboard(props) {
   const [snackbarData, setSnackbarData] = useState({
     open: false,
     severity: "",
-    message: ""
+    message: "",
   });
 
   const fabClasses = fabStyles();
@@ -49,12 +49,12 @@ export default function NodesDashboard(props) {
     console.log("adding new node", name);
     var nodesDataUpdated = {
       [name]: { description: description },
-      ...nodesData
+      ...nodesData,
     };
     setNodesData(nodesDataUpdated);
   };
 
-  const deleteOldNodeFromState = name => {
+  const deleteOldNodeFromState = (name) => {
     console.log("deleting old node", name);
     let { [name]: omit, ...nodesDataUpdated } = nodesData;
     setNodesData(nodesDataUpdated);
@@ -71,7 +71,7 @@ export default function NodesDashboard(props) {
   useEffect(() => {
     (async () => {
       setIsLoading(true);
-      await sleep(1000); // TODO Remove when testing is done
+      await sleep(500); // TODO Remove when testing is done
       try {
         const nodesAndDescriptions = await nodesClient.getNodes();
         setNodesData(nodesAndDescriptions);

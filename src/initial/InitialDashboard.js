@@ -40,7 +40,7 @@ export default function InitialDashboard(props) {
   useEffect(() => {
     const fetchNodes = async () => {
       setIsLoading(true);
-      await sleep(1000); // TODO Remove when testing is done
+      await sleep(500); // TODO Remove when testing is done
       await fetch(nodesURL, {
         headers: { Authorization: `Bearer ${getToken()}` },
       })
